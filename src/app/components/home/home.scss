@@ -1,0 +1,854 @@
+// ─────────────────────────────────────────────
+// Tokens
+// ─────────────────────────────────────────────
+$bg: #141410;
+$cream: #f0e8c8;
+$cta-border: #c8b87a;
+$arch-w: clamp(240px, 28vw, 420px);
+$arch-h: calc(#{$arch-w} * 1.35);
+$text-muted: #c8bfa8;
+$bg-yellow: #fdff7f;
+$text-dark: #1a1a18;
+$font-display: 'Playfair Display', serif;
+$font-body: 'EB Garamond', 'Garamond', Georgia, serif;
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+$card-bg: #666536;
+
+// ─────────────────────────────────────────────
+// Breakpoints
+// ─────────────────────────────────────────────
+$bp-lg: 1005px;
+$bp-md: 768px;
+$bp-sm: 600px;
+$bp-xs: 480px;
+$bp-xxs: 320px;
+
+// ─────────────────────────────────────────────
+// Keyframes
+// ─────────────────────────────────────────────
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes archReveal {
+  from {
+    opacity: 0;
+    transform: scaleY(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+@keyframes titleFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes floatCard {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// ─────────────────────────────────────────────
+// Hero
+// ─────────────────────────────────────────────
+.hero {
+  isolation: isolate;
+  height: 100vh;
+  width: 100%;
+  min-height: clamp(340px, 48vw, 620px);
+  background: $bg;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &--visible {
+    opacity: 1;
+
+    .hero__arch-mask {
+      animation: archReveal 1.1s $ease-out 0.05s both;
+    }
+    .hero__title-inner {
+      animation: titleFade 1s ease-out 0.25s both;
+    }
+    .hero__tagline {
+      animation: fadeUp 0.7s ease-out 0.55s both;
+    }
+    .hero__cta {
+      animation: fadeUp 0.7s ease-out 0.72s both;
+    }
+  }
+
+  @media (max-width: $bp-lg) {
+    min-height: 100svh;
+  }
+}
+
+// ── მთავარი wrapper — arch + text ერთად, ცენტრში ──
+.hero-div-mtavari {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__arch {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: $arch-w;
+  height: $arch-h;
+  z-index: 1;
+  pointer-events: none;
+
+  @media (max-width: $bp-md) {
+    width: clamp(200px, 60vw, 340px);
+    height: calc(clamp(200px, 60vw, 340px) * 1.35);
+  }
+
+  @media (max-width: $bp-sm) {
+    width: 72vw;
+    height: calc(72vw * 1.35);
+  }
+
+  @media (max-width: $bp-xs) {
+    width: 82vw;
+    height: calc(82vw * 1.35);
+  }
+
+  @media (max-width: $bp-xxs) {
+    width: 92vw;
+    height: calc(92vw * 1.35);
+  }
+}
+
+.hero__arch-mask {
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+  overflow: hidden;
+  transform-origin: top center;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.75);
+}
+
+.hero__arch-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  filter: saturate(0.88) brightness(0.85);
+}
+
+.hero__arch-vignette {
+  width: 100%;
+  height: 100%;
+  margin-top: -100%;
+  background: radial-gradient(
+    ellipse 80% 90% at 50% 55%,
+    transparent 35%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 40%;
+    margin-top: 60%;
+    background: linear-gradient(to bottom, transparent, $bg);
+  }
+}
+
+// ── ტექსტი arch-ის თავზე, z-index-ით ──
+.hero-div {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__title {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+  width: 100%;
+}
+
+.hero__title-inner {
+  display: inline-block;
+  font-family: 'Playwrite GB S Guides', cursive;
+  font-size: clamp(4rem, 12vw, 11rem);
+  font-weight: 400;
+  color: $cream;
+  text-shadow:
+    0 0 80px rgba(240, 232, 200, 0.22),
+    0 2px 10px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+
+  @media (max-width: $bp-lg) {
+    font-size: clamp(3.2rem, 10vw, 8rem);
+  }
+
+  @media (max-width: $bp-md) {
+    font-size: clamp(2.8rem, 12vw, 5.5rem);
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  @media (max-width: $bp-sm) {
+    font-size: clamp(2.4rem, 14vw, 4rem);
+  }
+
+  @media (max-width: $bp-xs) {
+    font-size: clamp(2rem, 16vw, 3.2rem);
+  }
+
+  @media (max-width: $bp-xxs) {
+    font-size: clamp(1.8rem, 18vw, 2.6rem);
+  }
+}
+
+.hero__sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1rem;
+  padding-bottom: clamp(24px, 5vw, 48px);
+}
+
+.hero__tagline {
+  margin: 0;
+  padding: 6px 22px;
+  color: $cream;
+  font-family: $font-display;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+
+  @media (max-width: $bp-sm)  { font-size: 0.95rem; }
+  @media (max-width: $bp-xxs) { font-size: 0.85rem; padding: 4px 12px; }
+}
+
+.hero__cta {
+  display: inline-block;
+  padding: 5px 18px;
+  border: 1px solid rgba(240, 232, 200, 0.5);
+  border-radius: 20px;
+  background: rgba(240, 232, 200, 0.07);
+  color: rgba(240, 232, 200, 0.85);
+  font-family: $font-body;
+  font-size: clamp(0.65rem, 1.4vw, 0.82rem);
+  letter-spacing: 0.07em;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(200, 184, 122, 0.2);
+    color: #fff;
+    box-shadow: 0 0 18px rgba(200, 184, 122, 0.28);
+    outline: none;
+  }
+
+  @media (max-width: $bp-sm)  { font-size: 0.72rem; }
+  @media (max-width: $bp-xxs) { font-size: 0.62rem; padding: 4px 14px; }
+}
+// ─────────────────────────────────────────────
+// Section 1
+// ─────────────────────────────────────────────
+.section1 {
+  background: $bg;
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  overflow: hidden;
+
+  &__image-wrap {
+    width: 55%;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 60px 50px;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(2.5rem, 5vw, 4.2rem);
+    font-weight: 400;
+    color: $cream;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  &__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  &__description {
+    font-family: $font-body;
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    color: $text-muted;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  &__btn {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid $text-muted;
+    color: $cream;
+    font-family: $font-body;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    padding: 12px 36px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition:
+      background 0.3s,
+      color 0.3s;
+
+    &:hover {
+      background: $cream;
+      color: $bg;
+    }
+  }
+
+  // ── 1005px: image narrower, content more room ──
+  @media (max-width: $bp-lg) {
+    &__image-wrap {
+      width: 50%;
+    }
+    &__content {
+      padding: 48px 36px;
+    }
+  }
+
+  // ── 768px: stack vertically ──
+  @media (max-width: $bp-md) {
+    flex-direction: column;
+    min-height: auto;
+
+    &__image-wrap {
+      width: 100%;
+      height: 56vw;
+      max-height: 480px;
+    }
+
+    &__content {
+      padding: 48px 36px 56px;
+      gap: 32px;
+      justify-content: flex-start;
+    }
+
+    &__title {
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+    }
+
+    &__description {
+      font-size: clamp(1rem, 2.2vw, 1.15rem);
+    }
+  }
+
+  // ── 600px ──
+  @media (max-width: $bp-sm) {
+    &__image-wrap {
+      height: 62vw;
+    }
+    &__content {
+      padding: 36px 24px 48px;
+    }
+    &__title {
+      font-size: clamp(1.9rem, 7vw, 2.6rem);
+    }
+    &__btn {
+      padding: 11px 28px;
+      font-size: 0.85rem;
+    }
+  }
+
+  // ── 480px ──
+  @media (max-width: $bp-xs) {
+    &__image-wrap {
+      height: 68vw;
+    }
+    &__content {
+      padding: 28px 20px 40px;
+      gap: 24px;
+    }
+    &__title {
+      font-size: clamp(1.7rem, 8vw, 2.2rem);
+    }
+    &__bottom {
+      gap: 20px;
+    }
+  }
+
+  // ── 320px ──
+  @media (max-width: $bp-xxs) {
+    &__image-wrap {
+      height: 75vw;
+    }
+    &__content {
+      padding: 24px 16px 36px;
+      gap: 20px;
+    }
+    &__title {
+      font-size: clamp(1.5rem, 9vw, 1.9rem);
+    }
+    &__description {
+      font-size: 0.95rem;
+    }
+    &__btn {
+      padding: 10px 22px;
+      font-size: 0.8rem;
+      align-self: stretch;
+      text-align: center;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Section 2
+// ─────────────────────────────────────────────
+.section2 {
+  background-color: $bg-yellow;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100px 40px;
+  gap: 48px;
+  overflow: hidden;
+
+  &__label {
+    color: $bg;
+    font-family: $font-body;
+    font-size: 1.85rem;
+    letter-spacing: 0.08em;
+    padding: 6px 18px;
+    border-radius: 3px;
+  }
+
+  &__quote {
+    font-family: $font-display;
+    font-size: clamp(1.5rem, 3vw, 2.8rem);
+    font-weight: 400;
+    color: $text-dark;
+    line-height: 1.5;
+    text-align: center;
+    max-width: 900px;
+  }
+
+  &__portrait {
+    width: 320px;
+    height: 430px;
+    object-fit: cover;
+    display: block;
+  }
+
+  // ── 1005px ──
+  @media (max-width: $bp-lg) {
+    padding: 80px 48px;
+    gap: 40px;
+
+    &__label {
+      font-size: 1.65rem;
+    }
+    &__quote {
+      font-size: clamp(1.4rem, 2.8vw, 2.4rem);
+      max-width: 780px;
+    }
+    &__portrait {
+      width: 290px;
+      height: 390px;
+    }
+  }
+
+  // ── 768px ──
+  @media (max-width: $bp-md) {
+    padding: 72px 36px;
+    gap: 36px;
+    min-height: auto;
+
+    &__label {
+      font-size: 1.5rem;
+    }
+    &__quote {
+      font-size: clamp(1.3rem, 3.5vw, 2rem);
+    }
+    &__portrait {
+      width: clamp(240px, 72vw, 320px);
+      height: calc(clamp(240px, 72vw, 320px) * 1.34);
+    }
+  }
+
+  // ── 600px ──
+  @media (max-width: $bp-sm) {
+    padding: 60px 24px;
+    gap: 28px;
+
+    &__label {
+      font-size: 1.3rem;
+      letter-spacing: 0.05em;
+    }
+    &__quote {
+      font-size: clamp(1.2rem, 4.5vw, 1.7rem);
+      line-height: 1.55;
+    }
+    &__portrait {
+      width: 80vw;
+      height: calc(80vw * 1.34);
+    }
+  }
+
+  // ── 480px ──
+  @media (max-width: $bp-xs) {
+    padding: 52px 20px;
+    gap: 24px;
+
+    &__label {
+      font-size: 1.15rem;
+      padding: 4px 12px;
+    }
+    &__quote {
+      font-size: clamp(1.1rem, 5vw, 1.5rem);
+    }
+    &__portrait {
+      width: 86vw;
+      height: calc(86vw * 1.34);
+    }
+  }
+
+  // ── 320px ──
+  @media (max-width: $bp-xxs) {
+    padding: 40px 16px;
+    gap: 20px;
+
+    &__label {
+      font-size: 1rem;
+      padding: 3px 10px;
+    }
+    &__quote {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    &__portrait {
+      width: 92vw;
+      height: calc(92vw * 1.34);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Section 3 — Arch Card Testimonials
+// ─────────────────────────────────────────────
+.section3 {
+  --s3-card-h: 580px;
+  --s3-card-w: 420px;
+  --s3-card-r-v: 210px;
+
+  min-height: 100vh;
+  background: $bg;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 24px;
+  overflow: hidden;
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+  }
+
+  &__heading {
+    font-family: $font-display;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 400;
+    color: rgba(240, 232, 200, 0.75);
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+
+  &__card-outer {
+    width: var(--s3-card-w);
+    height: var(--s3-card-h);
+    overflow: hidden;
+    border-top-left-radius: 50% var(--s3-card-r-v);
+    border-top-right-radius: 50% var(--s3-card-r-v);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.65);
+    animation: floatCard 6s ease-in-out infinite;
+  }
+
+  &__card {
+    width: 100%;
+    height: 100%;
+    background: $card-bg;
+    position: relative;
+  }
+
+  &__slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 52px 48px;
+    text-align: center;
+    gap: 32px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+
+    &--active {
+      opacity: 1;
+      transform: translateY(0);
+      z-index: 2;
+    }
+    &--above {
+      opacity: 0;
+      transform: translateY(-100%);
+      z-index: 1;
+    }
+    &--below {
+      opacity: 0;
+      transform: translateY(100%);
+      z-index: 1;
+    }
+  }
+
+  &__ornament {
+    display: block;
+    font-size: 2.4rem;
+    color: rgba(240, 232, 200, 0.55);
+    line-height: 1;
+    font-family: $font-display;
+  }
+
+  &__text {
+    font-family: $font-display;
+    color: $cream;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    line-height: 1.65;
+    font-weight: 400;
+    max-width: 320px;
+
+    &::before {
+      content: '\201C';
+    }
+    &::after {
+      content: '\201D';
+    }
+  }
+
+  &__author {
+    color: rgba(240, 232, 200, 0.6);
+    font-family: $font-body;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+  }
+
+  &__dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(240, 232, 200, 0.25);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &--active {
+      background: rgba(240, 232, 200, 0.75);
+    }
+  }
+
+  // ── 1005px ──
+  @media (max-width: $bp-lg) {
+    --s3-card-h: 560px;
+    --s3-card-w: 400px;
+    --s3-card-r-v: 200px;
+
+    padding: 72px 24px;
+  }
+
+  // ── 768px ──
+  @media (max-width: $bp-md) {
+    --s3-card-h: 520px;
+    --s3-card-w: 360px;
+    --s3-card-r-v: 180px;
+
+    padding: 64px 20px;
+    min-height: auto;
+
+    &__wrapper {
+      gap: 28px;
+    }
+    &__slide {
+      padding: 52px 44px 44px;
+      gap: 28px;
+    }
+    &__text {
+      font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+    }
+  }
+
+  // ── 600px ──
+  @media (max-width: $bp-sm) {
+    --s3-card-h: 480px;
+    --s3-card-w: 320px;
+    --s3-card-r-v: 160px;
+
+    padding: 56px 16px;
+
+    &__wrapper {
+      gap: 24px;
+    }
+    &__slide {
+      padding: 48px 36px 40px;
+      gap: 24px;
+    }
+    &__ornament {
+      font-size: 2rem;
+    }
+    &__text {
+      font-size: 1rem;
+      max-width: 270px;
+    }
+  }
+
+  // ── 480px ──
+  @media (max-width: $bp-xs) {
+    --s3-card-h: 460px;
+    --s3-card-w: 300px;
+    --s3-card-r-v: 150px;
+
+    padding: 48px 12px;
+
+    &__slide {
+      padding: 44px 28px 36px;
+      gap: 20px;
+    }
+    &__text {
+      font-size: 0.97rem;
+      max-width: 250px;
+    }
+    &__author {
+      font-size: 0.78rem;
+    }
+    &__ornament {
+      font-size: 1.8rem;
+    }
+  }
+
+  // ── 320px ──
+  @media (max-width: $bp-xxs) {
+    --s3-card-h: 420px;
+    --s3-card-w: 272px;
+    --s3-card-r-v: 136px;
+
+    padding: 40px 8px;
+
+    &__wrapper {
+      gap: 20px;
+    }
+    &__heading {
+      font-size: 0.9rem;
+    }
+    &__slide {
+      padding: 40px 22px 32px;
+      gap: 16px;
+    }
+    &__text {
+      font-size: 0.9rem;
+      max-width: 220px;
+    }
+    &__author {
+      font-size: 0.74rem;
+    }
+    &__ornament {
+      font-size: 1.5rem;
+    }
+    &__dot {
+      width: 5px;
+      height: 5px;
+    }
+    &__dots {
+      gap: 6px;
+    }
+  }
+}

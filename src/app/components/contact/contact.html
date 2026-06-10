@@ -1,0 +1,107 @@
+<section class="contact-section">
+  <div class="contact-container">
+    <!-- Left Side: Contact Info -->
+    <div class="contact-info">
+      <p class="contact-subtitle">Connect with Me</p>
+      <h1 class="contact-title">I always love to hear from<br>fellow readers and dreamers</h1>
+
+      <div class="contact-details">
+        <div class="detail-block">
+          <h3 class="detail-title">Address</h3>
+          <p class="detail-text">500 Terry Francine St<br>San Francisco, CA 94158</p>
+        </div>
+
+        <div class="detail-block">
+          <h3 class="detail-title">Telephone</h3>
+          <p class="detail-text">123-456-7890</p>
+        </div>
+
+        <div class="detail-block">
+          <h3 class="detail-title">Email</h3>
+          <p class="detail-text">info@mysite.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Form -->
+    <div class="form-wrapper">
+      <h2 class="form-title">Send a Message</h2>
+
+      <form [formGroup]="contactForm" (submit)="submit()" class="contact-form">
+        <div class="form-group">
+          <label for="firstName" class="form-label">First name <span>*</span></label>
+          <input 
+            type="text" 
+            id="firstName" 
+            formControlName="firstName"
+            class="form-input"
+            placeholder=""
+          >
+          <span class="error-msg" *ngIf="contactForm.get('firstName')?.invalid && contactForm.get('firstName')?.touched">
+            First name is required (min 2 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName" class="form-label">Last name <span>*</span></label>
+          <input 
+            type="text" 
+            id="lastName" 
+            formControlName="lastName"
+            class="form-input"
+            placeholder=""
+          >
+          <span class="error-msg" *ngIf="contactForm.get('lastName')?.invalid && contactForm.get('lastName')?.touched">
+            Last name is required (min 2 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email <span>*</span></label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email"
+            class="form-input"
+            placeholder=""
+          >
+          <span class="error-msg" *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+            Please enter a valid email
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="subject" class="form-label">Subject</label>
+          <input 
+            type="text" 
+            id="subject"
+            class="form-input"
+            placeholder=""
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="massage" class="form-label">Message</label>
+          <textarea 
+            id="massage" 
+            formControlName="massage"
+            class="form-textarea"
+            placeholder=""
+            rows="6"
+          ></textarea>
+          <span class="error-msg" *ngIf="contactForm.get('massage')?.invalid && contactForm.get('massage')?.touched">
+            Message is required (min 10 characters)
+          </span>
+        </div>
+
+        <button 
+          type="submit" 
+          class="submit-btn"
+          [disabled]="contactForm.invalid"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

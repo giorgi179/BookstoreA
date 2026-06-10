@@ -1,0 +1,431 @@
+@use 'sass:color';
+
+// ===== COLOR PALETTE =====
+$dark-bg: #1a1a12;
+$darker-bg: #0d0d0b;
+$hero-bg: #333323;
+$card-bg: #1a1a12;
+$cream: #f0e8c8;
+$cream-light: rgba(240, 232, 200, 0.6);
+$cream-lighter: rgba(240, 232, 200, 0.4);
+$cream-faint: rgba(240, 232, 200, 0.2);
+$text-dark: #1a1a10;
+$text-light: #ffffff;
+
+// ===== TYPOGRAPHY =====
+$font-display: 'Playfair Display', serif;
+$font-body: 'EB Garamond', 'Garamond', Georgia, serif;
+$font-script: 'Great Vibes', cursive;
+
+// ===== SPACING =====
+$sp-xs: 8px;
+$sp-sm: 12px;
+$sp-md: 16px;
+$sp-lg: 24px;
+$sp-xl: 32px;
+$sp-2xl: 48px;
+$sp-3xl: 60px;
+
+// ===== SHADOWS =====
+$shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+$shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
+$shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.6);
+
+// ===== TRANSITIONS =====
+$transition-fast: 0.25s ease;
+$transition-smooth: 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+
+// ===== BREAKPOINTS =====
+$breakpoint-md: 768px;
+$breakpoint-sm: 480px;
+
+// ===== HERO SECTION =====
+.books-hero {
+  background: linear-gradient(135deg, $hero-bg 0%, color.adjust($hero-bg, $lightness: -5%) 100%);
+  min-height: 93vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $sp-3xl $sp-lg $sp-lg;
+  box-sizing: border-box;
+  gap: $sp-2xl;
+
+  &__title {
+    font-family: $font-script;
+    font-size: clamp(4rem, 12vw, 14rem);
+    font-weight: 400;
+    color: $text-light;
+    line-height: 1;
+    text-align: center;
+    margin: 0 0 $sp-lg;
+    letter-spacing: 0.02em;
+    animation: fadeInDown 0.8s ease-out;
+  }
+
+  &__subtitle {
+    font-family: $font-body;
+    font-size: clamp(1.2rem, 1vw, 1.2rem);
+    font-weight: 400;
+    color: $cream;
+    letter-spacing: 0.06em;
+    text-align: center;
+    margin: 0;
+    text-transform: uppercase;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+}
+
+.status {
+  text-align: center;
+  padding: $sp-2xl;
+  color: $text-dark;
+  font-family: $font-body;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.books-list {
+  background: linear-gradient(180deg, $hero-bg 0%, color.adjust($hero-bg, $lightness: -3%) 100%);
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: $sp-2xl;
+  padding: $sp-3xl $sp-lg;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 340px;
+  min-height: auto;
+  opacity: 0;
+  transition: opacity $transition-smooth, transform $transition-smooth;
+  transform: translateY($sp-xl);
+  will-change: opacity, transform;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &:hover {
+    .book-card__image {
+      transform: scale(1.02);
+    }
+    .book-card__btn--details {
+      color: $cream;
+      border-color: $cream;
+    }
+  }
+
+  &__image {
+    overflow: hidden;
+    background: $darker-bg;
+    padding: $sp-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px 12px 0 0;
+    transition: transform $transition-fast;
+
+    img {
+      max-width: 240px;
+      height: 360px;
+      object-fit: cover;
+      display: block;
+      box-shadow: $shadow-lg;
+      border-radius: 8px;
+      transition: transform $transition-fast;
+    }
+  }
+
+  &__info {
+    background: linear-gradient(135deg, $card-bg 0%, color.adjust($card-bg, $lightness: 5%) 100%);
+    padding: $sp-xl $sp-lg;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: $sp-md;
+    border-radius: 0 0 12px 12px;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    color: $cream;
+    line-height: 1.3;
+    margin: 0;
+    text-transform: capitalize;
+  }
+
+  &__desc {
+    font-family: $font-body;
+    font-size: 0.9rem;
+    color: $cream-light;
+    font-style: italic;
+    line-height: 1.7;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-size: 1.3rem;
+    color: $cream;
+    margin: $sp-xs 0 0;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  &__buttons {
+    display: flex;
+    gap: $sp-sm;
+    margin-top: $sp-md;
+  }
+
+  &__btn {
+    font-family: $font-body;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    padding: $sp-sm $sp-md;
+    border: none;
+    cursor: pointer;
+    transition: all $transition-fast;
+    border-radius: 6px;
+    flex: 1;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 500;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &--details {
+      background: transparent;
+      color: $cream-light;
+      border: 1.5px solid $cream-faint;
+
+      &:hover {
+        color: $cream;
+        border-color: $cream;
+        background: rgba(240, 232, 200, 0.05);
+      }
+    }
+
+    &--cart {
+      background: $cream;
+      color: $text-dark;
+      font-weight: 600;
+
+      &:hover {
+        background: color.adjust($cream, $lightness: -5%);
+        box-shadow: 0 8px 20px rgba(240, 232, 200, 0.2);
+      }
+    }
+  }
+}
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+}
+
+.auth-modal {
+  background: #1a1a12;
+  border: 1px solid rgba(240, 232, 200, 0.12);
+  border-radius: 16px;
+  padding: 48px 40px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &__icon {
+    font-size: 40px;
+    margin-bottom: 4px;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #f0e8c8;
+    margin: 0;
+  }
+
+  &__text {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.95rem;
+    color: rgba(240, 232, 200, 0.55);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  &__btn {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+
+    &--primary {
+      background: #f0e8c8;
+      color: #1a1a12;
+      &:hover {
+        opacity: 0.88;
+        transform: translateY(-2px);
+      }
+    }
+
+    &--ghost {
+      background: transparent;
+      color: rgba(240, 232, 200, 0.5);
+      border: 1px solid rgba(240, 232, 200, 0.2);
+      &:hover {
+        border-color: rgba(240, 232, 200, 0.45);
+        color: #f0e8c8;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.book-detail {
+  background: linear-gradient(135deg, color.adjust($hero-bg, $lightness: -10%) 0%, $hero-bg 100%);
+  min-height: 100vh;
+  padding: clamp(40px, 10vw, 100px) clamp(24px, 8vw, 160px);
+  box-sizing: border-box;
+
+  &__back {
+    background: transparent;
+    border: none;
+    font-family: $font-body;
+    font-size: 0.95rem;
+    color: $cream;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    margin-bottom: $sp-2xl;
+    display: inline-block;
+    transition: all $transition-fast;
+    text-transform: uppercase;
+    font-weight: 500;
+
+    &:hover {
+      color: $text-light;
+      transform: translateX(-4px);
+    }
+  }
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 8vw, 80px);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__image {
+    background: linear-gradient(135deg, $darker-bg 0%, darken($darker-bg, 5%) 100%);
+    padding: $sp-2xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: $shadow-lg;
+
+    img {
+      max-width: 280px;
+      height: 420px;
+      object-fit: cover;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: $sp-lg;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: $cream;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  &__isbn,
+  &__stock {
+    font-family: $font-body;
+    font-size: 0.95rem;
+    color: $cream-light;
+    font-style: italic;
+    margin: 0;
+    letter-spacing: 0.04em;
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    color: $cream;
+    margin: $sp-md 0 0;
+    font-weight: 600;
+  }
+   &__btn{
+    color: $text-dark;
+    background: $cream;
+    font-family: $font-body;
+    font-size: 0.95rem; 
+    letter-spacing: 0.06em;
+    padding: $sp-sm $sp-md;
+   
+
+   }
+}

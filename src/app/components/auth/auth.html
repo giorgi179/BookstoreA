@@ -1,0 +1,310 @@
+<div class="auth-container" [class.right-panel-active]="isSignUpMode()"
+  [class.is-verifying]="showVerification() || isVerified()">
+
+  <!-- ══════════ SIGN UP ══════════ -->
+  <div class="form-container sign-up-container">
+
+    @if (!showVerification() && !isVerified()) {
+    <form [formGroup]="registerForm" (ngSubmit)="signUp()">
+      <h1>Create Account</h1>
+
+      <div class="social-buttons-container">
+        <button type="button" class="social-button google" (click)="signInWithGoogle()">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+          <span>Google</span>
+        </button>
+        <button type="button" class="social-button facebook" (click)="signInWithFacebook()">
+          <i class="fab fa-facebook-f"></i>
+          <span>Facebook</span>
+        </button>
+      </div>
+
+      <span>or use your email for registration</span>
+
+      <div class="input-row">
+        <div class="input-wrap">
+          <input type="text" formControlName="firstName" placeholder="First Name" autocomplete="given-name"
+            [class.invalid]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched" />
+          @if (registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched) {
+          <p class="field-error">Required</p>
+          }
+        </div>
+        <div class="input-wrap">
+          <input type="text" formControlName="lastName" placeholder="Last Name" autocomplete="family-name"
+            [class.invalid]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched" />
+          @if (registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched) {
+          <p class="field-error">Required</p>
+          }
+        </div>
+      </div>
+
+      <div class="input-wrap full">
+        <input type="email" formControlName="email" placeholder="Email" autocomplete="username"
+          [class.invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" />
+        @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+        <p class="field-error">Enter a valid email</p>
+        }
+      </div>
+
+      <!-- Password with strength -->
+      <div class="input-wrap full pw-wrap">
+        <div class="pw-field">
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Password"
+            autocomplete="new-password"
+            [class.invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" />
+          <button type="button" class="eye-btn" (click)="togglePasswordVisibility()">
+            {{ showPassword() ? '🙈' : '👁' }}
+          </button>
+        </div>
+
+        @if (registerForm.get('password')?.value) {
+        <!-- Strength bar -->
+        <div class="strength-bar">
+          @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="seg" [class.filled]="passwordStrength().score >= i" [attr.data-lvl]="passwordStrength().color">
+          </div>
+          }
+        </div>
+        <p class="strength-label" [attr.data-lvl]="passwordStrength().color">
+          Strength: {{ passwordStrength().level }}
+        </p>
+
+        <!-- Rules checklist -->
+        <ul class="pw-rules">
+          @for (rule of passwordRulesArray; track rule.label) {
+          <li [class.met]="rule.met">
+            <span class="rule-icon">{{ rule.met ? '✓' : '✗' }}</span>
+            {{ rule.label }}
+          </li>
+          }
+        </ul>
+        }
+
+        @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched &&
+        !registerForm.get('password')?.value) {
+        <p class="field-error">Password is required</p>
+        }
+      </div>
+
+      <div class="input-wrap full">
+        <input type="tel" formControlName="phone" placeholder="Phone (optional)" autocomplete="tel"
+          [class.invalid]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched" />
+        @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+        <p class="field-error">Invalid phone format</p>
+        }
+      </div>
+
+      @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" [disabled]="isLoading()">
+        @if (isLoading()) { <span class="btn-spinner"></span> } @else { Sign Up }
+      </button>
+    </form>
+    }
+
+    @if (showVerification()) {
+    <form [formGroup]="verifyForm" (ngSubmit)="verify()">
+      <h1>Verify Email</h1>
+      <p class="verify-text">{{ successMessage() }}</p>
+      <div class="input-wrap full">
+        <input type="text" formControlName="code" placeholder="Enter verification code" autocomplete="off"
+          autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="8" />
+        @if (verifyForm.get('code')?.invalid && verifyForm.get('code')?.touched) {
+        <p class="field-error">Code is required</p>
+        }
+      </div>
+      @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+      }
+      <button type="submit" [disabled]="isLoading()">
+        @if (isLoading()) { <span class="btn-spinner"></span> } @else { Verify }
+      </button>
+    </form>
+    }
+
+    @if (isVerified()) {
+    <div class="verified-container">
+      <div class="verified-icon">✓</div>
+      <h1>Verified!</h1>
+      <p>Your account has been successfully verified.</p>
+      <button type="button" (click)="togglePanel()">Sign In</button>
+    </div>
+    }
+  </div>
+
+  <!-- ══════════ SIGN IN ══════════ -->
+  <!-- ══════════ SIGN IN ══════════ -->
+  <div class="form-container sign-in-container">
+
+    @if (!showForgotPassword() && !showResetPassword()) {
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <h1>Sign In</h1>
+
+      <div class="social-buttons-container">
+        <button type="button" class="social-button google" (click)="signInWithGoogle()">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+          <span>Google</span>
+        </button>
+        <button type="button" class="social-button facebook" (click)="signInWithFacebook()">
+          <i class="fab fa-facebook-f"></i>
+          <span>Facebook</span>
+        </button>
+      </div>
+
+      <span>or use your account</span>
+
+      <div class="input-wrap full">
+        <input type="email" formControlName="email" placeholder="Email" autocomplete="username"
+          [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+        <p class="field-error">Enter a valid email</p>
+        }
+      </div>
+
+      <div class="input-wrap full pw-wrap">
+        <div class="pw-field">
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Password"
+            autocomplete="current-password"
+            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+          <button type="button" class="eye-btn" (click)="togglePasswordVisibility()">
+            {{ showPassword() ? '🙈' : '👁' }}
+          </button>
+        </div>
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+        <p class="field-error">Password is required</p>
+        }
+      </div>
+
+      @if (isVerified()) {
+      <p class="success-message">✓ Verified! You can now sign in.</p>
+      }
+      @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+      }
+
+      <a (click)="openForgotPassword()" class="forgot-link">Forgot your password?</a>
+
+      <button type="submit" [disabled]="isLoading()">
+        @if (isLoading()) { <span class="btn-spinner"></span> } @else { Sign In }
+      </button>
+    </form>
+    }
+
+    @if (showForgotPassword()) {
+    <form [formGroup]="forgotForm" (ngSubmit)="sendForgotCode()" class="reset-form">
+      <div class="back-btn" (click)="closeForgotPassword()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Back to Sign In
+      </div>
+
+      <h1>Forgot Password</h1>
+      <p class="reset-subtitle">Enter your email and we'll send you a reset code</p>
+
+      <div class="input-wrap full">
+        <input type="email" formControlName="email" placeholder="Email address" autocomplete="email"
+          [class.invalid]="forgotForm.get('email')?.invalid && forgotForm.get('email')?.touched" />
+        @if (forgotForm.get('email')?.invalid && forgotForm.get('email')?.touched) {
+        <p class="field-error">Enter a valid email</p>
+        }
+      </div>
+
+      @if (errorMessage()) { <p class="error-message">{{ errorMessage() }}</p> }
+
+      <button type="submit" [disabled]="isLoading()" class="full-btn">
+        @if (isLoading()) { <span class="btn-spinner"></span> } @else { Send Reset Code }
+      </button>
+    </form>
+    }
+
+    @if (showResetPassword()) {
+    <form [formGroup]="resetForm" (ngSubmit)="submitReset()" class="reset-form">
+      <div class="back-btn" (click)="closeForgotPassword()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Back to Sign In
+      </div>
+
+      <h1>Reset Password</h1>
+      <p class="reset-subtitle">We sent a code to <strong>{{ forgotEmail() }}</strong></p>
+
+      <div class="input-wrap full">
+        <input type="text" formControlName="code" placeholder="Enter 6-digit code" autocomplete="off" maxlength="8"
+          [class.invalid]="resetForm.get('code')?.invalid && resetForm.get('code')?.touched" />
+        @if (resetForm.get('code')?.invalid && resetForm.get('code')?.touched) {
+        <p class="field-error">Code is required</p>
+        }
+      </div>
+
+      <div class="input-wrap full pw-wrap">
+        <div class="pw-field">
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="newPassword" placeholder="New password"
+            autocomplete="new-password"
+            [class.invalid]="resetForm.get('newPassword')?.invalid && resetForm.get('newPassword')?.touched" />
+          <button type="button" class="eye-btn" (click)="togglePasswordVisibility()">
+            {{ showPassword() ? '🙈' : '👁' }}
+          </button>
+        </div>
+        @if (resetForm.get('newPassword')?.invalid && resetForm.get('newPassword')?.touched) {
+        <p class="field-error">Password doesn't meet requirements</p>
+        }
+      </div>
+
+      @if (errorMessage()) { <p class="error-message">{{ errorMessage() }}</p> }
+      @if (successMessage()) { <p class="success-message">{{ successMessage() }}</p> }
+
+      <button type="submit" [disabled]="isLoading()" class="full-btn">
+        @if (isLoading()) { <span class="btn-spinner"></span> } @else { Set New Password }
+      </button>
+    </form>
+    }
+
+  </div>
+
+  <!-- ══════════ OVERLAY ══════════ -->
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>Welcome Back!</h1>
+        <p>To keep connected with us please login with your personal info</p>
+        <button type="button" class="ghost" (click)="togglePanel()">Sign In</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>Hello, Friend!</h1>
+        <p>Enter your personal details and start your journey with us</p>
+        <button type="button" class="ghost" (click)="togglePanel()">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+</div>

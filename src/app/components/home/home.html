@@ -1,0 +1,81 @@
+<section #heroSection class="hero" [class.hero--visible]="isVisible">
+  <div class="hero-div-mtavari">
+    <div class="hero__arch">
+      <div class="hero__arch-mask">
+        <img [src]="imageUrl" alt="Aurelia Finch" class="hero__arch-img" loading="eager" />
+        <div class="hero__arch-vignette"></div>
+      </div>
+    </div>
+
+    <div class="hero-div">
+      <h1 class="hero__title">
+        <span class="hero__title-inner">Aurelia Finch</span>
+      </h1>
+      <div class="hero__sub">
+        <p class="hero__tagline">Weaver of Worlds</p>
+        <a routerLink="books" class="hero__cta">Discover the Latest Novel</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section2">
+  <span class="section2__label" data-aos="fade-down" data-aos-duration="700" data-aos-easing="ease-out-quart">
+    Meet the Storyteller
+  </span>
+  <p class="section2__quote" data-aos="fade-up" data-aos-duration="900" data-aos-delay="100"
+    data-aos-easing="ease-out-quart">
+    From a young age, I found solace in worlds spun from ink and imagination.
+    My stories are born from stormy skies, ancient forests, and the quiet magic
+    hidden in everyday life. My purpose is to create a haven for dreamers, a
+    place where you can lose yourself and, perhaps, find a new piece of your own story.
+  </p>
+  <img class="section2__portrait" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="250"
+    data-aos-easing="ease-out-quart"
+    src="https://static.wixstatic.com/media/11062b_ad2d435d175246dcb7d4230bc73d52aa~mv2.jpg/v1/fill/w_386,h_495,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Woman%20Enjoying%20Outdoors.jpg"
+    alt="Storyteller portrait" />
+</section>
+
+<section class="section1">
+  <div class="section1__image-wrap" data-aos="fade-right" data-aos-duration="1000" data-aos-easing="ease-out-quart">
+    <img class="section1__image"
+      src="https://static.wixstatic.com/media/nsplsh_73588e3c34814191a03f83068556bf2d~mv2.jpg/v1/fill/w_864,h_1012,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Image%20by%20Urban%20Vintage.jpg"
+      alt="Mountain landscape" />
+  </div>
+  <div class="section1__content" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="150"
+    data-aos-easing="ease-out-quart">
+    <h1 class="section1__title">Journeys in Ink</h1>
+    <div class="section1__bottom">
+      <p class="section1__description">
+        Explore the realms that have captivated readers around the globe.
+        Each book is a doorway to a new adventure, where mystery and magic
+        reside in every word.
+      </p>
+      <button routerLink="books" class="section1__btn">Explore All Books</button>
+    </div>
+  </div>
+</section>
+
+<section class="section3">
+  <div class="section3__wrapper">
+    <h2 class="section3__heading">Whispers from Readers</h2>
+
+    <div class="section3__card-outer">
+      <div class="section3__card">
+        <div class="section3__slide" *ngFor="let item of testimonials; let i = index"
+          [class.section3__slide--active]="i === currentIndex()" [class.section3__slide--above]="i === prevIndex()"
+          [class.section3__slide--below]="i !== currentIndex() && i !== prevIndex()">
+          <span class="section3__ornament">❧</span>
+          <p class="section3__text">{{ item.text }}</p>
+          <span class="section3__author">— {{ item.author }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section3__dots">
+      <button class="section3__dot" *ngFor="let item of testimonials; let i = index"
+        [class.section3__dot--active]="i === currentIndex()" (click)="goTo(i)"
+        [attr.aria-label]="'Go to testimonial ' + (i + 1)"></button>
+    </div>
+  </div>
+</section>

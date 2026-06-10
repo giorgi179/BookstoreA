@@ -1,0 +1,61 @@
+<!-- Auth Modal -->
+@if (showAuthModal()) {
+<div class="auth-modal-overlay" (click)="closeModal()">
+  <div class="auth-modal" (click)="$event.stopPropagation()">
+    <div class="auth-modal__icon">🔒</div>
+    <h2 class="auth-modal__title">Sign in required</h2>
+    <p class="auth-modal__text">To add books to your cart, please sign in or create an account.</p>
+    <div class="auth-modal__buttons">
+      <button class="auth-modal__btn auth-modal__btn--primary" (click)="goToAuth()">Sign In / Register</button>
+      <button class="auth-modal__btn auth-modal__btn--ghost" (click)="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+<section class="books-hero">
+  <h1 class="books-hero__title">Upcoming Events</h1>
+</section>
+@if (selectedBook()) {
+<div class="book-detail">
+  <button class="book-detail__back" (click)="closeDetail()">← Back</button>
+  <div class="book-detail__inner">
+    <div class="book-detail__image">
+      <img [src]="selectedBook()!.bookUrl" [alt]="selectedBook()!.title" />
+    </div>
+    <div class="book-detail__info">
+      <h1 class="book-detail__title">{{ selectedBook()!.title }}</h1>
+      <p class="book-detail__isbn">ISBN: {{ selectedBook()!.isbn }}</p>
+      <p class="book-detail__price">{{ selectedBook()!.price }}$</p>
+      <p class="book-detail__stock">მარაგი: {{ selectedBook()!.stock }}</p>
+      <button class="book-detail__btn" (click)="addToCart(selectedBook()!)">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+} @else {
+@if (loading()) {
+<app-loader></app-loader>
+} @else if (error()) {
+<p class="status">{{ error() }}</p>
+} @else {
+
+<div class="books-list">
+  @for (book of books(); track book.id) {
+  <div class="book-card" [attr.data-animate-repeat]="''">
+    <div class="book-card__image">
+      <img [src]="book.bookUrl" [alt]="book.title" />
+    </div>
+    <div class="book-card__info">
+      <h2 class="book-card__title">{{ book.title }}</h2>
+      <p class="book-card__desc">{{ book.isbn }}</p>
+      <p class="book-card__price">{{ book.price }}$</p>
+      <div class="book-card__buttons">
+        <button class="book-card__btn book-card__btn--details" (click)="openDetail(book)">Details</button>
+        <button class="book-card__btn book-card__btn--cart" (click)="addToCart(book)">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+}
+}

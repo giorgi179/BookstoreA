@@ -1,0 +1,59 @@
+<div class="mtavaridivi" [class.nav--open]="menuOpen">
+  <a class="logo-wrap" routerLink="/" (click)="closeMenu()">
+    <img src="https://static.wixstatic.com/shapes/c837a6_cfca943078714fa5be058f0ed28292c4.svg" alt="Logo" />
+  </a>
+
+  <nav [class.nav--visible]="menuOpen">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="closeMenu()">Home</a>
+    <a routerLink="about" routerLinkActive="active" (click)="closeMenu()">About</a>
+    <a routerLink="books" routerLinkActive="active" (click)="closeMenu()">Books</a>
+    <a routerLink="events" routerLinkActive="active" (click)="closeMenu()">Events</a>
+    <a routerLink="contact" routerLinkActive="active" (click)="closeMenu()">Contact</a>
+  </nav>
+
+  <div class="container">
+
+    @if (isLoggedIn()) {
+
+      <!-- Basket icon -->
+      <a routerLink="basket" class="btn-icon" routerLinkActive="active" (click)="closeMenu()" title="Basket">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+      </a>
+
+ 
+
+      <!-- Profile -->
+      <a routerLink="profile" class="btn-profile" routerLinkActive="active" (click)="closeMenu()">
+        <div class="cr"></div>
+        <span class="btn-profile__icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+        </span>
+        <span>PROFILE</span>
+      </a>
+
+    } @else {
+
+      <a routerLink="auth" class="btn-entry" (click)="closeMenu()">
+        <div class="cr"></div>
+        <span>LOG IN</span>
+      </a>
+
+    }
+
+    <label class="menuButton" [class.menuButton--open]="menuOpen" (click)="toggleMenu()">
+      <span class="top"></span>
+      <span class="mid"></span>
+      <span class="bot"></span>
+    </label>
+  </div>
+</div>
+
+<div class="nav-overlay" [class.nav-overlay--visible]="menuOpen" (click)="closeMenu()"></div>
