@@ -72,9 +72,14 @@
       font-size: 18px;
       outline: none;
       font-family: inherit;
+      transition: opacity 0.2s;
 
       &::placeholder {
         color: rgba(243, 239, 210, 0.7);
+      }
+
+      &:disabled {
+        opacity: 0.5;
       }
     }
   }
@@ -86,14 +91,51 @@
     margin-bottom: 28px;
 
     input {
+      appearance: none;
       width: 18px;
       height: 18px;
-      accent-color: #f3efd2;
+      min-width: 18px;
+      border: 1px solid rgba(243, 239, 210, 0.6);
+      border-radius: 3px;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+
+      &:checked {
+        background: #f3efd2;
+        border-color: #f3efd2;
+
+        &::after {
+          content: '✓';
+          position: absolute;
+          top: -3px;
+          left: 2px;
+          font-size: 13px;
+          color: #656536;
+        }
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
 
     label {
       font-size: 17px;
+      cursor: pointer;
     }
+  }
+
+  .newsletter-msg {
+    margin-top: 14px;
+    font-size: 16px;
+    color: #f3efd2;
+    transition: color 0.2s;
+
+    &--ok  { color: #cfe8b8; }
+    &--err { color: #e08a7a; }
   }
 
   button {
@@ -107,10 +149,23 @@
     cursor: pointer;
     transition: 0.3s ease;
     font-family: 'Cormorant Garamond', serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    &:hover {
+    &:hover:not(:disabled) {
       transform: translateY(-2px);
       background: #fff9d8;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    &.is-success {
+      background: #cfe8b8;
+      color: #3c5a2c;
     }
   }
 }
@@ -186,6 +241,7 @@
   font-size: 18px;
   opacity: 0.9;
 }
+
 .scroll-top {
   display: block;
   margin: 0 auto 40px;
@@ -205,6 +261,7 @@
     transform: translateY(-3px);
   }
 }
+
 @media (max-width: 768px) {
   .luxury-footer {
     padding: 50px 25px 25px;

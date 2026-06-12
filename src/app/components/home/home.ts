@@ -79,6 +79,11 @@ export class Home implements AfterViewInit, OnInit, OnDestroy {
       offset: 80,
       throttleDelay: 99,
     });
+
+    // DOM-ის render-ის შემდეგ refresh, რომ ახალი elements "დაითვალოს"
+    setTimeout(() => {
+      AOS.refreshHard();
+    }, 0);
   }
 
   ngOnDestroy(): void {

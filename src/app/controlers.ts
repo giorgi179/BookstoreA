@@ -23,16 +23,23 @@ export interface ResetPasswordRequest {
 // User / Profile
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Matches the actual API response from GET /api/User/get-user
+ * NOTE: API returns `fullName` (not separate firstName/lastName),
+ * `savedCardMasked`, `savedCardHolder`, `savedCardExpiry`, `isSubscribed`
+ */
 export interface UserProfile {
-  id:          number;
-  email:       string;
-  firstName:   string;
-  lastName:    string;
-  phone:       string;
-  cardNumber?: string;
-  cardHolder?: string;
-  expiry?:     string;
-  subscribed?: boolean;
+  id:               number;
+  email:            string;
+  fullName:         string;
+  phone:            string | null;
+  userImgs:         string | null;
+  isVerified:       boolean;
+  savedCardMasked:  string | null;
+  savedCardHolder:  string | null;
+  savedCardExpiry:  string | null;
+  savedCardBrand:   string | null;
+  isSubscribed:     boolean;
 }
 
 export interface UpdateProfileRequest {
@@ -108,14 +115,47 @@ export interface Payment {
 // Categories (legacy — keep for backwards compat)
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** @deprecated  Rename to UserProfile — this shape was incorrectly typed as
- *  "categories" in the original codebase. */
+/** @deprecated Use UserProfile instead */
 export interface Category {
-  id?:        number;
-  userUrl?:   string;
-  email:      string | null;
-  password:   string | null;
-  lastName:   string | null;
-  firstName:  string | null;
-  phone:      string | null;
+  id?:       number;
+  userUrl?:  string;
+  email:     string | null;
+  password:  string | null;
+  lastName:  string | null;
+  firstName: string | null;
+  phone:     string | null;
+}
+
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cart
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface AddToBasketRequest {
+  userId: number;
+  bookId: number;
+  quantity: number;
+}
+export interface BasketBook {
+  id: number;
+  title: string;
+  bookUrl: string;
+  isbn: string;
+  price: number;
+  bookDetails?: { author?: string } | null;
+}
+
+export interface BasketItem {
+  id: number;
+  bookId: number;
+  quantity: number;
+  price: number;
+  book: BasketBook;
+}
+
+export interface BasketGroup {
+  id: number;
+  total: number;
+  items: BasketItem[];
 }

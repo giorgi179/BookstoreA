@@ -1,607 +1,665 @@
-// ─────────────────────────────────────────────
-// Tokens  (mirrors the project's global tokens)
-// ─────────────────────────────────────────────
-$bg:           #141410;
-$cream:        #f0e8c8;
-$text-muted:   #c8bfa8;
-$cta-border:   #c8b87a;
-$card-bg:      #1e1e18;
-$card-border:  #2e2e26;
-$danger:       #b94a3a;
-$success:      #6b9e6b;
-$font-display: 'Playfair Display', serif;
-$font-body:    'EB Garamond', 'Garamond', Georgia, serif;
-$ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+// ─────────────────────────────────────────────────────────────────────────────
+// Design tokens
+// ─────────────────────────────────────────────────────────────────────────────
+$bg:          #141410;
+$surface:     #0e0e0c;
+$card:        #1e1e18;
+$card-border: #2a2a22;
+$cream:       #f0e8c8;
+$muted:       #c8bfa8;
+$muted-dim:   rgba(200, 191, 168, 0.5);
+$gold:        #c8b87a;
+$danger:      #b94a3a;
+$success:     #6b9e6b;
 
-$bp-lg:  1005px;
+$font-d: 'Playfair Display', serif;
+$font-b: 'EB Garamond', 'Garamond', Georgia, serif;
+$ease:   cubic-bezier(0.22, 1, 0.36, 1);
+
+$sidebar-w: 252px;
+
+// Breakpoints
+$bp-lg:  1024px;
 $bp-md:  768px;
 $bp-sm:  600px;
 $bp-xs:  480px;
-$bp-xxs: 320px;
+$bp-xxs: 380px;
+$bp-min: 320px;
 
-// ─────────────────────────────────────────────
-// Spinner
-// ─────────────────────────────────────────────
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Keyframes
+// ─────────────────────────────────────────────────────────────────────────────
+@keyframes spin { to { transform: rotate(360deg); } }
 
-// ─────────────────────────────────────────────
-// Layout
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Root layout
+// ─────────────────────────────────────────────────────────────────────────────
 .pg {
-  display:    flex;
-  min-height: 100vh;
-  background: $bg;
-  color:      $cream;
-  font-family: $font-body;
-  padding-top: 70px; // 70px desktop
-  // ── Sidebar ────────────────────────────────
-  &__sidebar {
-    width:           260px;
-    flex-shrink:     0;
-    background:      #0e0e0c;
-    border-right:    1px solid $card-border;
-    display:         flex;
-    flex-direction:  column;
-    padding:         36px 0 28px;
-    position:        sticky;
-    top:             0;
-    height:          100vh;
-    overflow-y:      auto;
-  }
-
-  // ── Avatar block ───────────────────────────
-  &__avatar-block {
-    display:         flex;
-    flex-direction:  column;
-    align-items:     center;
-    gap:             14px;
-    padding:         0 24px 32px;
-    border-bottom:   1px solid $card-border;
-    margin-bottom:   24px;
-  }
-
-  &__avatar-ring {
-    position:  relative;
-    width:     82px;
-    height:    82px;
-  }
-
-  &__avatar-arch {
-    width:         100%;
-    height:        100%;
-    border-radius: 50% 50% 0 0 / 38% 38% 0 0;
-    overflow:      hidden;
-    border:        1.5px solid rgba($cta-border, 0.4);
-    box-shadow:    0 6px 28px rgba(0,0,0,0.55);
-  }
-
-  &__avatar-img {
-    width:          100%;
-    height:         100%;
-    object-fit:     cover;
-    object-position: center top;
-    display:        block;
-  }
-
-  &__avatar-edit {
-    position:       absolute;
-    bottom:         -6px;
-    right:          -6px;
-    width:          26px;
-    height:         26px;
-    border-radius:  50%;
-    background:     $card-bg;
-    border:         1px solid $card-border;
-    color:          $text-muted;
-    cursor:         pointer;
-    display:        flex;
-    align-items:    center;
-    justify-content: center;
-    transition:     background 0.2s, color 0.2s;
-
-    &:hover { background: rgba($cta-border, 0.15); color: $cream; }
-    &:disabled { opacity: 0.4; cursor: not-allowed; }
-  }
-
-  &__identity { text-align: center; }
-
-  &__name {
-    margin:      0;
-    font-family: $font-display;
-    font-size:   1.05rem;
-    font-weight: 400;
-    color:       $cream;
-    line-height: 1.3;
-  }
-
-  &__email-label {
-    margin:    4px 0 0;
-    font-size: 0.78rem;
-    color:     $text-muted;
-    word-break: break-all;
-  }
-
-  // ── Nav ────────────────────────────────────
-  &__nav {
-    flex:            1;
-    display:         flex;
-    flex-direction:  column;
-    padding:         0 12px;
-    gap:             2px;
-  }
-
-  &__nav-item {
-    display:     flex;
-    align-items: center;
-    gap:         10px;
-    padding:     10px 14px;
-    border:      none;
-    background:  transparent;
-    color:       $text-muted;
-    font-family: $font-body;
-    font-size:   0.9rem;
-    letter-spacing: 0.04em;
-    border-radius: 6px;
-    cursor:      pointer;
-    text-align:  left;
-    transition:  background 0.18s, color 0.18s;
-
-    &:hover { background: rgba($cream, 0.05); color: $cream; }
-
-    &--active {
-      background: rgba($cta-border, 0.12);
-      color:      $cream;
-      .pg__nav-icon { color: $cta-border; }
-    }
-  }
-
-  &__nav-icon {
-    display:    flex;
-    flex-shrink: 0;
-    color:      inherit;
-    opacity:    0.7;
-    transition: color 0.18s;
-  }
-
-  // ── Logout ─────────────────────────────────
-  &__logout {
-    display:     flex;
-    align-items: center;
-    gap:         8px;
-    margin:      16px 12px 0;
-    padding:     10px 14px;
-    border:      none;
-    background:  transparent;
-    color:       rgba($text-muted, 0.65);
-    font-family: $font-body;
-    font-size:   0.88rem;
-    letter-spacing: 0.05em;
-    border-radius: 6px;
-    cursor:      pointer;
-    transition:  background 0.18s, color 0.18s;
-
-    &:hover { background: rgba($danger, 0.08); color: lighten($danger, 20%); }
-  }
-
-  // ── Main ───────────────────────────────────
-  &__main {
-    flex:       1;
-    padding:    52px clamp(28px, 5vw, 64px);
-    max-width:  760px;
-  }
-
-  // ── Panel ──────────────────────────────────
-  &__panel-head {
-    margin-bottom: 36px;
-    border-bottom: 1px solid $card-border;
-    padding-bottom: 20px;
-  }
-
-  &__panel-title {
-    margin:      0;
-    font-family: $font-display;
-    font-size:   clamp(1.6rem, 3vw, 2rem);
-    font-weight: 400;
-    color:       $cream;
-    line-height: 1.2;
-  }
-
-  &__panel-sub {
-    margin:    8px 0 0;
-    font-size: 0.88rem;
-    color:     $text-muted;
-    font-style: italic;
-  }
-
-  // ── Form ───────────────────────────────────
-  &__form {}
-
-  &__fields {
-    display:               grid;
-    grid-template-columns: 1fr 1fr;
-    gap:                   20px 24px;
-    margin-bottom:         28px;
-  }
-
-  &__field {
-    display:        flex;
-    flex-direction: column;
-    gap:            7px;
-
-    &--full { grid-column: 1 / -1; }
-
-    label {
-      font-size:      0.78rem;
-      letter-spacing: 0.08em;
-      color:          $text-muted;
-      text-transform: uppercase;
-    }
-
-    input {
-      background:    rgba($cream, 0.04);
-      border:        1px solid $card-border;
-      border-radius: 6px;
-      padding:       10px 14px;
-      color:         $cream;
-      font-family:   $font-body;
-      font-size:     0.95rem;
-      outline:       none;
-      transition:    border-color 0.2s, background 0.2s;
-
-      &::placeholder { color: rgba($text-muted, 0.45); }
-
-      &:focus {
-        border-color: rgba($cta-border, 0.55);
-        background:   rgba($cream, 0.06);
-      }
-
-      &:disabled {
-        opacity:  0.45;
-        cursor:   not-allowed;
-      }
-    }
-  }
-
-  &__locked {
-    font-size:      0.7rem;
-    letter-spacing: 0.05em;
-    color:          rgba($text-muted, 0.5);
-    text-transform: uppercase;
-    margin-left:    6px;
-  }
-
-  &__form-foot {
-    display:     flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap:         16px;
-    flex-wrap:   wrap;
-  }
-
-  // ── Password field ─────────────────────────
-  &__pw-wrap {
-    position: relative;
-
-    input { width: 100%; box-sizing: border-box; padding-right: 42px; }
-  }
-
-  &__eye {
-    position:  absolute;
-    right:     10px;
-    top:       50%;
-    transform: translateY(-50%);
-    background: none;
-    border:     none;
-    cursor:     pointer;
-    font-size:  15px;
-    line-height: 1;
-    padding:    0;
-    color:      $text-muted;
-
-    &:hover { color: $cream; }
-  }
-
-  // ── Messages ───────────────────────────────
-  &__msg {
-    font-size: 0.82rem;
-    color:     $success;
-    flex:      1;
-
-    &--ok  { color: $success; }
-    &--err { color: $danger;  }
-  }
-
-  // ── Buttons ────────────────────────────────
-  &__btn {
-    display:        inline-flex;
-    align-items:    center;
-    justify-content: center;
-    gap:            7px;
-    border-radius:  50px;
-    font-family:    $font-body;
-    font-size:      0.88rem;
-    letter-spacing: 0.06em;
-    cursor:         pointer;
-    transition:     background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
-    text-decoration: none;
-
-    &--primary {
-      background: rgba($cta-border, 0.15);
-      border:     1px solid rgba($cta-border, 0.45);
-      color:      $cream;
-      padding:    10px 28px;
-
-      &:hover:not(:disabled) {
-        background:  rgba($cta-border, 0.28);
-        box-shadow:  0 0 18px rgba($cta-border, 0.18);
-      }
-
-      &:disabled { opacity: 0.45; cursor: not-allowed; }
-    }
-
-    &--ghost {
-      background: transparent;
-      border:     1px solid rgba($text-muted, 0.35);
-      color:      $text-muted;
-      padding:    10px 24px;
-
-      &:hover { border-color: $cream; color: $cream; }
-    }
-
-    &--danger {
-      background: rgba($danger, 0.1);
-      border:     1px solid rgba($danger, 0.4);
-      color:      lighten($danger, 18%);
-      padding:    10px 26px;
-
-      &:hover:not(:disabled) { background: rgba($danger, 0.22); }
-      &:disabled { opacity: 0.4; cursor: not-allowed; }
-    }
-  }
-
-  // ── Spinner ────────────────────────────────
-  &__spinner {
-    display:       inline-block;
-    width:         14px;
-    height:        14px;
-    border:        2px solid rgba($cream, 0.25);
-    border-top-color: $cream;
-    border-radius: 50%;
-    animation:     spin 0.7s linear infinite;
-  }
-
-  // ── Library ────────────────────────────────
-  &__empty {
-    display:        flex;
-    flex-direction: column;
-    align-items:    center;
-    gap:            16px;
-    padding:        60px 0;
-    color:          $text-muted;
-    text-align:     center;
-  }
-
-  &__empty-ornament {
-    font-size: 2.8rem;
-    opacity:   0.4;
-    font-family: $font-display;
-  }
-
-  &__books {
-    display:               grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap:                   24px;
-  }
-
-  &__book-card {
-    display:        flex;
-    flex-direction: column;
-    gap:            10px;
-    transition:     transform 0.22s $ease-out;
-
-    &:hover { transform: translateY(-4px); }
-  }
-
-  &__book-cover {
-    width:         100%;
-    aspect-ratio:  2/3;
-    object-fit:    cover;
-    border-radius: 4px;
-    display:       block;
-    box-shadow:    0 8px 24px rgba(0,0,0,0.55);
-  }
-
-  &__book-meta { display: flex; flex-direction: column; gap: 3px; }
-  &__book-title { font-family: $font-display; font-size: 0.88rem; color: $cream; line-height: 1.3; }
-  &__book-isbn  { font-size: 0.72rem; color: $text-muted; letter-spacing: 0.05em; }
-  &__book-price { font-size: 0.82rem; color: rgba($cta-border, 0.85); }
-
-  // ── Card preview ───────────────────────────
-  &__card-preview {
-    position:      relative;
-    background:    linear-gradient(135deg, #2a2a1e 0%, #3a3820 100%);
-    border:        1px solid rgba($cta-border, 0.25);
-    border-radius: 14px;
-    padding:       28px 28px 22px;
-    width:         clamp(260px, 55%, 340px);
-    margin-bottom: 32px;
-    box-shadow:    0 12px 40px rgba(0,0,0,0.5);
-  }
-
-  &__card-chip {
-    width:         38px;
-    height:        28px;
-    background:    linear-gradient(135deg, rgba($cta-border, 0.6), rgba($cta-border, 0.25));
-    border-radius: 5px;
-    margin-bottom: 22px;
-  }
-
-  &__card-num {
-    font-family:    monospace;
-    font-size:      1.08rem;
-    color:          $cream;
-    letter-spacing: 0.18em;
-    margin:         0 0 20px;
-  }
-
-  &__card-foot {
-    display:         flex;
-    justify-content: space-between;
-    font-size:       0.78rem;
-    color:           $text-muted;
-    letter-spacing:  0.06em;
-    text-transform:  uppercase;
-  }
-
-  &__card-remove {
-    position:      absolute;
-    top:           14px;
-    right:         14px;
-    background:    none;
-    border:        none;
-    color:         rgba($text-muted, 0.5);
-    cursor:        pointer;
-    font-size:     16px;
-    line-height:   1;
-    padding:       0;
-    transition:    color 0.2s;
-
-    &:hover { color: lighten($danger, 15%); }
-  }
-
-  // ── Settings ───────────────────────────────
-  &__settings-list {
-    display:       flex;
-    flex-direction: column;
-    gap:           1px;
-    margin-bottom: 48px;
-  }
-
-  &__setting {
-    display:         flex;
-    align-items:     center;
-    justify-content: space-between;
-    gap:             24px;
-    padding:         18px 0;
-    border-bottom:   1px solid $card-border;
-  }
-
-  &__setting-name {
-    margin:      0;
-    font-size:   0.95rem;
-    color:       $cream;
-    font-family: $font-display;
-  }
-
-  &__setting-desc {
-    margin:    4px 0 0;
-    font-size: 0.82rem;
-    color:     $text-muted;
-    font-style: italic;
-    max-width: 380px;
-  }
-
-  // ── Toggle ─────────────────────────────────
-  &__toggle {
-    position:      relative;
-    width:         44px;
-    height:        24px;
-    border-radius: 12px;
-    background:    rgba($text-muted, 0.18);
-    border:        1px solid $card-border;
-    cursor:        pointer;
-    flex-shrink:   0;
-    transition:    background 0.25s, border-color 0.25s;
-
-    &--on {
-      background:   rgba($cta-border, 0.22);
-      border-color: rgba($cta-border, 0.45);
-
-      .pg__toggle-knob { transform: translateX(20px); background: $cta-border; }
-    }
-  }
-
-  &__toggle-knob {
-    position:       absolute;
-    top:            3px;
-    left:           3px;
-    width:          16px;
-    height:         16px;
-    border-radius:  50%;
-    background:     $text-muted;
-    transition:     transform 0.25s $ease-out, background 0.25s;
-  }
-
-  // ── Danger zone ────────────────────────────
-  &__danger-zone {
-    border:        1px solid rgba($danger, 0.2);
-    border-radius: 10px;
-    padding:       24px 28px;
-    background:    rgba($danger, 0.04);
-  }
-
-  &__danger-title {
-    margin:      0 0 8px;
-    font-family: $font-display;
-    font-size:   1rem;
-    font-weight: 400;
-    color:       lighten($danger, 18%);
-  }
-
-  &__danger-desc {
-    margin:    0 0 18px;
-    font-size: 0.85rem;
-    color:     $text-muted;
-    line-height: 1.55;
-  }
-
-  // ── Backdrop / Modal ───────────────────────
+  display:     flex;
+  min-height:  100vh;
+  background:  $bg;
+  color:       $cream;
+  font-family: $font-b;
+  padding-top: 70px;
+  box-sizing:  border-box;
 }
 
-.pg__backdrop {
-  position:   fixed;
-  inset:      0;
-  background: rgba(0,0,0,0.72);
-  backdrop-filter: blur(3px);
-  z-index:    100;
-  display:    flex;
-  align-items: center;
+// ─────────────────────────────────────────────────────────────────────────────
+// Sidebar
+// ─────────────────────────────────────────────────────────────────────────────
+.pg__sidebar {
+  width:          $sidebar-w;
+  flex-shrink:    0;
+  background:     $surface;
+  border-right:   1px solid $card-border;
+  display:        flex;
+  flex-direction: column;
+  padding:        40px 0 32px;
+  position:       sticky;
+  top:            0;
+  height:         100vh;
+  overflow-y:     auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+.pg__avatar-block {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            14px;
+  padding:        0 20px 28px;
+  border-bottom:  1px solid $card-border;
+  margin-bottom:  20px;
+}
+
+.pg__avatar-ring {
+  position:    relative;
+  width:       80px;
+  height:      80px;
+  flex-shrink: 0;
+}
+
+.pg__avatar-arch {
+  width:         100%;
+  height:        100%;
+  border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+  overflow:      hidden;
+  border:        1.5px solid rgba($gold, 0.35);
+  box-shadow:    0 8px 28px rgba(0,0,0,0.6);
+}
+
+.pg__avatar-img {
+  width:           100%;
+  height:          100%;
+  object-fit:      cover;
+  object-position: center top;
+  display:         block;
+}
+
+.pg__avatar-edit {
+  position:        absolute;
+  bottom:          -5px;
+  right:           -5px;
+  width:           26px;
+  height:          26px;
+  border-radius:   50%;
+  background:      $card;
+  border:          1px solid $card-border;
+  color:           $muted;
+  cursor:          pointer;
+  display:         flex;
+  align-items:     center;
   justify-content: center;
+  transition:      background 0.2s, color 0.2s;
+
+  &:hover    { background: rgba($gold, 0.15); color: $cream; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.pg__identity {
+  text-align: center;
+  min-width:  0;
+  width:      100%;
+}
+
+.pg__name {
+  margin:        0;
+  font-family:   $font-d;
+  font-size:     1rem;
+  font-weight:   400;
+  color:         $cream;
+  line-height:   1.3;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  max-width:     100%;
+}
+
+.pg__email-label {
+  margin:     4px 0 0;
+  font-size:  0.75rem;
+  color:      $muted-dim;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+// ─── Nav ──────────────────────────────────────────────────────────────────────
+.pg__nav {
+  flex:           1;
+  display:        flex;
+  flex-direction: column;
+  padding:        0 10px;
+  gap:            2px;
+}
+
+.pg__nav-item {
+  display:        flex;
+  align-items:    center;
+  gap:            10px;
+  padding:        10px 14px;
+  border:         none;
+  background:     transparent;
+  color:          $muted;
+  font-family:    $font-b;
+  font-size:      0.88rem;
+  letter-spacing: 0.04em;
+  border-radius:  6px;
+  cursor:         pointer;
+  text-align:     left;
+  transition:     background 0.18s, color 0.18s;
+  white-space:    nowrap;
+  min-height:     42px;
+  width:          100%;
+
+  &:hover      { background: rgba($cream, 0.05); color: $cream; }
+
+  &--active {
+    background: rgba($gold, 0.1);
+    color:      $cream;
+
+    .pg__nav-icon { color: $gold; opacity: 1; }
+  }
+}
+
+.pg__nav-icon {
+  display:     flex;
+  flex-shrink: 0;
+  opacity:     0.6;
+  transition:  color 0.18s, opacity 0.18s;
+}
+
+// ─── Logout ───────────────────────────────────────────────────────────────────
+.pg__logout {
+  display:        flex;
+  align-items:    center;
+  gap:            9px;
+  margin:         12px 10px 0;
+  padding:        10px 14px;
+  border:         1px solid rgba($danger, 0.18);
+  border-radius:  6px;
+  background:     transparent;
+  color:          rgba($muted, 0.6);
+  font-family:    $font-b;
+  font-size:      0.88rem;
+  letter-spacing: 0.05em;
+  cursor:         pointer;
+  transition:     background 0.2s, color 0.2s, border-color 0.2s;
+  min-height:     42px;
+  width:          calc(100% - 20px);
+
+  &:hover {
+    background:   rgba($danger, 0.08);
+    color:        lighten($danger, 22%);
+    border-color: rgba($danger, 0.4);
+  }
+
+  span { flex: 1; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main content
+// ─────────────────────────────────────────────────────────────────────────────
+.pg__main {
+  flex:       1;
+  padding:    52px clamp(24px, 5vw, 64px) 64px;
+  max-width:  780px;
+  min-width:  0;
+  box-sizing: border-box;
+}
+
+// ─── Panel ────────────────────────────────────────────────────────────────────
+.pg__panel-head {
+  margin-bottom:  40px;
+  padding-bottom: 20px;
+  border-bottom:  1px solid $card-border;
+}
+
+.pg__panel-title {
+  margin:      0;
+  font-family: $font-d;
+  font-size:   clamp(1.5rem, 3.5vw, 2.1rem);
+  font-weight: 400;
+  color:       $cream;
+  line-height: 1.2;
+}
+
+.pg__panel-sub {
+  margin:     8px 0 0;
+  font-size:  0.85rem;
+  color:      $muted-dim;
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+// ─── Form grid ────────────────────────────────────────────────────────────────
+.pg__fields {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   18px 24px;
+  margin-bottom:         28px;
+}
+
+.pg__field {
+  display:        flex;
+  flex-direction: column;
+  gap:            7px;
+
+  &--full { grid-column: 1 / -1; }
+
+  label {
+    font-size:      0.72rem;
+    letter-spacing: 0.1em;
+    color:          $muted-dim;
+    text-transform: uppercase;
+  }
+
+  input {
+    background:    rgba($cream, 0.035);
+    border:        1px solid $card-border;
+    border-radius: 6px;
+    padding:       11px 14px;
+    color:         $cream;
+    font-family:   $font-b;
+    font-size:     1rem; // always ≥ 16px equivalent → no iOS zoom
+    outline:       none;
+    transition:    border-color 0.2s, background 0.2s;
+    width:         100%;
+    box-sizing:    border-box;
+    min-height:    46px;
+
+    &::placeholder { color: rgba($muted, 0.3); }
+
+    &:focus {
+      border-color: rgba($gold, 0.5);
+      background:   rgba($cream, 0.055);
+    }
+
+    &:disabled { opacity: 0.38; cursor: not-allowed; }
+  }
+}
+
+.pg__form-foot {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             16px;
+  flex-wrap:       wrap;
+  padding-top:     4px;
+}
+
+.pg__form-label {
+  font-size:      0.75rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color:          $muted-dim;
+  margin:         0 0 16px;
+}
+
+// ─── Password wrapper ─────────────────────────────────────────────────────────
+.pg__pw-wrap {
+  position: relative;
+
+  input { padding-right: 46px; }
+}
+
+.pg__eye {
+  position:        absolute;
+  right:           0;
+  top:             0;
+  bottom:          0;
+  width:           44px;
+  background:      none;
+  border:          none;
+  cursor:          pointer;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       14px;
+  color:           $muted-dim;
+  transition:      color 0.2s;
+  padding:         0;
+
+  &:hover { color: $cream; }
+}
+
+// ─── Status messages ──────────────────────────────────────────────────────────
+.pg__msg {
+  font-size:  0.82rem;
+  color:      transparent; // invisible when empty
+  flex:       1;
+  min-height: 1.2em;
+  transition: color 0.2s;
+
+  &--ok  { color: $success; }
+  &--err { color: lighten($danger, 15%); }
+}
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+.pg__btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             7px;
+  border-radius:   50px;
+  font-family:     $font-b;
+  font-size:       0.9rem;
+  letter-spacing:  0.06em;
+  cursor:          pointer;
+  transition:      background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s, opacity 0.22s;
+  text-decoration: none;
+  min-height:      44px;
+  white-space:     nowrap;
+  box-sizing:      border-box;
+
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  &--primary {
+    background: rgba($gold, 0.12);
+    border:     1px solid rgba($gold, 0.42);
+    color:      $cream;
+    padding:    10px 28px;
+
+    &:hover:not(:disabled) {
+      background: rgba($gold, 0.22);
+      box-shadow: 0 0 20px rgba($gold, 0.14);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    border:     1px solid rgba($muted, 0.3);
+    color:      $muted;
+    padding:    10px 24px;
+
+    &:hover:not(:disabled) { border-color: $cream; color: $cream; }
+  }
+
+  &--danger {
+    background: rgba($danger, 0.08);
+    border:     1px solid rgba($danger, 0.38);
+    color:      lighten($danger, 20%);
+    padding:    10px 26px;
+
+    &:hover:not(:disabled) { background: rgba($danger, 0.18); }
+  }
+}
+
+// ─── Spinner ──────────────────────────────────────────────────────────────────
+.pg__spinner {
+  display:          inline-block;
+  width:            14px;
+  height:           14px;
+  border:           2px solid rgba($cream, 0.2);
+  border-top-color: $cream;
+  border-radius:    50%;
+  animation:        spin 0.7s linear infinite;
+  flex-shrink:      0;
+}
+
+// ─── Library ──────────────────────────────────────────────────────────────────
+.pg__empty {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            14px;
+  padding:        64px 0;
+  color:          $muted-dim;
+  text-align:     center;
+}
+
+.pg__empty-ornament {
+  font-size:   3rem;
+  opacity:     0.35;
+  font-family: $font-d;
+}
+
+.pg__books {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap:                   22px;
+}
+
+.pg__book-card {
+  display:        flex;
+  flex-direction: column;
+  gap:            9px;
+  transition:     transform 0.22s $ease;
+  &:hover { transform: translateY(-4px); }
+}
+
+.pg__book-cover {
+  width:         100%;
+  aspect-ratio:  2/3;
+  object-fit:    cover;
+  border-radius: 4px;
+  display:       block;
+  box-shadow:    0 8px 24px rgba(0,0,0,0.55);
+}
+
+.pg__book-meta  { display: flex; flex-direction: column; gap: 3px; }
+.pg__book-title { font-family: $font-d; font-size: 0.88rem; color: $cream; line-height: 1.3; }
+.pg__book-isbn  { font-size: 0.7rem; color: $muted-dim; letter-spacing: 0.05em; }
+.pg__book-price { font-size: 0.82rem; color: rgba($gold, 0.85); }
+
+// ─── Payment card preview ─────────────────────────────────────────────────────
+.pg__card-preview {
+  position:      relative;
+  background:    linear-gradient(135deg, #252519 0%, #353421 100%);
+  border:        1px solid rgba($gold, 0.22);
+  border-radius: 14px;
+  padding:       28px 24px 22px;
+  width:         clamp(240px, 55%, 340px);
+  margin-bottom: 28px;
+  box-shadow:    0 14px 44px rgba(0,0,0,0.5);
+  box-sizing:    border-box;
+}
+
+.pg__card-chip {
+  width:         36px;
+  height:        26px;
+  background:    linear-gradient(135deg, rgba($gold, 0.55), rgba($gold, 0.22));
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.pg__card-num {
+  font-family:    monospace;
+  font-size:      clamp(0.9rem, 2.5vw, 1.05rem);
+  color:          $cream;
+  letter-spacing: 0.2em;
+  margin:         0 0 18px;
+  word-break:     break-all;
+}
+
+.pg__card-foot {
+  display:         flex;
+  justify-content: space-between;
+  font-size:       0.75rem;
+  color:           $muted-dim;
+  letter-spacing:  0.06em;
+  text-transform:  uppercase;
+  gap:             8px;
+  flex-wrap:       wrap;
+}
+
+.pg__card-remove {
+  position:        absolute;
+  top:             12px;
+  right:           12px;
+  background:      none;
+  border:          none;
+  color:           rgba($muted, 0.4);
+  cursor:          pointer;
+  font-size:       16px;
+  line-height:     1;
+  padding:         6px;
+  min-width:       32px;
+  min-height:      32px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  transition:      color 0.2s;
+
+  &:hover { color: lighten($danger, 18%); }
+}
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
+.pg__settings-list {
+  display:        flex;
+  flex-direction: column;
+  margin-bottom:  44px;
+}
+
+.pg__setting {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             20px;
+  padding:         18px 0;
+  border-bottom:   1px solid $card-border;
+}
+
+.pg__setting-name {
+  margin:      0;
+  font-size:   0.95rem;
+  color:       $cream;
+  font-family: $font-d;
+}
+
+.pg__setting-desc {
+  margin:     4px 0 0;
+  font-size:  0.82rem;
+  color:      $muted-dim;
+  font-style: italic;
+  max-width:  360px;
+  line-height: 1.55;
+}
+
+// ─── Toggle ───────────────────────────────────────────────────────────────────
+.pg__toggle {
+  position:      relative;
+  width:         44px;
+  height:        24px;
+  border-radius: 12px;
+  background:    rgba($muted, 0.15);
+  border:        1px solid $card-border;
+  cursor:        pointer;
+  flex-shrink:   0;
+  transition:    background 0.25s, border-color 0.25s;
+  padding:       0;
+
+  &--on {
+    background:   rgba($gold, 0.2);
+    border-color: rgba($gold, 0.42);
+    .pg__toggle-knob { transform: translateX(20px); background: $gold; }
+  }
+}
+
+.pg__toggle-knob {
+  position:      absolute;
+  top:           3px;
+  left:          3px;
+  width:         16px;
+  height:        16px;
+  border-radius: 50%;
+  background:    $muted;
+  transition:    transform 0.25s $ease, background 0.25s;
+}
+
+// ─── Danger zone ──────────────────────────────────────────────────────────────
+.pg__danger-zone {
+  border:        1px solid rgba($danger, 0.18);
+  border-radius: 10px;
+  padding:       24px 26px;
+  background:    rgba($danger, 0.04);
+  box-sizing:    border-box;
+}
+
+.pg__danger-title {
+  margin:      0 0 8px;
+  font-family: $font-d;
+  font-size:   0.95rem;
+  font-weight: 400;
+  color:       lighten($danger, 20%);
+}
+
+.pg__danger-desc {
+  margin:      0 0 18px;
+  font-size:   0.85rem;
+  color:       $muted-dim;
+  line-height: 1.6;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Backdrop / Modal
+// ─────────────────────────────────────────────────────────────────────────────
+.pg__backdrop {
+  position:        fixed;
+  inset:           0;
+  background:      rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  z-index:         200;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         16px;
+  box-sizing:      border-box;
 }
 
 .pg__modal {
-  background:    #1a1a14;
+  background:    #1c1c15;
   border:        1px solid $card-border;
   border-radius: 14px;
-  padding:       40px 40px 32px;
-  max-width:     420px;
-  width:         calc(100vw - 48px);
+  padding:       44px 40px 36px;
+  max-width:     400px;
+  width:         100%;
   text-align:    center;
-  box-shadow:    0 32px 80px rgba(0,0,0,0.7);
+  box-shadow:    0 32px 80px rgba(0,0,0,0.75);
+  box-sizing:    border-box;
 
   &-ornament {
-    font-size:   2.4rem;
-    color:       rgba($cta-border, 0.4);
-    font-family: $font-display;
-    line-height: 1;
-    margin-bottom: 16px;
+    font-size:     2.6rem;
+    color:         rgba($gold, 0.35);
+    font-family:   $font-d;
+    line-height:   1;
+    margin-bottom: 14px;
   }
 
   &-title {
-    margin:      0 0 12px;
-    font-family: $font-display;
-    font-size:   1.4rem;
+    margin:      0 0 10px;
+    font-family: $font-d;
+    font-size:   clamp(1.2rem, 4vw, 1.4rem);
     font-weight: 400;
     color:       $cream;
   }
 
   &-body {
-    margin:    0 0 28px;
-    font-size: 0.9rem;
-    color:     $text-muted;
-    line-height: 1.6;
+    margin:      0 0 28px;
+    font-size:   0.88rem;
+    color:       $muted-dim;
+    line-height: 1.65;
   }
 
   &-actions {
@@ -611,75 +669,174 @@ $bp-xxs: 320px;
   }
 }
 
-// ─────────────────────────────────────────────
-// Responsive
-// ─────────────────────────────────────────────
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive — 1024px
+// ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-lg) {
-  .pg__sidebar { width: 230px; }
-  .pg__main    { padding: 44px clamp(20px, 4vw, 48px); }
+  .pg__sidebar { width: 220px; }
+  .pg__main    { padding: 44px clamp(20px, 4vw, 48px) 56px; }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive — 768px  (sidebar → top bar)
+// ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-md) {
   .pg {
     flex-direction: column;
+    padding-top:    60px;
   }
 
+  // Sidebar becomes a horizontal top bar
   .pg__sidebar {
-    width:     100%;
-    height:    auto;
-    position:  static;
-    padding:   24px 0 0;
-    flex-direction: row;
-    flex-wrap: wrap;
-    border-right:   none;
-    border-bottom:  1px solid $card-border;
+    width:           100%;
+    height:          auto;
+    position:        sticky;
+    top:             0;
+    z-index:         10;
+    padding:         0;
+    flex-direction:  row;
+    align-items:     stretch;
+    border-right:    none;
+    border-bottom:   1px solid $card-border;
+    overflow-x:      auto;
+    overflow-y:      visible;
+    -webkit-overflow-scrolling: touch;
   }
 
+  // Avatar — compact row item
   .pg__avatar-block {
     flex-direction: row;
     align-items:    center;
-    padding:        16px 20px;
+    padding:        10px 16px;
     border-bottom:  none;
     border-right:   1px solid $card-border;
     margin-bottom:  0;
-    gap:            12px;
+    gap:            10px;
     flex-shrink:    0;
   }
 
+  .pg__avatar-ring  { width: 44px; height: 44px; }
+  .pg__avatar-edit  { width: 20px; height: 20px; bottom: -4px; right: -4px; font-size: 10px; }
+
+  .pg__identity { text-align: left; }
+  .pg__name     { font-size: 0.85rem; max-width: 120px; }
+  .pg__email-label { display: none; } // hidden in topbar — saves space
+
+  // Nav — horizontal scrollable row
   .pg__nav {
     flex-direction: row;
-    flex-wrap:      wrap;
-    padding:        8px 12px;
-    gap:            4px;
+    flex-wrap:      nowrap;
+    padding:        6px 8px;
+    gap:            2px;
     flex:           1;
+    align-items:    center;
+    overflow-x:     auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
   }
 
-  .pg__nav-item { padding: 7px 12px; }
+  .pg__nav-item {
+    flex-shrink: 0;
+    padding:     7px 12px;
+    font-size:   0.82rem;
+    min-height:  36px;
+    border-radius: 6px;
+  }
 
+  // Logout — always visible as last item in the bar
   .pg__logout {
-    width:   100%;
-    padding: 10px 20px;
-    margin:  0;
-    border-top: 1px solid $card-border;
+    flex-shrink:  0;
+    margin:       6px 8px 6px 4px;
+    padding:      7px 12px;
+    width:        auto;
+    min-height:   36px;
+    font-size:    0.82rem;
+    border-color: rgba($danger, 0.22);
+    white-space:  nowrap;
+    gap:          6px;
   }
 
-  .pg__main { padding: 36px 24px; }
+  .pg__main {
+    padding:   36px 20px 48px;
+    max-width: 100%;
+  }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive — 600px
+// ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-sm) {
-  .pg__fields { grid-template-columns: 1fr; }
-  .pg__field--full { grid-column: auto; }
+  .pg__fields {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .pg__field--full  { grid-column: auto; }
+
+  .pg__form-foot {
+    flex-direction: column-reverse;
+    align-items:    stretch;
+    gap:            10px;
+
+    .pg__btn  { width: 100%; }
+    .pg__msg  { text-align: center; min-height: 1.4em; }
+  }
+
   .pg__card-preview { width: 100%; }
-  .pg__books { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+
+  .pg__books { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 16px; }
+
+  .pg__modal {
+    padding: 32px 24px 28px;
+    &-actions { flex-direction: column; .pg__btn { width: 100%; } }
+  }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive — 480px
+// ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-xs) {
-  .pg__main    { padding: 24px 16px; }
-  .pg__setting { flex-direction: column; align-items: flex-start; }
+  .pg__main     { padding: 28px 14px 40px; }
+  .pg__setting  { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .pg__panel-head { margin-bottom: 28px; }
+
+  // Hide nav labels → icon-only tabs
+  .pg__nav-item span:last-child { display: none; }
+  .pg__nav-item { padding: 8px 10px; }
+
+  // Keep logout text visible so it's recognisable
+  .pg__logout span { display: inline; }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive — 380px
+// ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-xxs) {
-  .pg__panel-title { font-size: 1.4rem; }
-  .pg__modal       { padding: 28px 24px 24px; }
+  .pg { padding-top: 56px; }
+
+  .pg__name { max-width: 90px; }
+  .pg__main { padding: 22px 12px 36px; }
+
+  .pg__danger-zone { padding: 18px 14px; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Responsive — 320px
+// ─────────────────────────────────────────────────────────────────────────────
+@media (max-width: $bp-min) {
+  .pg { padding-top: 52px; }
+
+  .pg__avatar-block { padding: 8px 10px; gap: 8px; }
+  .pg__avatar-ring  { width: 36px; height: 36px; }
+  .pg__avatar-edit  { width: 18px; height: 18px; }
+  .pg__name         { max-width: 72px; font-size: 0.78rem; }
+
+  .pg__nav-item  { padding: 7px 8px; }
+  .pg__logout    { padding: 7px 8px; margin: 4px 6px; font-size: 0.78rem; gap: 5px; }
+
+  .pg__main      { padding: 18px 10px 28px; }
+  .pg__panel-head { margin-bottom: 20px; }
+  .pg__fields    { gap: 12px; }
+
+  .pg__danger-zone   { padding: 14px 12px; }
+  .pg__modal         { padding: 24px 16px 20px; border-radius: 10px; }
 }

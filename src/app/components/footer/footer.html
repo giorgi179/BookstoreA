@@ -10,20 +10,46 @@
     </div>
 
     <div class="newsletter-right">
-      <form>
+      <form (ngSubmit)="onSubscribe()">
         <div class="input-group">
           <label>Email *</label>
-          <input type="email" placeholder="Enter your email" />
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            placeholder="Enter your email"
+            [disabled]="loading()"
+          />
         </div>
 
         <div class="checkbox-group">
-          <input type="checkbox" id="subscribe" />
+          <input
+            type="checkbox"
+            id="subscribe"
+            name="subscribeChecked"
+            [(ngModel)]="subscribeChecked"
+            [disabled]="loading()"
+          />
           <label for="subscribe">
             I want to subscribe to your newsletter.
           </label>
         </div>
 
-        <button type="submit">Subscribe</button>
+        <button type="submit" [disabled]="loading()" [class.is-success]="subscribed()">
+          @if (loading()) {
+            Subscribing...
+          } @else if (subscribed()) {
+            ✓ Subscribed
+          } @else {
+            Subscribe
+          }
+        </button>
+
+        @if (msg()) {
+          <p class="newsletter-msg" [class.newsletter-msg--err]="err()" [class.newsletter-msg--ok]="!err() && msg()">
+            {{ msg() }}
+          </p>
+        }
       </form>
     </div>
   </div>
@@ -47,16 +73,17 @@
     </div>
 
     <div class="footer-links">
-      <a href="#">Accessibility Statement</a>
-      <a href="#">Terms & Conditions</a>
-      <a href="#">Privacy Policy</a>
+      <a routerLink="/accessibility">Accessibility Statement</a>
+      <a routerLink="/terms">Terms & Conditions</a>
+      <a routerLink="/privacy">Privacy Policy</a>
+      <a routerLink="/cookies">Cookie Policy</a>
     </div>
 
     <div class="socials">
       <h4>Follow the Whispers</h4>
 
-      <a href="#">Instagram</a>
-      <a href="#">Pinterest</a>
+      <a href="https://www.instagram.com/g_meshveliani_15/">Instagram</a>
+      <a href="https://www.upwork.com/freelancers/~01977b43dc53ca2c2d?mp_source=share">Upwork</a>
       <a href="#">X</a>
     </div>
   </div>
@@ -64,6 +91,6 @@
     ↑
   </button>
   <div class="copyright">
-    © 2025 by Aurelia Finch. Powered and secured by Wix
+    © 2026 by Giorgi. All rights reserved.
   </div>
 </footer>

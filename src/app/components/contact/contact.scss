@@ -19,9 +19,16 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
 $sp-xs: 8px;
 $sp-sm: 12px;
 $sp-md: 16px;
-$sp-lg: 24px;
+$sp-lg: 44px;
 $sp-xl: 32px;
 $sp-2xl: 48px;
+
+// ===== BREAKPOINTS =====
+$bp-lg:  1024px;
+$bp-md:   768px;
+$bp-sm:   480px;
+$bp-xs:   380px;
+$bp-xxs:  320px;
 
 // ===== TRANSITIONS =====
 $transition-fast: 0.3s ease;
@@ -29,43 +36,16 @@ $transition-smooth: 0.5s ease-out;
 
 // ===== ANIMATIONS =====
 @keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-
 @keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes underlineGrow {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 // ===== MAIN SECTION =====
@@ -79,6 +59,10 @@ $transition-smooth: 0.5s ease-out;
   padding: $sp-2xl;
   box-sizing: border-box;
   overflow: hidden;
+
+  @media (max-width: $bp-md)  { padding: $sp-lg; min-height: auto; }
+  @media (max-width: $bp-sm)  { padding: $sp-md; }
+  @media (max-width: $bp-xxs) { padding: $sp-sm; }
 }
 
 .contact-container {
@@ -88,29 +72,61 @@ $transition-smooth: 0.5s ease-out;
   max-width: 1400px;
   width: 100%;
   padding: $sp-2xl;
+
+  @media (max-width: $bp-lg) {
+    grid-template-columns: 1fr;
+    gap: $sp-2xl;
+    padding: $sp-lg;
+  }
+
+  @media (max-width: $bp-sm) {
+    gap: $sp-xl;
+    padding: $sp-md;
+  }
+
+  @media (max-width: $bp-xxs) {
+    gap: $sp-lg;
+    padding: $sp-xs;
+  }
 }
 
-// ===== CONTACT INFO SECTION =====
+// ===== CONTACT INFO =====
 .contact-info {
   animation: slideInLeft 0.8s $transition-smooth;
 
+  @media (max-width: $bp-lg) { order: 2; }
+
   .contact-subtitle {
     font-family: $font-body;
-    font-size: 0.95rem;
+    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
     color: $text-muted;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin: 0 0 $sp-lg;
     font-weight: 400;
+
+    @media (max-width: $bp-sm)  { margin-bottom: $sp-md; }
+    @media (max-width: $bp-xxs) { font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: $sp-sm; }
   }
 
   .contact-title {
     font-family: $font-display;
-    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-size: clamp(1.4rem, 4vw, 3.5rem);
     font-weight: 400;
     color: $text-light;
-    line-height: 1.3;
+    line-height: 1.35;
     margin: 0 0 $sp-2xl * 1.5;
+
+    @media (max-width: $bp-md)  { margin-bottom: $sp-xl; }
+    @media (max-width: $bp-sm)  { margin-bottom: $sp-lg; }
+    @media (max-width: $bp-xxs) {
+      font-size: clamp(1.15rem, 6vw, 1.4rem);
+      margin-bottom: $sp-md;
+      line-height: 1.4;
+
+      // break long line nicely on tiny screens
+      br { display: none; }
+    }
   }
 }
 
@@ -119,51 +135,59 @@ $transition-smooth: 0.5s ease-out;
   flex-direction: column;
   gap: $sp-2xl * 1.5;
   margin-top: $sp-2xl * 2;
+
+  @media (max-width: $bp-md)  { gap: $sp-xl;  margin-top: $sp-xl; }
+  @media (max-width: $bp-sm)  { gap: $sp-lg;  margin-top: $sp-lg; }
+  @media (max-width: $bp-xxs) { gap: $sp-md;  margin-top: $sp-md; }
 }
 
 .detail-block {
   animation: fadeIn 0.8s ease-out backwards;
 
-  &:nth-child(1) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.4s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.6s;
-  }
+  &:nth-child(1) { animation-delay: 0.2s; }
+  &:nth-child(2) { animation-delay: 0.4s; }
+  &:nth-child(3) { animation-delay: 0.6s; }
 
   .detail-title {
     font-family: $font-display;
-    font-size: 1.3rem;
+    font-size: clamp(0.95rem, 3vw, 1.3rem);
     font-weight: 400;
     color: $text-light;
     margin: 0 0 $sp-md;
     letter-spacing: 0.02em;
+
+    @media (max-width: $bp-sm)  { margin-bottom: $sp-sm; }
+    @media (max-width: $bp-xxs) { margin-bottom: $sp-xs; }
   }
 
   .detail-text {
     font-family: $font-body;
-    font-size: 0.95rem;
+    font-size: clamp(0.82rem, 2.5vw, 0.95rem);
     color: $text-muted;
     line-height: 1.8;
     margin: 0;
     letter-spacing: 0.02em;
+
+    @media (max-width: $bp-xxs) { line-height: 1.6; }
   }
 }
 
-// ===== FORM SECTION =====
+// ===== FORM WRAPPER =====
 .form-wrapper {
   animation: slideInRight 0.8s $transition-smooth;
 
+  @media (max-width: $bp-lg) { order: 1; }
+
   .form-title {
     font-family: $font-display;
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(1.2rem, 3vw, 2rem);
     font-weight: 400;
     color: $text-light;
     margin: 0 0 $sp-2xl;
     letter-spacing: 0.04em;
+
+    @media (max-width: $bp-sm)  { margin-bottom: $sp-xl; }
+    @media (max-width: $bp-xxs) { margin-bottom: $sp-lg; }
   }
 }
 
@@ -171,6 +195,9 @@ $transition-smooth: 0.5s ease-out;
   display: flex;
   flex-direction: column;
   gap: $sp-xl;
+
+  @media (max-width: $bp-sm)  { gap: $sp-lg; }
+  @media (max-width: $bp-xxs) { gap: $sp-md; }
 }
 
 .form-group {
@@ -179,26 +206,18 @@ $transition-smooth: 0.5s ease-out;
   gap: $sp-md;
   animation: fadeIn 0.8s ease-out backwards;
 
-  &:nth-child(1) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.3s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.4s;
-  }
-  &:nth-child(4) {
-    animation-delay: 0.5s;
-  }
-  &:nth-child(5) {
-    animation-delay: 0.6s;
-  }
+  &:nth-child(1) { animation-delay: 0.2s; }
+  &:nth-child(2) { animation-delay: 0.3s; }
+  &:nth-child(3) { animation-delay: 0.4s; }
+  &:nth-child(4) { animation-delay: 0.5s; }
+  &:nth-child(5) { animation-delay: 0.6s; }
+
+  @media (max-width: $bp-xxs) { gap: $sp-sm; }
 }
 
 .form-label {
   font-family: $font-body;
-  font-size: 0.85rem;
+  font-size: clamp(0.78rem, 2.5vw, 0.85rem);
   color: $text-light;
   letter-spacing: 0.04em;
   text-transform: capitalize;
@@ -217,15 +236,16 @@ $transition-smooth: 0.5s ease-out;
   border-bottom: 2px solid $border-color;
   padding: $sp-md 0 $sp-sm;
   font-family: $font-body;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 3vw, 0.95rem);
   color: $text-light;
   outline: none;
   transition: all $transition-fast;
-  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  // prevent iOS zoom on focus (font-size must be ≥16px equivalent)
+  -webkit-text-size-adjust: 100%;
 
-  &::placeholder {
-    color: transparent;
-  }
+  &::placeholder { color: transparent; }
 
   &:focus {
     border-bottom-color: $cream;
@@ -239,21 +259,30 @@ $transition-smooth: 0.5s ease-out;
     -webkit-text-fill-color: $text-light;
   }
 
-  &:not(:placeholder-shown) {
-    color: $text-light;
+  @media (max-width: $bp-sm) {
+    padding: $sp-sm 0 $sp-xs;
+    &:focus { padding: $sp-sm $sp-sm $sp-xs; }
+  }
+
+  @media (max-width: $bp-xxs) {
+    font-size: 16px; // prevent iOS zoom
+    padding: $sp-xs 0;
+    &:focus { padding: $sp-xs $sp-xs $sp-xs; }
   }
 }
 
 .form-textarea {
   resize: vertical;
   min-height: 120px;
-  font-size: 0.9rem;
   line-height: 1.6;
+
+  @media (max-width: $bp-sm)  { min-height: 100px; }
+  @media (max-width: $bp-xxs) { min-height: 80px; }
 }
 
 .error-msg {
   font-family: $font-body;
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 2vw, 0.75rem);
   color: $cream;
   margin-top: -$sp-sm;
   letter-spacing: 0.02em;
@@ -267,7 +296,7 @@ $transition-smooth: 0.5s ease-out;
   border: none;
   padding: $sp-lg $sp-2xl;
   font-family: $font-body;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 3vw, 0.95rem);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: capitalize;
@@ -278,6 +307,9 @@ $transition-smooth: 0.5s ease-out;
   position: relative;
   overflow: hidden;
   text-align: center;
+  width: 100%;           // full width on all sizes — cleaner on mobile
+  min-height: 48px;      // touch target
+  box-sizing: border-box;
 
   &::before {
     content: '';
@@ -294,180 +326,24 @@ $transition-smooth: 0.5s ease-out;
     background: $cream-dark;
     transform: translateY(-2px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-
-    &::before {
-      left: 100%;
-    }
+    &::before { left: 100%; }
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
+  &:active:not(:disabled) { transform: translateY(0); }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-}
 
-// ===== RESPONSIVE DESIGN =====
-@media (max-width: 1024px) {
-  .contact-container {
-    grid-template-columns: 1fr;
-    gap: $sp-2xl;
-    padding: $sp-lg;
-  }
-
-  .contact-info {
-    order: 2;
-  }
-
-  .form-wrapper {
-    order: 1;
-  }
-}
-
-@media (max-width: 768px) {
-  .contact-section {
-    padding: $sp-lg;
-    min-height: auto;
-  }
-
-  .contact-container {
-    grid-template-columns: 1fr;
-    gap: $sp-xl;
-    padding: $sp-lg;
-  }
-
-  .contact-info {
-    .contact-title {
-      font-size: clamp(1.5rem, 3vw, 2.5rem);
-      margin-bottom: $sp-xl;
-    }
-
-    .contact-subtitle {
-      font-size: 0.85rem;
-    }
-  }
-
-  .contact-details {
-    gap: $sp-xl;
-    margin-top: $sp-xl;
-  }
-
-  .detail-block {
-    .detail-title {
-      font-size: 1.1rem;
-    }
-
-    .detail-text {
-      font-size: 0.9rem;
-    }
-  }
-
-  .form-wrapper {
-    .form-title {
-      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
-      margin-bottom: $sp-xl;
-    }
-  }
-
-  .contact-form {
-    gap: $sp-lg;
-  }
-
-  .form-input,
-  .form-textarea {
-    font-size: 0.9rem;
-    padding: $sp-md 0 $sp-sm;
-
-    &:focus {
-      padding: $sp-md $sp-sm $sp-sm;
-    }
-  }
-
-  .form-textarea {
-    min-height: 100px;
-    font-size: 0.85rem;
-  }
-
-  .submit-btn {
+  @media (max-width: $bp-sm) {
     padding: $sp-md $sp-xl;
-    font-size: 0.9rem;
-    margin-top: $sp-lg;
-  }
-}
-
-@media (max-width: 480px) {
-  .contact-section {
-    padding: $sp-md;
-  }
-
-  .contact-container {
-    padding: 0;
-    gap: $sp-lg;
-  }
-
-  .contact-info {
-    .contact-title {
-      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-      margin-bottom: $sp-lg;
-    }
-
-    .contact-subtitle {
-      margin-bottom: $sp-md;
-    }
-  }
-
-  .contact-details {
-    gap: $sp-lg;
     margin-top: $sp-lg;
   }
 
-  .detail-block {
-    .detail-title {
-      font-size: 1rem;
-      margin-bottom: $sp-sm;
-    }
-
-    .detail-text {
-      font-size: 0.85rem;
-      line-height: 1.6;
-    }
-  }
-
-  .form-wrapper {
-    .form-title {
-      font-size: 1.3rem;
-      margin-bottom: $sp-lg;
-    }
-  }
-
-  .contact-form {
-    gap: $sp-md;
-  }
-
-  .form-label {
-    font-size: 0.8rem;
-  }
-
-  .form-input,
-  .form-textarea {
-    font-size: 0.85rem;
-    padding: $sp-sm 0 $sp-xs;
-
-    &:focus {
-      padding: $sp-sm $sp-sm $sp-xs;
-    }
-  }
-
-  .form-textarea {
-    min-height: 80px;
-  }
-
-  .submit-btn {
-    padding: $sp-md $sp-lg;
-    font-size: 0.85rem;
+  @media (max-width: $bp-xxs) {
+    padding: $sp-sm $sp-lg;
     margin-top: $sp-md;
+    letter-spacing: 0.04em;
   }
 }

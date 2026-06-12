@@ -1,0 +1,128 @@
+<section class="legal">
+  <div class="legal__wrapper">
+    <span class="legal__ornament">❧</span>
+    <h1 class="legal__title">Cookie Policy</h1>
+    <p class="legal__updated">Last updated: June 2026</p>
+
+    <div class="legal__section">
+      <h3 class="legal__section-title">What Are Cookies?</h3>
+      <p class="legal__text">
+        Cookies are small text files stored on your device when you visit a
+        website. They help the site remember your preferences, keep you signed
+        in, and understand how the site is used so we can improve it.
+      </p>
+    </div>
+
+    <div class="legal__section">
+      <h3 class="legal__section-title">Types of Cookies We Use</h3>
+
+      <table class="legal__table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Purpose</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Necessary</td>
+            <td>Authentication, session management, security</td>
+            <td>Session / 30 days</td>
+          </tr>
+          <tr>
+            <td>Preferences</td>
+            <td>Remembering display settings and selections</td>
+            <td>1 year</td>
+          </tr>
+          <tr>
+            <td>Analytics</td>
+            <td>Understanding how visitors use the site</td>
+            <td>1 year</td>
+          </tr>
+          <tr>
+            <td>Marketing</td>
+            <td>Personalized recommendations and newsletters</td>
+            <td>1 year</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legal__section">
+      <h3 class="legal__section-title">Manage Your Preferences</h3>
+      <p class="legal__text">
+        You can choose which categories of optional cookies to allow below.
+        Necessary cookies cannot be disabled, as they are required for the
+        site to function.
+      </p>
+
+      <div class="legal__toggle-row">
+        <div class="legal__toggle-info">
+          <h4>Necessary</h4>
+          <p>Required for login, security, and core site functionality. Always active.</p>
+        </div>
+        <button class="legal__toggle legal__toggle--on legal__toggle--disabled" disabled>
+          <span class="legal__toggle-knob"></span>
+        </button>
+      </div>
+
+      <div class="legal__toggle-row">
+        <div class="legal__toggle-info">
+          <h4>Preferences</h4>
+          <p>Remembers choices like your selected tab or display settings.</p>
+        </div>
+        <button class="legal__toggle" [class.legal__toggle--on]="prefs.preferences"
+          (click)="prefs.preferences = !prefs.preferences">
+          <span class="legal__toggle-knob"></span>
+        </button>
+      </div>
+
+      <div class="legal__toggle-row">
+        <div class="legal__toggle-info">
+          <h4>Analytics</h4>
+          <p>Helps us understand site usage so we can improve the experience.</p>
+        </div>
+        <button class="legal__toggle" [class.legal__toggle--on]="prefs.analytics"
+          (click)="prefs.analytics = !prefs.analytics">
+          <span class="legal__toggle-knob"></span>
+        </button>
+      </div>
+
+      <div class="legal__toggle-row">
+        <div class="legal__toggle-info">
+          <h4>Marketing</h4>
+          <p>Used for personalized recommendations and newsletter content.</p>
+        </div>
+        <button class="legal__toggle" [class.legal__toggle--on]="prefs.marketing"
+          (click)="prefs.marketing = !prefs.marketing">
+          <span class="legal__toggle-knob"></span>
+        </button>
+      </div>
+
+      <div class="legal__save-row">
+        <button class="legal__btn" [class.legal__btn--saved]="saved" (click)="savePreferences()">
+          {{ saved ? 'Preferences Saved' : 'Save Preferences' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="legal__section">
+      <h3 class="legal__section-title">Managing Cookies in Your Browser</h3>
+      <p class="legal__text">
+        In addition to the controls above, most browsers allow you to manage
+        cookies through their settings. You can delete existing cookies,
+        block cookies from specific sites, or block third-party cookies
+        entirely. Note that disabling necessary cookies may affect your ability
+        to sign in or use certain features.
+      </p>
+    </div>
+
+    <div class="legal__section">
+      <h3 class="legal__section-title">Contact</h3>
+      <div class="legal__contact">
+        Email: <a href="mailto:privacy@aureliafinch.com">privacy&#64;aureliafinch.com</a>
+      </div>
+    </div>
+  </div>
+</section>

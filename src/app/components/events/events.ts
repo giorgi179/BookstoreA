@@ -3,7 +3,8 @@ import { Book } from '../../service/book';
 import { Auths } from '../../service/auths';
 import { books } from '../../controlers';
 import { CommonModule } from '@angular/common';
-import { Loader } from "../loader/loader";
+import { Loader } from '../loader/loader';
+import { BasketService } from '../../service/basket';
 
 @Component({
   selector: 'app-events',
@@ -12,32 +13,42 @@ import { Loader } from "../loader/loader";
   styleUrl: './events.scss',
 })
 export class Events implements OnInit {
-  private api = inject(Book);
-  private auth = inject(Auths);
-  private cdr = inject(ChangeDetectorRef);
+  private api    = inject(Book);
+  private auth   = inject(Auths);
+  private cdr    = inject(ChangeDetectorRef);
+  private basket = inject(BasketService);
 
-  books = signal<books[]>([]);
-  loading = signal(true);
-  error = signal('');
-  selectedBook = signal<books | null>(null);
+  books         = signal<books[]>([]);
+  loading       = signal(true);
+  error         = signal('');
+  selectedBook  = signal<books | null>(null);
   showAuthModal = signal(false);
 
+  // Toast
+  toastBook    = signal<books | null>(null);
+  toastVisible = signal(false);
+  private toastTimer: any;
+
   addToCart(book: books): void {
-    const userId = this.auth.getToken();
-    if (!userId) {
-      this.showAuthModal.set(true);
-      return;
-    }
-    // TODO: cart logic
+    const userId = localStorage.getItem('userId');
+    if (!userId) { this.showAuthModal.set(true); return; }
+
+    this.basket.addItem(book.id, 1).subscribe({
+      next:  () => this.showToast(book),
+      error: () => this.showToast(null),
+    });
   }
 
-  closeModal(): void {
-    this.showAuthModal.set(false);
+  private showToast(book: books | null): void {
+    clearTimeout(this.toastTimer);
+    this.toastBook.set(book);
+    this.toastVisible.set(true);
+    this.toastTimer = setTimeout(() => this.toastVisible.set(false), 3200);
   }
 
-  goToAuth(): void {
-    window.location.href = '/auth';
-  }
+  closeModal():   void { this.showAuthModal.set(false); }
+  goToAuth():     void { window.location.href = '/auth'; }
+  dismissToast(): void { this.toastVisible.set(false); }
 
   ngOnInit(): void {
     this.api.getBooks().subscribe({
@@ -47,10 +58,7 @@ export class Events implements OnInit {
         this.cdr.detectChanges();
         setTimeout(() => this.initObserver(), 100);
       },
-      error: () => {
-        this.error.set('შეცდომა');
-        this.loading.set(false);
-      },
+      error: () => { this.error.set('შეცდომა'); this.loading.set(false); },
     });
   }
 
@@ -69,17 +77,12 @@ export class Events implements OnInit {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          } else {
-            entry.target.classList.remove('is-visible');
-          }
+          if (entry.isIntersecting) entry.target.classList.add('is-visible');
+          else entry.target.classList.remove('is-visible');
         });
       },
       { threshold: 0.15, rootMargin: '0px 0px -60px 0px' },
     );
-    document.querySelectorAll('[data-animate-repeat]').forEach((el) => {
-      observer.observe(el);
-    });
+    document.querySelectorAll('[data-animate-repeat]').forEach(el => observer.observe(el));
   }
 }

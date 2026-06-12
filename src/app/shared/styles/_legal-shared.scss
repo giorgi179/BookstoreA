@@ -1,0 +1,273 @@
+// ─────────────────────────────────────────────
+// Shared tokens (mirror of main design tokens)
+// ─────────────────────────────────────────────
+$bg: #141410;
+$cream: #f0e8c8;
+$text-muted: #c8bfa8;
+$gold: #c8b87a;
+$card-border: #2a2a22;
+$font-display: 'Playfair Display', serif;
+$font-body: 'EB Garamond', 'Garamond', Georgia, serif;
+
+$bp-md: 768px;
+$bp-sm: 600px;
+$bp-xs: 480px;
+
+// ─────────────────────────────────────────────
+// Legal page layout
+// ─────────────────────────────────────────────
+.legal {
+  background: $bg;
+  min-height: 100vh;
+  padding: 120px 24px 100px;
+  display: flex;
+  justify-content: center;
+
+  &__wrapper {
+    max-width: 760px;
+    width: 100%;
+  }
+
+  &__ornament {
+    display: block;
+    text-align: center;
+    font-family: $font-display;
+    font-size: 2.4rem;
+    color: rgba($gold, 0.5);
+    margin-bottom: 16px;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 400;
+    color: $cream;
+    text-align: center;
+    margin: 0 0 8px;
+  }
+
+  &__updated {
+    text-align: center;
+    font-family: $font-body;
+    font-size: 0.85rem;
+    color: rgba($text-muted, 0.6);
+    font-style: italic;
+    margin: 0 0 56px;
+  }
+
+  &__section {
+    margin-bottom: 40px;
+
+    &-title {
+      font-family: $font-display;
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+      font-weight: 400;
+      color: $cream;
+      margin: 0 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid $card-border;
+    }
+  }
+
+  &__text {
+    font-family: $font-body;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: $text-muted;
+    margin: 0 0 14px;
+
+    a {
+      color: $gold;
+      text-decoration: underline;
+      text-decoration-color: rgba($gold, 0.4);
+
+      &:hover { text-decoration-color: $gold; }
+    }
+  }
+
+  &__list {
+    font-family: $font-body;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: $text-muted;
+    margin: 0 0 14px;
+    padding-left: 24px;
+
+    li { margin-bottom: 8px; }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: $font-body;
+    font-size: 0.92rem;
+    color: $text-muted;
+    margin: 0 0 14px;
+
+    th, td {
+      text-align: left;
+      padding: 10px 14px;
+      border: 1px solid $card-border;
+    }
+
+    th {
+      color: $cream;
+      font-weight: 400;
+      font-family: $font-display;
+      letter-spacing: 0.04em;
+      background: rgba($cream, 0.03);
+    }
+  }
+
+  &__contact {
+    border: 1px solid $card-border;
+    border-radius: 10px;
+    padding: 24px 28px;
+    background: rgba($cream, 0.02);
+    font-family: $font-body;
+    color: $text-muted;
+    line-height: 1.8;
+
+    a { color: $gold; }
+  }
+
+  // ─── Cookie preferences (cookies page only) ───
+  &__toggle-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid $card-border;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  &__toggle-info {
+    flex: 1;
+
+    h4 {
+      font-family: $font-display;
+      font-size: 1rem;
+      font-weight: 400;
+      color: $cream;
+      margin: 0 0 6px;
+    }
+
+    p {
+      font-family: $font-body;
+      font-size: 0.88rem;
+      color: rgba($text-muted, 0.85);
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  &__toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: rgba($text-muted, 0.15);
+    border: 1px solid $card-border;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.25s, border-color 0.25s;
+    padding: 0;
+    margin-top: 4px;
+
+    &--on {
+      background: rgba($gold, 0.2);
+      border-color: rgba($gold, 0.42);
+
+      .legal__toggle-knob {
+        transform: translateX(20px);
+        background: $gold;
+      }
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: $text-muted;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s;
+  }
+
+  &__save-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 28px;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 50px;
+    font-family: $font-body;
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.22s, color 0.22s, box-shadow 0.22s;
+    padding: 11px 32px;
+    background: rgba($gold, 0.12);
+    border: 1px solid rgba($gold, 0.42);
+    color: $cream;
+
+    &:hover {
+      background: rgba($gold, 0.22);
+      box-shadow: 0 0 20px rgba($gold, 0.14);
+    }
+
+    &--saved {
+      background: rgba($gold, 0.28);
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // Responsive
+  // ─────────────────────────────────────────────
+  @media (max-width: $bp-md) {
+    padding: 100px 20px 80px;
+
+    &__section { margin-bottom: 32px; }
+  }
+
+  @media (max-width: $bp-sm) {
+    padding: 88px 16px 64px;
+
+    &__updated { margin-bottom: 40px; }
+
+    &__table {
+      font-size: 0.82rem;
+
+      th, td { padding: 8px 10px; }
+    }
+  }
+
+  @media (max-width: $bp-xs) {
+    padding: 76px 14px 56px;
+
+    &__title { font-size: 1.7rem; }
+    &__text, &__list { font-size: 0.92rem; }
+
+    &__toggle-row {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    &__toggle { align-self: flex-start; }
+
+    &__contact { padding: 18px 18px; }
+  }
+}

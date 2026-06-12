@@ -1,0 +1,129 @@
+$bg: #1c1c15;
+$cream: #f0e8c8;
+$gold: #c8b87a;
+$text-muted: #c8bfa8;
+$card-border: #2a2a22;
+$font-display: 'Playfair Display', serif;
+$font-body: 'EB Garamond', 'Garamond', Georgia, serif;
+
+.cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &__inner {
+    width: 100%;
+    max-width: 760px;
+    background: $bg;
+    border: 1px solid $card-border;
+    border-radius: 14px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 220px;
+
+    h4 {
+      margin: 0 0 6px;
+      font-family: $font-display;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: $cream;
+    }
+
+    p {
+      margin: 0;
+      font-family: $font-body;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: $text-muted;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    font-family: $font-body;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 10px 26px;
+    min-height: 42px;
+    white-space: nowrap;
+    transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s;
+
+    &--primary {
+      background: rgba($gold, 0.14);
+      border: 1px solid rgba($gold, 0.42);
+      color: $cream;
+
+      &:hover {
+        background: rgba($gold, 0.24);
+        box-shadow: 0 0 18px rgba($gold, 0.16);
+      }
+    }
+
+    &--ghost {
+      background: transparent;
+      border: 1px solid rgba($text-muted, 0.3);
+      color: $text-muted;
+
+      &:hover {
+        border-color: $cream;
+        color: $cream;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 12px;
+
+    &__inner {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 20px;
+      gap: 16px;
+    }
+
+    &__actions {
+      width: 100%;
+
+      .cookie-consent__btn {
+        flex: 1;
+      }
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

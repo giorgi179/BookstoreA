@@ -1,21 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, signal, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { ProfileService, UserProfile, BookOrder } from '../../service/profile';
-import { CardFormData } from '../../controlers';
+
+import { BookOrder, CardFormData, UserProfile } from '../../controlers';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-// ─── Animation ───────────────────────────────────────────────────────────────
-
-export const fadeSlide = trigger('fadeSlide', [
-  transition(':enter', [
-    style({ opacity: 0, transform: 'translateY(12px)' }),
-    animate('260ms cubic-bezier(0.22,1,0.36,1)', style({ opacity: 1, transform: 'translateY(0)' })),
-  ]),
-]);
-
-// ─── Nav items ───────────────────────────────────────────────────────────────
+import { Loader } from '../loader/loader';
+import { ProfileService } from '../../service/profile';
+import { DomSanitizer } from '@angular/platform-browser';
 
 const NAV_ITEMS = [
   {
@@ -58,171 +51,222 @@ const NAV_ITEMS = [
 
 type TabId = (typeof NAV_ITEMS)[number]['id'];
 
-// ─── Component ───────────────────────────────────────────────────────────────
-
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
-  animations: [fadeSlide],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Loader],
+  animations: [
+    trigger('fadeSlide', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(12px)' }),
+        animate(
+          '260ms cubic-bezier(0.22,1,0.36,1)',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class Profile implements OnInit {
   private svc = inject(ProfileService);
   private router = inject(Router);
+  private sanitizer = inject(DomSanitizer);
+  private zone = inject(NgZone);
 
-  // ── State ──────────────────────────────────────────────────────────────────
+  loader = signal(true);
 
-  tab: TabId = 'profile';
-  navItems = NAV_ITEMS;
-  defaultAvatar = 'assets/default-avatar.png';
+  // ── Tab ──────────────────────────────────────────────────────────────────
+  private _tab: TabId = 'profile';
 
+  get tab(): TabId {
+    return this._tab;
+  }
+  set tab(value: TabId) {
+    this._tab = value;
+    this.saveMsg = '';
+    this.saveErr = false;
+    this.pwMsg = '';
+    this.pwErr = '';
+    this.cardMsg = '';
+    this.cardErr = '';
+  }
+
+  navItems = NAV_ITEMS.map((item) => ({
+    ...item,
+    safeIcon: this.sanitizer.bypassSecurityTrustHtml(item.icon),
+  }));
+
+  defaultAvatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+
+  // ── User ─────────────────────────────────────────────────────────────────
   user: UserProfile | null = null;
   photoUrl: string | null = null;
   orders: BookOrder[] = [];
-
   displayName = '';
-  uploadingPhoto = false;
 
-  // Profile form
+  // ── Profile form ─────────────────────────────────────────────────────────
   editForm = { firstName: '', lastName: '', phone: '' };
-  saving = false;
   saveMsg = '';
   saveErr = false;
 
-  // Password form
+  // ── Password form ─────────────────────────────────────────────────────────
   pwForm = { current: '', next: '', confirm: '' };
   showPw = [false, false, false];
   changingPw = false;
   pwMsg = '';
   pwErr = '';
 
-  // Card
+  // ── Card ─────────────────────────────────────────────────────────────────
   card: CardFormData = { cardNumber: '', cardHolder: '', expiry: '' };
-  savingCard = false;
+  newCard: CardFormData = { cardNumber: '', cardHolder: '', expiry: '' };
   cardMsg = '';
   cardErr = '';
 
-  // Settings
+  // ── Settings ─────────────────────────────────────────────────────────────
   subscribed = false;
   showDeleteModal = false;
   deleting = false;
+  uploadingPhoto = false;
 
-  @ViewChild('photoInput') photoInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('photoInput', { static: false })
+  photoInput!: ElementRef<HTMLInputElement>;
 
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
-
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadUser();
     this.loadPhoto();
-    this.loadOrders();
   }
 
-  // ── Loaders ────────────────────────────────────────────────────────────────
-
+  // ── Loaders ───────────────────────────────────────────────────────────────
   private loadUser(): void {
     this.svc.getUser().subscribe({
       next: (u) => {
-        this.user = u;
-        this.displayName = `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || u.email;
-        this.editForm = {
-          firstName: u.firstName ?? '',
-          lastName: u.lastName ?? '',
-          phone: u.phone ?? '',
-        };
-        this.subscribed = u.subscribed ?? false;
-        if (u.cardNumber) {
-          this.card = {
-            cardNumber: u.cardNumber,
-            cardHolder: u.cardHolder ?? '',
-            expiry: u.expiry ?? '',
-          };
-        }
+        this.zone.run(() => {
+          this.user = u;
+          const parts = (u.fullName ?? '').trim().split(/\s+/);
+          const firstName = parts[0] ?? '';
+          const lastName = parts.slice(1).join(' ');
+
+          this.displayName = u.fullName?.trim() || u.email;
+          this.editForm = { firstName, lastName, phone: u.phone ?? '' };
+          this.subscribed = u.isSubscribed ?? false;
+          this.orders = (u as any).payments ?? [];
+
+          if (u.savedCardMasked) {
+            this.card = {
+              cardNumber: u.savedCardMasked,
+              cardHolder: u.savedCardHolder ?? '',
+              expiry: u.savedCardExpiry ?? '',
+            };
+          }
+          this.loader.set(false);
+        });
       },
-      error: () => this.router.navigate(['/login']),
+      error: () => {
+        this.zone.run(() => this.loader.set(false));
+        this.logout();
+      },
     });
   }
 
   private loadPhoto(): void {
     this.svc.getPhoto().subscribe({
       next: (url) => {
-        this.photoUrl = url || null;
+        this.zone.run(() => {
+          this.photoUrl = url ? url + '?t=' + Date.now() : null;
+        });
       },
       error: () => {
-        this.photoUrl = null;
+        this.zone.run(() => {
+          this.photoUrl = null;
+        });
       },
     });
   }
 
-  private loadOrders(): void {
-    this.svc.getOrders().subscribe({
-      next: (orders) => {
-        this.orders = orders;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-  }
-  // ── Photo ──────────────────────────────────────────────────────────────────
-
+  // ── Photo ─────────────────────────────────────────────────────────────────
   triggerPhoto(): void {
-    this.photoInput.nativeElement.click();
+    this.photoInput?.nativeElement.click();
   }
 
   onPhoto(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+
+    // ანგარიში — local preview FileReader-ით, ეგრევე ჩანდეს
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.zone.run(() => {
+        this.photoUrl = e.target?.result as string;
+      });
+    };
+    reader.readAsDataURL(file);
+
     this.uploadingPhoto = true;
+
     this.svc.uploadPhoto(file).subscribe({
-      next: () => {
-        this.loadPhoto();
-        this.uploadingPhoto = false;
+      next: (imageUrl) => {
+        this.zone.run(() => {
+          this.uploadingPhoto = false;
+          // server-ის რეალური URL + cache-busting timestamp
+          this.photoUrl = imageUrl + '?t=' + Date.now();
+        });
       },
       error: (err) => {
+        this.zone.run(() => {
+          this.uploadingPhoto = false;
+        });
         alert(err.message);
-        this.uploadingPhoto = false;
       },
     });
+
+    (event.target as HTMLInputElement).value = '';
   }
 
-  // ── Profile ────────────────────────────────────────────────────────────────
-
+  // ── Profile ───────────────────────────────────────────────────────────────
   saveProfile(): void {
     if (!this.editForm.firstName.trim()) {
       this.saveMsg = 'First name is required.';
       this.saveErr = true;
       return;
     }
-    this.saving = true;
-    this.saveMsg = '';
+
+    const newDisplayName =
+      `${this.editForm.firstName.trim()} ${this.editForm.lastName.trim()}`.trim();
+    const prevDisplayName = this.displayName;
+    const prevUser = this.user;
+
+    this.displayName = newDisplayName;
+    if (this.user) {
+      this.user = { ...this.user, fullName: newDisplayName, phone: this.editForm.phone };
+    }
+    this.saveMsg = 'Changes saved.';
     this.saveErr = false;
+
     this.svc.updateProfile(this.editForm).subscribe({
-      next: () => {
-        this.saving = false;
-        this.saveMsg = 'Changes saved.';
-        this.displayName = `${this.editForm.firstName} ${this.editForm.lastName}`.trim();
-      },
+      next: () => {},
       error: (err) => {
-        this.saving = false;
         this.saveMsg = err.message;
         this.saveErr = true;
+        this.displayName = prevDisplayName;
+        this.user = prevUser;
       },
     });
   }
 
-  // ── Password ───────────────────────────────────────────────────────────────
-
+  // ── Password ──────────────────────────────────────────────────────────────
   changePassword(): void {
     this.pwErr = '';
     this.pwMsg = '';
+
     if (!this.pwForm.current) {
       this.pwErr = 'Enter your current password.';
       return;
     }
     if (this.pwForm.next.length < 8) {
-      this.pwErr = 'Password must be at least 8 characters.';
+      this.pwErr = 'New password must be at least 8 characters.';
       return;
     }
     if (this.pwForm.next !== this.pwForm.confirm) {
@@ -230,64 +274,72 @@ export class Profile implements OnInit {
       return;
     }
 
-    this.changingPw = true;
-    this.svc.changePassword(this.pwForm.current, this.pwForm.next).subscribe({
-      next: () => {
-        this.changingPw = false;
-        this.pwMsg = 'Password updated.';
-        this.pwForm = { current: '', next: '', confirm: '' };
-      },
+    const saved = { ...this.pwForm };
+    this.pwForm = { current: '', next: '', confirm: '' };
+    this.showPw = [false, false, false];
+
+    this.pwMsg = 'Password updated successfully.';
+
+    this.svc.changePassword(saved.current, saved.next).subscribe({
+      next: () => {},
       error: (err) => {
-        this.changingPw = false;
+        this.pwMsg = '';
         this.pwErr = err.message;
+        this.pwForm = saved;
       },
     });
   }
-
-  // ── Card ───────────────────────────────────────────────────────────────────
-
+  // ── Card ─────────────────────────────────────────────────────────────────
   saveCard(): void {
     this.cardMsg = '';
     this.cardErr = '';
-    const raw = this.card.cardNumber.replace(/\s/g, '');
+
+    const raw = this.newCard.cardNumber.replace(/\s/g, '');
     if (raw.length !== 16 || !/^\d+$/.test(raw)) {
       this.cardErr = 'Enter a valid 16-digit card number.';
       return;
     }
-    if (!this.card.expiry.match(/^\d{2}\/\d{2}$/)) {
+    if (!this.newCard.expiry.match(/^\d{2}\/\d{2}$/)) {
       this.cardErr = 'Enter expiry as MM/YY.';
       return;
     }
-    if (!this.card.cardHolder.trim()) {
+    if (!this.newCard.cardHolder.trim()) {
       this.cardErr = 'Enter the cardholder name.';
       return;
     }
-    this.savingCard = true;
-    this.svc.saveCard(this.card).subscribe({
-      next: () => {
-        this.savingCard = false;
-        this.cardMsg = 'Card saved.';
-      },
+
+    const prevCard = { ...this.card };
+    const toSave = { ...this.newCard };
+
+    this.card = { ...toSave };
+    this.newCard = { cardNumber: '', cardHolder: '', expiry: '' };
+    this.cardMsg = 'Card saved successfully.';
+
+    this.svc.saveCard(toSave).subscribe({
+      next: () => {},
       error: (err) => {
-        this.savingCard = false;
+        this.card = prevCard;
+        this.newCard = { ...toSave };
+        this.cardMsg = '';
         this.cardErr = err.message;
       },
     });
   }
 
   removeCard(): void {
+    const prevCard = { ...this.card };
+    this.card = { cardNumber: '', cardHolder: '', expiry: '' };
+    this.newCard = { cardNumber: '', cardHolder: '', expiry: '' };
+    this.cardMsg = '';
+
     this.svc.removeCard().subscribe({
-      next: () => {
-        this.card = { cardNumber: '', cardHolder: '', expiry: '' };
-        this.cardMsg = 'Card removed.';
-      },
+      next: () => {},
       error: (err) => {
+        this.card = prevCard;
         this.cardErr = err.message;
       },
     });
   }
-
-  // ── Card formatting helpers ────────────────────────────────────────────────
 
   formatCard(n: string): string {
     return n
@@ -300,7 +352,7 @@ export class Profile implements OnInit {
     const el = event.target as HTMLInputElement;
     const raw = el.value.replace(/\D/g, '').slice(0, 16);
     el.value = raw.replace(/(.{4})/g, '$1 ').trim();
-    this.card.cardNumber = el.value;
+    this.newCard.cardNumber = el.value;
   }
 
   formatExpiry(event: Event): void {
@@ -308,30 +360,30 @@ export class Profile implements OnInit {
     let raw = el.value.replace(/\D/g, '').slice(0, 4);
     if (raw.length > 2) raw = raw.slice(0, 2) + '/' + raw.slice(2);
     el.value = raw;
-    this.card.expiry = raw;
+    this.newCard.expiry = raw;
   }
 
-  // ── Newsletter ─────────────────────────────────────────────────────────────
-
+  // ── Newsletter ────────────────────────────────────────────────────────────
   toggleNewsletter(): void {
+    this.subscribed = !this.subscribed;
     const action$ = this.subscribed
-      ? this.svc.unsubscribeNewsletter()
-      : this.svc.subscribeNewsletter();
+      ? this.svc.subscribeNewsletter()
+      : this.svc.unsubscribeNewsletter();
     action$.subscribe({
-      next: () => {
+      next: () => {},
+      error: (err) => {
         this.subscribed = !this.subscribed;
+        alert(err.message);
       },
-      error: (err) => alert(err.message),
     });
   }
 
-  // ── Account deletion ───────────────────────────────────────────────────────
-
+  // ── Account deletion ──────────────────────────────────────────────────────
   deleteAccount(): void {
     this.deleting = true;
     this.svc.deleteUser().subscribe({
       next: () => {
-        localStorage.clear();
+        this.svc.clearAuth();
         this.router.navigate(['/']);
       },
       error: (err) => {
@@ -341,10 +393,11 @@ export class Profile implements OnInit {
     });
   }
 
-  // ── Auth ───────────────────────────────────────────────────────────────────
-
+  // ── Logout ────────────────────────────────────────────────────────────────
+  // clearAuth() + navigate synchronously — profile page ვეღარ დარჩება
   logout(): void {
-    localStorage.clear();
-    this.router.navigate(['/login']);
+    this.svc.clearAuth();
+    // replaceUrl: true — back button-ით profile-ზე დაბრუნება შეუძლებელია
+    this.router.navigate(['/auth'], { replaceUrl: true });
   }
 }

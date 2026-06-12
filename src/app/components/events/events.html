@@ -1,3 +1,24 @@
+
+@if (toastVisible()) {
+  <div class="cart-toast" [class.cart-toast--error]="!toastBook()" (click)="dismissToast()">
+    @if (toastBook()) {
+      <div class="cart-toast__img-wrap">
+        <img [src]="toastBook()!.bookUrl" [alt]="toastBook()!.title" class="cart-toast__img" />
+      </div>
+      <div class="cart-toast__body">
+        <p class="cart-toast__label">Added to cart</p>
+        <p class="cart-toast__title">{{ toastBook()!.title }}</p>
+        <p class="cart-toast__price">${{ toastBook()!.price }}</p>
+      </div>
+      <svg class="cart-toast__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    } @else {
+      <span class="cart-toast__err-icon">✕</span>
+      <p class="cart-toast__label">Failed to add item</p>
+    }
+  </div>
+}
 <!-- Auth Modal -->
 @if (showAuthModal()) {
 <div class="auth-modal-overlay" (click)="closeModal()">

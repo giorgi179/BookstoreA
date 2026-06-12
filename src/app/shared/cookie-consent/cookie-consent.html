@@ -1,0 +1,20 @@
+<div class="cookie-consent" *ngIf="visible">
+  <div class="cookie-consent__inner">
+    <div class="cookie-consent__text">
+      <h4>No Access to Cookie Files</h4>
+      <p>
+        We use cookie files to ensure the website functions correctly and to
+        improve your experience.
+      </p>
+    </div>
+
+    <div class="cookie-consent__actions">
+      <button class="cookie-consent__btn cookie-consent__btn--ghost" (click)="managePreferences()">
+        Manage
+      </button>
+      <button class="cookie-consent__btn cookie-consent__btn--primary" (click)="acceptAll()">
+        Accept All
+      </button>
+    </div>
+  </div>
+</div>
