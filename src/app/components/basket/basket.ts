@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil, forkJoin, switchMap, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { Loader } from '../loader/loader';
 import { BasketService } from '../../service/basket';
@@ -96,8 +97,9 @@ export class BasketComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(): void {
+    // CVV არ არის required — შენახული ბარათით გადახდისას backend-ი CVV-ს არ ითხოვს.
+    // Delivery address კი საჭიროა.
     this.checkoutForm = this.fb.group({
-      cvv:          ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
       exactAddress: ['', [Validators.required, Validators.minLength(5)]],
     });
   }
@@ -161,23 +163,20 @@ export class BasketComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ── Checkout entry point ──────────────────────────────────────────
+  // ── Checkout entry point ───────────────────────────────────────────────────
   checkout(): void {
     if (this.checkingOut() || this.allItems.length === 0) return;
     this.checkingOut.set(true);
     this.payError.set('');
+
+    // შევინახოთ items + total (price-ითაც) — /card გვერდსაც სჭირდება
+    this.saveCheckoutState();
 
     this.paymentSvc.getSavedCard()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (card) => {
           this.checkingOut.set(false);
-          // ყოველთვის შევინახოთ items და total — /card გვერდსაც სჭირდება
-          localStorage.setItem('checkoutTotal', String(this.subtotal));
-          localStorage.setItem(
-            'checkoutItems',
-            JSON.stringify(this.allItems.map(i => ({ bookId: i.bookId, quantity: i.quantity }))),
-          );
           if (!card) {
             this.router.navigate(['/card']);
           } else {
@@ -188,14 +187,24 @@ export class BasketComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.checkingOut.set(false);
-          localStorage.setItem('checkoutTotal', String(this.subtotal));
-          localStorage.setItem(
-            'checkoutItems',
-            JSON.stringify(this.allItems.map(i => ({ bookId: i.bookId, quantity: i.quantity }))),
-          );
           this.router.navigate(['/card']);
         },
       });
+  }
+
+  /** შეინახე კალათის მდგომარეობა localStorage-ში checkout flow-სთვის */
+  private saveCheckoutState(): void {
+    localStorage.setItem('checkoutTotal', String(this.subtotal));
+    localStorage.setItem(
+      'checkoutItems',
+      JSON.stringify(
+        this.allItems.map(i => ({
+          bookId:   i.bookId,
+          quantity: i.quantity,
+          price:    i.price,   // ← unit price — per-item amount-ისთვის
+        })),
+      ),
+    );
   }
 
   closeModal(): void {
@@ -206,11 +215,11 @@ export class BasketComponent implements OnInit, OnDestroy {
 
   useDifferentCard(): void {
     this.showCheckoutModal.set(false);
-    localStorage.setItem('checkoutTotal', String(this.subtotal));
+    this.saveCheckoutState();
     this.router.navigate(['/card']);
   }
 
-  // ── Pay with saved card ───────────────────────────────────────────
+  // ── Pay with saved card ───────────────────────────────────────────────────
   confirmPay(): void {
     if (this.checkoutForm.invalid) {
       this.checkoutForm.markAllAsTouched();
@@ -222,37 +231,65 @@ export class BasketComponent implements OnInit, OnDestroy {
     this.paying.set(true);
     this.payError.set('');
 
-    const { cvv, exactAddress } = this.checkoutForm.value;
+    const { exactAddress } = this.checkoutForm.value;
     const itemsSnapshot = [...this.allItems];
+    const total = this.subtotal;
 
-    // 1. გადახდა
-    this.paymentSvc.payWithSaved(card, cvv, exactAddress, this.subtotal)
+    // ── Step 1: გადახდა — თითოეული book-ისთვის ცალკე call bookId-ით ──────
+    //
+    // API: POST /api/Payment/pay?userId&bookId&cardNumber&cardHolderName
+    //                           &expiryDate&cvv&exactAddress&amount
+    //
+    // შენახული ბარათით გადახდისას CVV-ი "000"-ით ივსება,
+    // რადგან backend-ი masked ბარათისთვის CVV-ს არ ამოწმებს.
+    const SAVED_CARD_CVV = '000';
+
+    const paymentCalls = itemsSnapshot.length > 0
+      ? itemsSnapshot.map(item =>
+          this.paymentSvc.pay(
+            card.cardNumber,
+            card.cardHolderName,
+            card.expiryDate,
+            SAVED_CARD_CVV,
+            exactAddress,
+            item.price * item.quantity,   // ← ზუსტი თანხა item-ისთვის
+            item.bookId,                  // ← bookId — purchases-ში გამოჩნდება
+          )
+        )
+      : [
+          this.paymentSvc.pay(
+            card.cardNumber, card.cardHolderName, card.expiryDate,
+            SAVED_CARD_CVV, exactAddress, total,
+          ),
+        ];
+
+    forkJoin(paymentCalls)
       .pipe(
         takeUntil(this.destroy$),
-        // 2. გადახდა წარმატებულია → თითოეული item-ისთვის delete-stuck-erti
+
+        // ── Step 2: stock შემცირება ────────────────────────────────────────
         switchMap(() => {
           const stockCalls = itemsSnapshot.map(item =>
             this.svc.decreaseStock(item.bookId, this.email, item.quantity)
+              .pipe(catchError(() => of(null))),  // ერთი შეცდომა სხვებს არ შეაჩერებს
           );
-          // stockCalls-ი ვერ ჩავარდება მთლიანად — forkJoin შეცდომაზეც გაგრძელდება
-          return stockCalls.length > 0
-            ? forkJoin(stockCalls.map(c => c.pipe(
-                // ერთი item-ის შეცდომა სხვებს არ უნდა შეაჩეროს
-                takeUntil(this.destroy$),
-              )))
-            : of([]);
+          return stockCalls.length > 0 ? forkJoin(stockCalls) : of([]);
         }),
+
+        // ── Step 3: კალათის გასუფთავება ───────────────────────────────────
+        switchMap(() => this.svc.clearBasket().pipe(catchError(() => of(null)))),
       )
       .subscribe({
         next: () => {
           this.paying.set(false);
           this.showCheckoutModal.set(false);
-          // კალათის გასუფთავება
+          localStorage.removeItem('checkoutItems');
+          localStorage.removeItem('checkoutTotal');
           this.qtySubjects.forEach(s => s.complete());
           this.qtySubjects.clear();
-          this.svc.clearBasket().subscribe();
           this.groups = [];
-          this.router.navigate(['/basket']);
+          // წარმატებული checkout-ის შემდეგ ბიბლიოთეკაში გადაამისამართე
+          this.router.navigate(['/profile'], { queryParams: { tab: 'library' } });
         },
         error: (e: Error) => {
           this.paying.set(false);

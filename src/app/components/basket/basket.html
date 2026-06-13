@@ -180,19 +180,7 @@
     </div>
     }
 
-    <!-- CVV input -->
-    <div class="bk__modal-field" [class.bk__modal-field--err]="errField('cvv')">
-      <label class="bk__modal-lbl">CVV</label>
-      <input class="bk__modal-input" type="password" inputmode="numeric"
-             maxlength="4" placeholder="···"
-             formControlName="cvv"
-             autocomplete="cc-csc"/>
-      @if (errField('cvv')) {
-        <span class="bk__modal-err">3 or 4 digits required.</span>
-      }
-    </div>
-
-    <!-- Address input -->
+    <!-- Delivery address — CVV არ ითხოვება შენახული ბარათისთვის -->
     <div class="bk__modal-field" [class.bk__modal-field--err]="errField('exactAddress')">
       <label class="bk__modal-lbl">Delivery Address</label>
       <input class="bk__modal-input" type="text"

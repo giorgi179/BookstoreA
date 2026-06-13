@@ -17,6 +17,12 @@ import { BasketService } from '../../service/basket';
 
 export type CardView = 'loading' | 'form' | 'success';
 
+interface CheckoutItem {
+  bookId: number;
+  quantity: number;
+  price: number; // unit price — needed for per-book amount
+}
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -48,8 +54,17 @@ export class Card implements OnInit, OnDestroy {
   savedCard = signal<SavedCard | null>(null);
   errorMsg = signal('');
 
+  // ── Checkout data ─────────────────────────────────────────────────────────
   get totalAmount(): number {
     return Number(localStorage.getItem('checkoutTotal') ?? 0);
+  }
+
+  private get checkoutItems(): CheckoutItem[] {
+    try {
+      return JSON.parse(localStorage.getItem('checkoutItems') ?? '[]');
+    } catch {
+      return [];
+    }
   }
 
   private get email(): string {
@@ -58,12 +73,10 @@ export class Card implements OnInit, OnDestroy {
 
   form!: FormGroup;
 
+  // ── Card preview getters ──────────────────────────────────────────────────
   get previewNumber(): string {
     const raw = (this.form?.get('cardNumber')?.value ?? '').replace(/\D/g, '');
-    return raw
-      .padEnd(16, '·')
-      .match(/.{1,4}/g)!
-      .join('  ');
+    return raw.padEnd(16, '·').match(/.{1,4}/g)!.join('  ');
   }
   get previewHolder(): string {
     return this.form?.get('cardHolderName')?.value?.toUpperCase() || '';
@@ -87,11 +100,11 @@ export class Card implements OnInit, OnDestroy {
 
   private buildForm(): void {
     this.form = this.fb.group({
-      cardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
+      cardNumber:     ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
       cardHolderName: ['', [Validators.required, Validators.minLength(2)]],
-      expiryDate: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/)]],
-      cvv: ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
-      exactAddress: ['', [Validators.required, Validators.minLength(5)]],
+      expiryDate:     ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/)]],
+      cvv:            ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
+      exactAddress:   ['', [Validators.required, Validators.minLength(5)]],
     });
   }
 
@@ -101,78 +114,81 @@ export class Card implements OnInit, OnDestroy {
       .getSavedCard()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (c) => {
-          this.savedCard.set(c);
-          this.view.set('form');
-        },
-        error: () => {
-          this.savedCard.set(null);
-          this.view.set('form');
-        },
+        next:  (c) => { this.savedCard.set(c); this.view.set('form'); },
+        error: ()  => { this.savedCard.set(null); this.view.set('form'); },
       });
   }
 
-  // ── Save card + pay ────────────────────────────────────────────────────────
+  // ── Payment flow ──────────────────────────────────────────────────────────
   saveCard(): void {
     if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
     }
+
     this.errorMsg.set('');
     this.saving.set(true);
 
     const { cardNumber, cardHolderName, expiryDate, cvv, exactAddress } = this.form.value;
+    const items = this.checkoutItems;
 
-    // localStorage-ში შენახული cart items (basket.ts checkout()-იდან)
-    const items: { bookId: number; quantity: number }[] = JSON.parse(
-      localStorage.getItem('checkoutItems') ?? '[]',
-    );
+    /**
+     * Build one payment call per basket item, each with its own bookId.
+     * Amount per item = unit price × quantity (or falls back to even split).
+     */
+    const buildPaymentCalls = () => {
+      if (items.length === 0) {
+        // No item metadata — single payment without bookId
+        return [
+          this.paymentSvc.pay(
+            cardNumber, cardHolderName, expiryDate,
+            cvv, exactAddress, this.totalAmount,
+          ),
+        ];
+      }
 
-    // 1. ბარათის შენახვა profile-ში
+      return items.map((item) => {
+        // Use per-item price if available, otherwise split total evenly
+        const itemAmount =
+          item.price != null
+            ? item.price * item.quantity
+            : this.totalAmount / items.length;
+
+        return this.paymentSvc.pay(
+          cardNumber,
+          cardHolderName,
+          expiryDate,
+          cvv,
+          exactAddress,
+          itemAmount,
+          item.bookId,   // ← bookId required by API
+        );
+      });
+    };
+
+    // Step 1: save card
     this.paymentSvc
       .saveCard(cardNumber, cardHolderName, expiryDate)
       .pipe(
         takeUntil(this.destroy$),
-        // 2. გადახდა
-        switchMap(() =>
-          this.paymentSvc.pay(
-            cardNumber,
-            cardHolderName,
-            expiryDate,
-            cvv,
-            exactAddress,
-            this.totalAmount,
-          ),
-        ),
-        // 3. stock შემცირება + confirmation email თითოეული item-ისთვის
+
+        // Step 2: pay for each item (parallel, bookId-aware)
+        switchMap(() => forkJoin(buildPaymentCalls())),
+
+        // Step 3: decrease stock per item
         switchMap(() => {
-          if (items.length === 0) {
-            // bookId-ის გარეშე გადახდა (თუ კალათა ცარიელია)
-            return this.paymentSvc.pay(
-              cardNumber,
-              cardHolderName,
-              expiryDate,
-              cvv,
-              exactAddress,
-              this.totalAmount,
-            );
-          }
-          // ✅ თითოეული წიგნისთვის ცალკე payment
-          const paymentCalls = items.map((item) =>
-            this.paymentSvc.pay(
-              cardNumber,
-              cardHolderName,
-              expiryDate,
-              cvv,
-              exactAddress,
-              this.totalAmount / items.length,
-              item.bookId, // ✅ bookId გადადის
-            ),
+          if (items.length === 0) return of([]);
+          const stockCalls = items.map((item) =>
+            this.basketSvc
+              .decreaseStock(item.bookId, this.email, item.quantity)
+              .pipe(catchError(() => of(null))),
           );
-          return forkJoin(paymentCalls);
+          return forkJoin(stockCalls);
         }),
-        // 4. კალათის გასუფთავება
+
+        // Step 4: clear basket
         switchMap(() => this.basketSvc.clearBasket().pipe(catchError(() => of(null)))),
+
         finalize(() => this.saving.set(false)),
       )
       .subscribe({
@@ -188,7 +204,7 @@ export class Card implements OnInit, OnDestroy {
       });
   }
 
-  // ── Remove saved card ──────────────────────────────────────────────────────
+  // ── Remove saved card ─────────────────────────────────────────────────────
   removeCard(): void {
     const card = this.savedCard();
     if (!card || this.deleting()) return;
@@ -196,20 +212,14 @@ export class Card implements OnInit, OnDestroy {
 
     this.paymentSvc
       .deleteCard(card.id)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => this.deleting.set(false)),
-      )
+      .pipe(takeUntil(this.destroy$), finalize(() => this.deleting.set(false)))
       .subscribe({
-        next: () => {
-          this.savedCard.set(null);
-        },
-        error: (e: Error) => {
-          this.errorMsg.set(e.message);
-        },
+        next:  () => { this.savedCard.set(null); },
+        error: (e: Error) => { this.errorMsg.set(e.message); },
       });
   }
 
+  // ── Form helpers ──────────────────────────────────────────────────────────
   err(field: string): boolean {
     const c: AbstractControl | null = this.form.get(field);
     return !!(c?.invalid && c?.touched);
@@ -228,10 +238,6 @@ export class Card implements OnInit, OnDestroy {
     el.value = v;
   }
 
-  onCvvFocus(): void {
-    this.cardFlip.set(true);
-  }
-  onCvvBlur(): void {
-    this.cardFlip.set(false);
-  }
+  onCvvFocus(): void { this.cardFlip.set(true); }
+  onCvvBlur():  void { this.cardFlip.set(false); }
 }

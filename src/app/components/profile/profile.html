@@ -10,32 +10,47 @@
         <div class="pg__avatar-block">
             <div class="pg__avatar-ring">
                 <div class="pg__avatar-arch">
-                    <img [src]="photoUrl || defaultAvatar" alt="avatar" class="pg__avatar-img" />
+                    <img
+                        [src]="photoUrl$() || defaultAvatar"
+                        alt="avatar"
+                        class="pg__avatar-img"
+                        referrerpolicy="no-referrer"
+                    />
                 </div>
-                <button class="pg__avatar-edit" (click)="triggerPhoto()" [disabled]="uploadingPhoto"
-                    title="Change photo">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.2">
-                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
+                <button class="pg__avatar-edit" (click)="triggerPhoto()"
+                    [disabled]="uploadingPhoto" title="Change photo">
+                    @if (uploadingPhoto) {
+                        <span class="pg__spinner pg__spinner--sm"></span>
+                    } @else {
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    }
                 </button>
             </div>
             <input #photoInput type="file" accept="image/*" hidden (change)="onPhoto($event)" />
 
             <div class="pg__identity">
-                <h2 class="pg__name">{{ displayName }}</h2>
-                <p class="pg__email-label">{{ user?.email }}</p>
+                <h2 class="pg__name">{{ displayName$() }}</h2>
+                <p class="pg__email-label">{{ user$()?.email }}</p>
             </div>
         </div>
 
         <!-- Nav -->
         <nav class="pg__nav">
-            <button *ngFor="let item of navItems" class="pg__nav-item" [class.pg__nav-item--active]="tab === item.id"
-                (click)="tab = item.id">
-                <span class="pg__nav-icon" [innerHTML]="item.safeIcon"></span>
-                <span>{{ item.label }}</span>
-            </button>
+            @for (item of navItems; track item.id) {
+                <button class="pg__nav-item"
+                    [class.pg__nav-item--active]="tab$() === item.id"
+                    (click)="tab = item.id">
+                    <span class="pg__nav-icon" [innerHTML]="item.safeIcon"></span>
+                    <span>{{ item.label }}</span>
+                    @if (item.id === 'library' && orders$().length > 0) {
+                        <span class="pg__nav-badge">{{ orders$().length }}</span>
+                    }
+                </button>
+            }
         </nav>
 
         <!-- Logout -->
@@ -53,7 +68,8 @@
     <main class="pg__main">
 
         <!-- ── TAB: Profile ── -->
-        <section class="pg__panel" *ngIf="tab === 'profile'" [@fadeSlide]>
+        @if (tab$() === 'profile') {
+        <section class="pg__panel" [@fadeSlide]>
             <div class="pg__panel-head">
                 <h1 class="pg__panel-title">Personal Information</h1>
                 <p class="pg__panel-sub">Update your name and contact details</p>
@@ -65,36 +81,34 @@
                         <label>First Name</label>
                         <input [(ngModel)]="editForm.firstName" name="firstName" />
                     </div>
-
                     <div class="pg__field">
                         <label>Last Name</label>
                         <input [(ngModel)]="editForm.lastName" name="lastName" />
                     </div>
-
                     <div class="pg__field pg__field--full">
                         <label>Phone</label>
                         <input [(ngModel)]="editForm.phone" name="phone" />
                     </div>
-
                     <div class="pg__field pg__field--full">
                         <label>Email</label>
-                        <input [value]="user?.email" disabled />
+                        <input [value]="user$()?.email" disabled />
                     </div>
                 </div>
-
                 <div class="pg__form-foot">
-                    <span class="pg__msg" [class.pg__msg--err]="saveErr" [class.pg__msg--ok]="!saveErr && saveMsg">
+                    <span class="pg__msg"
+                        [class.pg__msg--err]="saveErr"
+                        [class.pg__msg--ok]="!saveErr && saveMsg">
                         {{ saveMsg }}
                     </span>
-                    <button type="submit" class="pg__btn pg__btn--primary">
-                        Save Changes
-                    </button>
+                    <button type="submit" class="pg__btn pg__btn--primary">Save Changes</button>
                 </div>
             </form>
         </section>
+        }
 
         <!-- ── TAB: Security ── -->
-        <section class="pg__panel" *ngIf="tab === 'security'" [@fadeSlide]>
+        @if (tab$() === 'security') {
+        <section class="pg__panel" [@fadeSlide]>
             <div class="pg__panel-head">
                 <h1 class="pg__panel-title">Password &amp; Security</h1>
                 <p class="pg__panel-sub">Keep your account safe</p>
@@ -102,136 +116,190 @@
 
             <form class="pg__form" (ngSubmit)="changePassword()">
                 <div class="pg__fields">
+                    <input type="text" name="username" [value]="user$()?.email || ''"
+                        autocomplete="username" hidden />
 
-                    <!-- hidden username for browser accessibility -->
-                    <input type="text" name="username" [value]="user?.email || ''" autocomplete="username" hidden />
-
-                    <!-- Current password -->
                     <div class="pg__field pg__field--full">
                         <label>Current Password</label>
                         <div class="pg__pw-wrap">
-                            <input [type]="showPw[0] ? 'text' : 'password'" [(ngModel)]="pwForm.current" name="current"
+                            <input [type]="showPw[0] ? 'text' : 'password'"
+                                [(ngModel)]="pwForm.current" name="current"
                                 placeholder="••••••••" autocomplete="current-password" />
                             <button type="button" class="pg__eye" (click)="showPw[0] = !showPw[0]">
                                 {{ showPw[0] ? '🙈' : '👁' }}
                             </button>
                         </div>
                     </div>
-
-                    <!-- New password -->
                     <div class="pg__field">
                         <label>New Password</label>
                         <div class="pg__pw-wrap">
-                            <input [type]="showPw[1] ? 'text' : 'password'" [(ngModel)]="pwForm.next" name="next"
+                            <input [type]="showPw[1] ? 'text' : 'password'"
+                                [(ngModel)]="pwForm.next" name="next"
                                 placeholder="••••••••" autocomplete="new-password" />
                             <button type="button" class="pg__eye" (click)="showPw[1] = !showPw[1]">
                                 {{ showPw[1] ? '🙈' : '👁' }}
                             </button>
                         </div>
                     </div>
-
-                    <!-- Confirm password -->
                     <div class="pg__field">
                         <label>Confirm Password</label>
                         <div class="pg__pw-wrap">
-                            <input [type]="showPw[2] ? 'text' : 'password'" [(ngModel)]="pwForm.confirm" name="confirm"
+                            <input [type]="showPw[2] ? 'text' : 'password'"
+                                [(ngModel)]="pwForm.confirm" name="confirm"
                                 placeholder="••••••••" autocomplete="new-password" />
                             <button type="button" class="pg__eye" (click)="showPw[2] = !showPw[2]">
                                 {{ showPw[2] ? '🙈' : '👁' }}
                             </button>
                         </div>
                     </div>
-
                 </div>
                 <div class="pg__form-foot">
-                    <span class="pg__msg" [class.pg__msg--err]="pwErr" [class.pg__msg--ok]="pwMsg && !pwErr">
+                    <span class="pg__msg"
+                        [class.pg__msg--err]="pwErr"
+                        [class.pg__msg--ok]="pwMsg && !pwErr">
                         {{ pwErr || pwMsg }}
                     </span>
-                    <button type="submit" class="pg__btn pg__btn--primary">
-                        Update Password
-                    </button>
+                    <button type="submit" class="pg__btn pg__btn--primary">Update Password</button>
                 </div>
             </form>
         </section>
+        }
 
         <!-- ── TAB: Library ── -->
-        <section class="pg__panel" *ngIf="tab === 'library'" [@fadeSlide]>
+        @if (tab$() === 'library') {
+        <section class="pg__panel" [@fadeSlide]>
             <div class="pg__panel-head">
                 <h1 class="pg__panel-title">Your Library</h1>
-                <p class="pg__panel-sub">Books you've purchased</p>
+                <p class="pg__panel-sub">
+                    @if (ordersLoading()) {
+                        Loading your collection…
+                    } @else if (orders$().length > 0) {
+                        {{ orders$().length }} {{ orders$().length === 1 ? 'book' : 'books' }} purchased
+                        &nbsp;·&nbsp;
+                        <span class="pg__panel-total">${{ totalSpent$().toFixed(2) }} total</span>
+                    } @else {
+                        Books you've purchased
+                    }
+                </p>
             </div>
 
-            <div class="pg__empty" *ngIf="orders.length === 0">
+            <!-- Loading skeleton -->
+            @if (ordersLoading()) {
+            <div class="pg__books">
+                @for (s of [1,2,3]; track s) {
+                <div class="pg__book-card pg__book-card--skeleton">
+                    <div class="pg__book-cover pg__skeleton"></div>
+                    <div class="pg__book-meta">
+                        <div class="pg__skeleton pg__skeleton--title"></div>
+                        <div class="pg__skeleton pg__skeleton--sub"></div>
+                        <div class="pg__skeleton pg__skeleton--sub pg__skeleton--short"></div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+
+            <!-- Empty state -->
+            @else if (uniqueOrders$().length === 0) {
+            <div class="pg__empty">
                 <div class="pg__empty-ornament">❧</div>
                 <p>Your collection is empty.</p>
                 <a routerLink="/books" class="pg__btn pg__btn--ghost">Browse Books</a>
             </div>
+            }
 
-            <div class="pg__books" *ngIf="orders.length > 0">
-                <div class="pg__book-card" *ngFor="let b of orders">
-                    <img [src]="b.bookUrl" [alt]="b.title" class="pg__book-cover" />
+            <!-- Books grid -->
+            @else {
+            <div class="pg__books">
+                @for (b of uniqueOrders$(); track b.id + b.isbn) {
+                <div class="pg__book-card" [@cardAppear]>
+                    <div class="pg__book-cover-wrap">
+                        <img [src]="b.bookUrl" [alt]="b.title" class="pg__book-cover"
+                            referrerpolicy="no-referrer"
+                            (error)="b.bookUrl = 'assets/placeholder-book.png'" />
+                    </div>
                     <div class="pg__book-meta">
                         <p class="pg__book-title">{{ b.title }}</p>
                         <p class="pg__book-isbn">ISBN · {{ b.isbn }}</p>
                         <p class="pg__book-price">${{ b.price }}</p>
                     </div>
                 </div>
+                }
             </div>
+
+            <!-- Refresh button -->
+            <button class="pg__refresh-btn" (click)="loadOrders()" [disabled]="ordersLoading()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                </svg>
+                Refresh
+            </button>
+            }
         </section>
+        }
 
         <!-- ── TAB: Payment ── -->
-        <section class="pg__panel" *ngIf="tab === 'payment'" [@fadeSlide]>
+        @if (tab$() === 'payment') {
+        <section class="pg__panel" [@fadeSlide]>
             <div class="pg__panel-head">
                 <h1 class="pg__panel-title">Payment Method</h1>
                 <p class="pg__panel-sub">Save a card for faster checkout</p>
             </div>
 
-            <!-- შენახული ბარათი -->
-            <div class="pg__card-preview" *ngIf="card.cardNumber">
+            <!-- Saved card preview — updates instantly via card$() signal -->
+            @if (card$().cardNumber) {
+            <div class="pg__card-preview" [@cardAppear]>
                 <div class="pg__card-chip"></div>
-                <p class="pg__card-num">{{ formatCard(card.cardNumber) }}</p>
+                <p class="pg__card-num">{{ formatCard(card$().cardNumber) }}</p>
                 <div class="pg__card-foot">
-                    <span class="pg__card-holder">{{ card.cardHolder || '—' }}</span>
-                    <span class="pg__card-exp">{{ card.expiry || '—' }}</span>
+                    <span class="pg__card-holder">{{ card$().cardHolder || '—' }}</span>
+                    <span class="pg__card-exp">{{ card$().expiry || '—' }}</span>
                 </div>
                 <button class="pg__card-remove" (click)="removeCard()" title="Remove card">✕</button>
             </div>
+            }
 
-            <!-- ფორმის სათაური -->
-            <p class="pg__form-label" *ngIf="card.cardNumber">Replace card</p>
-            <p class="pg__form-label" *ngIf="!card.cardNumber">Add a card</p>
+            <p class="pg__form-label">{{ card$().cardNumber ? 'Replace card' : 'Add a card' }}</p>
 
             <form class="pg__form" (ngSubmit)="saveCard()">
                 <div class="pg__fields">
                     <div class="pg__field pg__field--full">
                         <label>Card Number</label>
-                        <input [(ngModel)]="newCard.cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456"
-                            maxlength="19" (input)="formatCardInput($event)" autocomplete="cc-number" />
+                        <input [(ngModel)]="newCard.cardNumber" name="cardNumber"
+                            placeholder="1234 5678 9012 3456" maxlength="19"
+                            (input)="formatCardInput($event)" autocomplete="cc-number" />
                     </div>
                     <div class="pg__field">
                         <label>Cardholder Name</label>
-                        <input [(ngModel)]="newCard.cardHolder" name="cardHolder" placeholder="FULL NAME"
-                            autocomplete="cc-name" />
+                        <input [(ngModel)]="newCard.cardHolder" name="cardHolder"
+                            placeholder="FULL NAME" autocomplete="cc-name" />
                     </div>
                     <div class="pg__field">
                         <label>Expiry</label>
-                        <input [(ngModel)]="newCard.expiry" name="expiry" placeholder="MM/YY" maxlength="5"
+                        <input [(ngModel)]="newCard.expiry" name="expiry"
+                            placeholder="MM/YY" maxlength="5"
                             (input)="formatExpiry($event)" autocomplete="cc-exp" />
                     </div>
                 </div>
                 <div class="pg__form-foot">
-                    <span class="pg__msg" [class.pg__msg--err]="cardErr" [class.pg__msg--ok]="cardMsg && !cardErr">
+                    <span class="pg__msg"
+                        [class.pg__msg--err]="cardErr"
+                        [class.pg__msg--ok]="cardMsg && !cardErr">
                         {{ cardErr || cardMsg }}
                     </span>
                     <button type="submit" class="pg__btn pg__btn--primary">
-                        {{ card.cardNumber ? 'Replace Card' : 'Save Card' }}
+                        {{ card$().cardNumber ? 'Replace Card' : 'Save Card' }}
                     </button>
                 </div>
             </form>
         </section>
+        }
 
         <!-- ── TAB: Settings ── -->
-        <section class="pg__panel" *ngIf="tab === 'settings'" [@fadeSlide]>
+        @if (tab$() === 'settings') {
+        <section class="pg__panel" [@fadeSlide]>
             <div class="pg__panel-head">
                 <h1 class="pg__panel-title">Preferences</h1>
                 <p class="pg__panel-sub">Notifications and account options</p>
@@ -241,9 +309,11 @@
                 <div class="pg__setting">
                     <div class="pg__setting-info">
                         <p class="pg__setting-name">Newsletter</p>
-                        <p class="pg__setting-desc">New releases, events, and author notes delivered to your inbox.</p>
+                        <p class="pg__setting-desc">New releases, events, and author notes
+                            delivered to your inbox.</p>
                     </div>
-                    <button class="pg__toggle" [class.pg__toggle--on]="subscribed" (click)="toggleNewsletter()">
+                    <button class="pg__toggle" [class.pg__toggle--on]="subscribed"
+                        (click)="toggleNewsletter()">
                         <span class="pg__toggle-knob"></span>
                     </button>
                 </div>
@@ -251,17 +321,21 @@
 
             <div class="pg__danger-zone">
                 <h3 class="pg__danger-title">Danger Zone</h3>
-                <p class="pg__danger-desc">Permanently delete your account and all data. This action cannot be undone.
-                </p>
-                <button class="pg__btn pg__btn--danger" (click)="showDeleteModal = true">Delete Account</button>
+                <p class="pg__danger-desc">Permanently delete your account and all data.
+                    This action cannot be undone.</p>
+                <button class="pg__btn pg__btn--danger" (click)="showDeleteModal = true">
+                    Delete Account
+                </button>
             </div>
         </section>
+        }
 
     </main>
 </div>
 
 <!-- ═══ Delete Confirm Modal ═══ -->
-<div class="pg__backdrop" *ngIf="showDeleteModal" (click)="showDeleteModal = false">
+@if (showDeleteModal) {
+<div class="pg__backdrop" (click)="showDeleteModal = false">
     <div class="pg__modal" (click)="$event.stopPropagation()">
         <div class="pg__modal-ornament">❧</div>
         <h3 class="pg__modal-title">Delete account?</h3>
@@ -271,10 +345,11 @@
         <div class="pg__modal-actions">
             <button class="pg__btn pg__btn--ghost" (click)="showDeleteModal = false">Cancel</button>
             <button class="pg__btn pg__btn--danger" (click)="deleteAccount()" [disabled]="deleting">
-                <span *ngIf="deleting" class="pg__spinner"></span>
-                <span *ngIf="!deleting">Yes, delete</span>
+                @if (deleting) { <span class="pg__spinner"></span> }
+                @else { Yes, delete }
             </button>
         </div>
     </div>
 </div>
+}
 }
