@@ -1,22 +1,22 @@
 @use '../../../styles/variables' as vars;
 
 // ─── tokens ──────────────────────────────────────────────────────────────────
-$cream      : #f0e8c8;
-$cream-60   : rgba(240, 232, 200, 0.6);
-$cream-40   : rgba(240, 232, 200, 0.4);
-$cream-20   : rgba(240, 232, 200, 0.2);
-$cream-10   : rgba(240, 232, 200, 0.1);
-$card       : #1a1a12;
-$card-deep  : #0d0d0b;
-$border     : rgba(240, 232, 200, 0.18);
-$danger     : #c0392b;
+$cream: #f0e8c8;
+$cream-60: rgba(240, 232, 200, 0.6);
+$cream-40: rgba(240, 232, 200, 0.4);
+$cream-20: rgba(240, 232, 200, 0.2);
+$cream-10: rgba(240, 232, 200, 0.1);
+$card: #1a1a12;
+$card-deep: #0d0d0b;
+$border: rgba(240, 232, 200, 0.18);
+$danger: #c0392b;
 
 // ─── breakpoints ─────────────────────────────────────────────────────────────
-$bp-xl  : 960px;
-$bp-md  : 768px;
-$bp-sm  : 600px;
-$bp-xs  : 480px;
-$bp-xxs : 320px;
+$bp-xl: 960px;
+$bp-md: 768px;
+$bp-sm: 600px;
+$bp-xs: 480px;
+$bp-xxs: 320px;
 
 // ─── shell ───────────────────────────────────────────────────────────────────
 .bk {
@@ -27,9 +27,15 @@ $bp-xxs : 320px;
   padding: 80px;
   box-sizing: border-box;
 
-  @media (max-width: $bp-md)  { padding: 48px 24px; }
-  @media (max-width: $bp-xs)  { padding: 52px 16px; }
-  @media (max-width: $bp-xxs) { padding: 84px 12px; }
+  @media (max-width: $bp-md) {
+    padding: 48px 24px;
+  }
+  @media (max-width: $bp-xs) {
+    padding: 52px 16px;
+  }
+  @media (max-width: $bp-xxs) {
+    padding: 84px 12px;
+  }
 }
 
 .bk__loader {
@@ -71,7 +77,10 @@ $bp-xxs : 320px;
     width: 72px;
     height: 72px;
 
-    svg { width: 36px; height: 36px; }
+    svg {
+      width: 36px;
+      height: 36px;
+    }
   }
 }
 
@@ -97,9 +106,15 @@ $bp-xxs : 320px;
   padding: 60px 40px 80px;
   box-sizing: border-box;
 
-  @media (max-width: $bp-md)  { padding: 36px 20px 60px; }
-  @media (max-width: $bp-xs)  { padding: 24px 0 40px; }
-  @media (max-width: $bp-xxs) { padding: 16px 0 32px; }
+  @media (max-width: $bp-md) {
+    padding: 36px 20px 60px;
+  }
+  @media (max-width: $bp-xs) {
+    padding: 24px 0 40px;
+  }
+  @media (max-width: $bp-xxs) {
+    padding: 16px 0 32px;
+  }
 }
 
 // ─── header ──────────────────────────────────────────────────────────────────
@@ -134,11 +149,16 @@ $bp-xxs : 320px;
   margin-bottom: 10px;
   transition: color 200ms;
 
-  svg { transition: transform 200ms; flex-shrink: 0; }
+  svg {
+    transition: transform 200ms;
+    flex-shrink: 0;
+  }
 
   &:hover {
     color: vars.$text-dark;
-    svg { transform: translateX(-3px); }
+    svg {
+      transform: translateX(-3px);
+    }
   }
 }
 
@@ -170,7 +190,9 @@ $bp-xxs : 320px;
     gap: 32px;
   }
 
-  @media (max-width: $bp-xxs) { gap: 24px; }
+  @media (max-width: $bp-xxs) {
+    gap: 24px;
+  }
 }
 
 // ─── list ────────────────────────────────────────────────────────────────────
@@ -191,7 +213,10 @@ $bp-xxs : 320px;
   position: relative;
   transition: opacity 300ms;
 
-  &--removing { opacity: 0.4; pointer-events: none; }
+  &--removing {
+    opacity: 0.4;
+    pointer-events: none;
+  }
 
   @media (max-width: $bp-sm) {
     grid-template-columns: auto 1fr;
@@ -216,8 +241,12 @@ $bp-xxs : 320px;
   flex-shrink: 0;
   align-self: start;
 
-  @media (max-width: $bp-xs)  { padding: 10px; }
-  @media (max-width: $bp-xxs) { padding: 8px; }
+  @media (max-width: $bp-xs) {
+    padding: 10px;
+  }
+  @media (max-width: $bp-xxs) {
+    padding: 8px;
+  }
 }
 
 .bk__cover {
@@ -226,8 +255,14 @@ $bp-xxs : 320px;
   height: 104px;
   object-fit: cover;
 
-  @media (max-width: $bp-xs)  { width: 56px; height: 80px; }
-  @media (max-width: $bp-xxs) { width: 46px; height: 66px; }
+  @media (max-width: $bp-xs) {
+    width: 56px;
+    height: 80px;
+  }
+  @media (max-width: $bp-xxs) {
+    width: 46px;
+    height: 66px;
+  }
 }
 
 .bk__meta {
@@ -236,7 +271,9 @@ $bp-xxs : 320px;
   gap: 5px;
   min-width: 0;
 
-  @media (max-width: $bp-xxs) { gap: 3px; }
+  @media (max-width: $bp-xxs) {
+    gap: 3px;
+  }
 }
 
 .bk__book-title {
@@ -309,11 +346,16 @@ $bp-xxs : 320px;
   border: 1px solid $border;
   color: $cream;
   cursor: pointer;
-  transition: border-color 200ms, background 200ms;
+  transition:
+    border-color 200ms,
+    background 200ms;
   // solid touch target on mobile
   min-width: 30px;
 
-  &:hover { border-color: $cream-60; background: rgba(240,232,200,0.06); }
+  &:hover {
+    border-color: $cream-60;
+    background: rgba(240, 232, 200, 0.06);
+  }
 
   @media (max-width: $bp-xxs) {
     width: 28px;
@@ -321,7 +363,66 @@ $bp-xxs : 320px;
     min-width: 28px;
   }
 }
+// ── confirm panel ──────────────────────────────────────────────────────────
+.bk__confirm-panel {
+  background: #1a1a12;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+}
 
+.bk__confirm-sub {
+  font-style: italic;
+  color: rgba(240, 232, 200, 0.5);
+  font-size: 15px;
+  margin: 0;
+}
+
+.bk__label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(240, 232, 200, 0.4);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.bk__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.bk__input {
+  background: rgba(240, 232, 200, 0.04);
+  border: 1px solid rgba(240, 232, 200, 0.18);
+  color: rgba(240, 232, 200, 0.9);
+  font-size: 1rem;
+  padding: 11px 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 200ms;
+
+  &::placeholder {
+    color: rgba(240, 232, 200, 0.2);
+  }
+  &:focus {
+    border-color: rgba(200, 184, 122, 0.6);
+  }
+
+  &--ta {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+.bk__pay-err {
+  color: #c0392b;
+  font-size: 13px;
+  margin: 0;
+}
 .bk__qty-val {
   font-family: vars.$font-display;
   font-size: 1.1rem;
@@ -329,7 +430,9 @@ $bp-xxs : 320px;
   min-width: 20px;
   text-align: center;
 
-  @media (max-width: $bp-xxs) { font-size: 1rem; }
+  @media (max-width: $bp-xxs) {
+    font-size: 1rem;
+  }
 }
 
 // ─── remove button ───────────────────────────────────────────────────────────
@@ -344,12 +447,17 @@ $bp-xxs : 320px;
   font-size: clamp(11px, 2.5vw, 13px);
   padding: 6px 14px;
   cursor: pointer;
-  transition: color 200ms, border-color 200ms;
+  transition:
+    color 200ms,
+    border-color 200ms;
   white-space: nowrap;
   align-self: start;
   min-height: 36px;
 
-  &:hover { color: $cream; border-color: $cream-40; }
+  &:hover {
+    color: $cream;
+    border-color: $cream-40;
+  }
 
   @media (max-width: $bp-sm) {
     grid-column: 1 / -1;
@@ -377,8 +485,13 @@ $bp-xxs : 320px;
     position: static; // don't sticky when stacked
   }
 
-  @media (max-width: $bp-xs)  { padding: 24px 20px; }
-  @media (max-width: $bp-xxs) { padding: 20px 14px; gap: 10px; }
+  @media (max-width: $bp-xs) {
+    padding: 24px 20px;
+  }
+  @media (max-width: $bp-xxs) {
+    padding: 20px 14px;
+    gap: 10px;
+  }
 }
 
 .bk__sum-title {
@@ -396,9 +509,15 @@ $bp-xxs : 320px;
   overflow-y: auto;
   padding-right: 4px;
 
-  &::-webkit-scrollbar { width: 3px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: $border; }
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+  }
 }
 
 .bk__sum-row {
@@ -415,7 +534,9 @@ $bp-xxs : 320px;
     text-overflow: ellipsis;
     max-width: 180px;
 
-    @media (max-width: $bp-xxs) { max-width: 140px; }
+    @media (max-width: $bp-xxs) {
+      max-width: 140px;
+    }
   }
 }
 
@@ -433,7 +554,9 @@ $bp-xxs : 320px;
   color: $cream-60;
 }
 
-.bk__free { color: #7ec88a; }
+.bk__free {
+  color: #7ec88a;
+}
 
 .bk__sum-total {
   display: flex;
@@ -458,23 +581,36 @@ $bp-xxs : 320px;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: opacity 200ms, transform 200ms, border-color 200ms, color 200ms;
+  transition:
+    opacity 200ms,
+    transform 200ms,
+    border-color 200ms,
+    color 200ms;
   min-height: 44px; // touch target
   box-sizing: border-box;
 
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
   &--primary {
     background: $cream;
     color: $card;
-    &:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    &:hover:not(:disabled) {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
   }
 
   &--ghost {
     background: transparent;
     border: 1px solid $border;
     color: $cream-60;
-    &:hover:not(:disabled) { border-color: $cream-40; color: $cream; }
+    &:hover:not(:disabled) {
+      border-color: $cream-40;
+      color: $cream;
+    }
   }
 
   @media (max-width: $bp-xxs) {
@@ -483,14 +619,19 @@ $bp-xxs : 320px;
   }
 }
 
-.bk__checkout { width: 100%; }
-.bk__continue { width: 100%; text-align: center; }
+.bk__checkout {
+  width: 100%;
+}
+.bk__continue {
+  width: 100%;
+  text-align: center;
+}
 
 .bk__clear {
   padding: 9px 18px;
   font-size: clamp(11px, 2.5vw, 13px);
-  color: rgba(26,26,16,0.5);
-  border-color: rgba(26,26,16,0.2);
+  color: rgba(26, 26, 16, 0.5);
+  border-color: rgba(26, 26, 16, 0.2);
   gap: 6px;
   min-height: 40px;
 
@@ -500,7 +641,10 @@ $bp-xxs : 320px;
     justify-content: center;
   }
 
-  &:hover:not(:disabled) { color: $danger; border-color: rgba(192,57,43,0.4); }
+  &:hover:not(:disabled) {
+    color: $danger;
+    border-color: rgba(192, 57, 43, 0.4);
+  }
 }
 
 // ─── spinner ─────────────────────────────────────────────────────────────────
@@ -515,5 +659,210 @@ $bp-xxs : 320px;
 }
 
 @keyframes bk-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+// ═══════════════════════════════════════════════════════════
+//  BASKET — Checkout Modal  (append to basket.scss)
+// ═══════════════════════════════════════════════════════════
+
+.bk__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.bk__modal {
+  background: var(--surface, #fff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  padding: 1.75rem;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── Header ──────────────────────────────────────────────────
+.bk__modal-head {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.bk__modal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-alpha, rgba(46, 95, 138, 0.1));
+  color: var(--primary, #2e5f8a);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.bk__modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+  color: var(--text, #1a1a1a);
+}
+
+.bk__modal-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted, #888);
+  margin: 0;
+}
+
+.bk__modal-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted, #888);
+  padding: 4px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover:not(:disabled) {
+    color: var(--text, #1a1a1a);
+    background: var(--hover, #f0f0f0);
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+// ── Saved card preview ───────────────────────────────────────
+.bk__modal-card {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2e5f8a 60%, #1a3050 100%);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem 1rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bk__modal-card-chip {
+  width: 28px;
+  opacity: 0.9;
+}
+
+.bk__modal-card-num {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bk__modal-card-foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+// ── Form fields ───────────────────────────────────────────────
+.bk__modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  &--err .bk__modal-input {
+    border-color: #e53935;
+  }
+}
+
+.bk__modal-lbl {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bk__modal-input {
+  height: 42px;
+  border: 1.5px solid var(--border, #e0e0e0);
+  border-radius: 8px;
+  padding: 0 0.875rem;
+  font-size: 0.9rem;
+  color: var(--text, #1a1a1a);
+  background: var(--input-bg, #fafafa);
+  transition: border-color 0.18s, box-shadow 0.18s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: var(--primary, #2e5f8a);
+    box-shadow: 0 0 0 3px rgba(46, 95, 138, 0.12);
+    background: #fff;
+  }
+
+  &::placeholder { color: var(--placeholder, #bbb); }
+}
+
+.bk__modal-err {
+  font-size: 0.75rem;
+  color: #e53935;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+// ── Total row ─────────────────────────────────────────────────
+.bk__modal-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border, #eee);
+  border-bottom: 1px solid var(--border, #eee);
+  font-size: 0.95rem;
+  color: var(--text, #1a1a1a);
+
+  strong {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary, #2e5f8a);
+  }
+}
+
+// ── API error ─────────────────────────────────────────────────
+.bk__modal-api-err {
+  font-size: 0.82rem;
+  color: #e53935;
+  background: rgba(229, 57, 53, 0.06);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+// ── Actions ───────────────────────────────────────────────────
+.bk__modal-actions {
+  display: flex;
+  gap: 0.75rem;
+
+  .bk__btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+// ── Spinner (light variant for dark button) ───────────────────
+.bk__spinner--light {
+  border-color: rgba(255,255,255,0.3);
+  border-top-color: #fff;
 }

@@ -137,6 +137,7 @@ export class Profile implements OnInit {
   ngOnInit(): void {
     this.loadUser();
     this.loadPhoto();
+    this.loadOrders();
   }
 
   // ── Loaders ───────────────────────────────────────────────────────────────
@@ -171,11 +172,24 @@ export class Profile implements OnInit {
     });
   }
 
+  private loadOrders(): void {
+    this.svc.getOrders().subscribe({
+      next: (orders) => {
+        this.orders = orders ?? [];
+      },
+      error: () => {
+        this.orders = [];
+      },
+    });
+  }
+
   private loadPhoto(): void {
     this.svc.getPhoto().subscribe({
       next: (url) => {
         this.zone.run(() => {
-          this.photoUrl = url ? url + '?t=' + Date.now() : null;
+          // quotes-ს ვაშორებთ თუ სერვერი text/plain-ს გამოაგზავნის
+          const clean = url?.replace(/^"|"$/g, '').trim();
+          this.photoUrl = clean ? clean + '?t=' + Date.now() : null;
         });
       },
       error: () => {
@@ -195,7 +209,7 @@ export class Profile implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    // ანგარიში — local preview FileReader-ით, ეგრევე ჩანდეს
+    // ეგრევე local preview — სერვერს არ ელოდება
     const reader = new FileReader();
     reader.onload = (e) => {
       this.zone.run(() => {
@@ -210,13 +224,15 @@ export class Profile implements OnInit {
       next: (imageUrl) => {
         this.zone.run(() => {
           this.uploadingPhoto = false;
-          // server-ის რეალური URL + cache-busting timestamp
+          // სერვერიდან მოსული URL-ით ვანახლებთ cache-bust-ით
           this.photoUrl = imageUrl + '?t=' + Date.now();
         });
       },
       error: (err) => {
         this.zone.run(() => {
           this.uploadingPhoto = false;
+          // upload ვერ მოხდა — preview-ც ვასუფთავებთ
+          this.photoUrl = null;
         });
         alert(err.message);
       },
@@ -289,6 +305,7 @@ export class Profile implements OnInit {
       },
     });
   }
+
   // ── Card ─────────────────────────────────────────────────────────────────
   saveCard(): void {
     this.cardMsg = '';
@@ -384,7 +401,7 @@ export class Profile implements OnInit {
     this.svc.deleteUser().subscribe({
       next: () => {
         this.svc.clearAuth();
-        this.router.navigate(['/']);
+        window.location.replace('/');
       },
       error: (err) => {
         this.deleting = false;
@@ -394,10 +411,8 @@ export class Profile implements OnInit {
   }
 
   // ── Logout ────────────────────────────────────────────────────────────────
-  // clearAuth() + navigate synchronously — profile page ვეღარ დარჩება
   logout(): void {
     this.svc.clearAuth();
-    // replaceUrl: true — back button-ით profile-ზე დაბრუნება შეუძლებელია
-    this.router.navigate(['/auth'], { replaceUrl: true });
+    window.location.replace('/auth');
   }
 }

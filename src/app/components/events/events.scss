@@ -534,10 +534,10 @@ $breakpoint-xxs: 320px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: $sp-lg;
+    gap: $sp-md;
 
     @media (max-width: $breakpoint-xxs) {
-      gap: $sp-md;
+      gap: $sp-sm;
     }
   }
 
@@ -554,14 +554,34 @@ $breakpoint-xxs: 320px;
     }
   }
 
+  &__author {
+    font-family: $font-body;
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+    color: $cream;
+    font-style: italic;
+    margin: 0;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
+  }
+
   &__isbn,
-  &__stock {
+  &__stock,
+  &__meta {
     font-family: $font-body;
     font-size: clamp(0.85rem, 2.5vw, 0.95rem);
     color: $cream-light;
     font-style: italic;
     margin: 0;
     letter-spacing: 0.04em;
+  }
+
+  &__description {
+    font-family: $font-body;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    color: $cream-lighter;
+    line-height: 1.8;
+    margin: $sp-xs 0 0;
+    letter-spacing: 0.01em;
   }
 
   &__price {
@@ -586,6 +606,7 @@ $breakpoint-xxs: 320px;
     min-height: 44px;
     align-self: flex-start;
     font-weight: 600;
+    margin-top: $sp-md;
 
     &:hover {
       background: color.adjust($cream, $lightness: -5%);

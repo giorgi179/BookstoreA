@@ -3,19 +3,19 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface LoginRequest {
-  email:    string;
+  email: string;
   password: string;
 }
 
 export interface TokenResponse {
   message: string;
-  userId:  number;
-  token:   string;
+  userId: number;
+  token: string;
 }
 
 export interface ResetPasswordRequest {
-  email:       string;
-  code:        string;
+  email: string;
+  code: string;
   newPassword: string;
 }
 
@@ -29,23 +29,23 @@ export interface ResetPasswordRequest {
  * `savedCardMasked`, `savedCardHolder`, `savedCardExpiry`, `isSubscribed`
  */
 export interface UserProfile {
-  id:               number;
-  email:            string;
-  fullName:         string;
-  phone:            string | null;
-  userImgs:         string | null;
-  isVerified:       boolean;
-  savedCardMasked:  string | null;
-  savedCardHolder:  string | null;
-  savedCardExpiry:  string | null;
-  savedCardBrand:   string | null;
-  isSubscribed:     boolean;
+  id: number;
+  email: string;
+  fullName: string;
+  phone: string | null;
+  userImgs: string | null;
+  isVerified: boolean;
+  savedCardMasked: string | null;
+  savedCardHolder: string | null;
+  savedCardExpiry: string | null;
+  savedCardBrand: string | null;
+  isSubscribed: boolean;
 }
 
 export interface UpdateProfileRequest {
-  userId:   number;
+  userId: number;
   fullName: string;
-  phone:    string;
+  phone: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -53,22 +53,29 @@ export interface UpdateProfileRequest {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface books {
-  id:          number;
-  bookUrl:     string;
-  title:       string;
-  isbn:        string;
-  price:       number;
-  categoryId:  number;
-  stock:       number;
-  bookDetails: null;
+  id: number;
+  title: string;
+  isbn: string;
+  price: number;
+  stock: number;
+  bookUrl: string;
+  categoryId: number;
+  bookDetails?: {
+    author?: string;
+    description?: string;
+    publisher?: string;
+    pageCount?: number;
+    publishedDate?: string;
+    language?: string;
+  } | null;
 }
 
 export interface BookOrder {
-  id:      number;
+  id: number;
   bookUrl: string;
-  title:   string;
-  isbn:    string;
-  price:   number;
+  title: string;
+  isbn: string;
+  price: number;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -76,16 +83,16 @@ export interface BookOrder {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface SaveCardRequest {
-  userId:     number;
+  userId: number;
   cardNumber: string;
   cardHolder: string;
-  expiry:     string;
+  expiry: string;
 }
 
 export interface CardFormData {
   cardNumber: string;
   cardHolder: string;
-  expiry:     string;
+  expiry: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -93,22 +100,22 @@ export interface CardFormData {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface PayRequest {
-  userId:         number;
-  cardNumber:     string;
+  userId: number;
+  cardNumber: string;
   cardHolderName: string;
-  expiryDate:     string;
-  cvv:            string;
-  exactAddress:   string;
-  amount:         number;
+  expiryDate: string;
+  cvv: string;
+  exactAddress: string;
+  amount: number;
 }
 
 export interface Payment {
-  id:             number;
-  userId:         number;
+  id: number;
+  userId: number;
   cardHolderName: string;
-  amount:         number;
-  exactAddress:   string;
-  createdAt?:     string;
+  amount: number;
+  exactAddress: string;
+  createdAt?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -117,16 +124,14 @@ export interface Payment {
 
 /** @deprecated Use UserProfile instead */
 export interface Category {
-  id?:       number;
-  userUrl?:  string;
-  email:     string | null;
-  password:  string | null;
-  lastName:  string | null;
+  id?: number;
+  userUrl?: string;
+  email: string | null;
+  password: string | null;
+  lastName: string | null;
   firstName: string | null;
-  phone:     string | null;
+  phone: string | null;
 }
-
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Cart
@@ -158,4 +163,73 @@ export interface BasketGroup {
   id: number;
   total: number;
   items: BasketItem[];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Profile
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+export interface AdminUser {
+  fullName: string;
+  email: string;
+  token: string;
+}
+
+export interface DashboardStats {
+  totalBooks: number;
+  totalUsers: number;
+  totalOrders: number;
+  lowStockBooks: number;
+  outOfStockBooks: number;
+  newMessages: number;
+}
+
+export interface Book {
+  id: number;
+  title: string;
+  isbn: string;
+  price: number;
+  stock: number;
+  bookUrl: string;
+  categoryId: number;
+  bookDetails?: {
+    author: string;
+    description: string;
+    publisher: string;
+    pageCount: number;
+    publishedDate: string;
+    language: string;
+  };
+}
+
+export interface AppUser {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  isVerified: boolean;
+  userImgs: string;
+  orderCount: number;
+}
+
+export interface Message {
+  id: number;
+  message?: string;
+  text?: string;
+  user?: { fullName: string; email: string };
+}
+export interface NewBook {
+  title: string;
+  isbn: string;
+  price: number;
+  stock: number;
+  bookUrl: string;
+  categoryId: number;
+  author: string;
+  description: string;
+  publisher: string;
+  pageCount: number;
+  publishedDate: string;
+  language: string;
 }

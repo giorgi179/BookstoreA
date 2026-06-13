@@ -1,4 +1,13 @@
-<app-navbar></app-navbar>
-<router-outlet></router-outlet>
-<app-footer></app-footer>
-<app-cookie-consent></app-cookie-consent>
+<header>
+    <app-navbar *ngIf="showNavbar"></app-navbar>
+</header>
+
+<main>
+    <router-outlet></router-outlet>
+</main>
+
+<footer *ngIf="showNavbar">
+    <app-footer></app-footer>
+</footer>
+
+<app-cookie-consent *ngIf="showNavbar"></app-cookie-consent>

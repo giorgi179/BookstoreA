@@ -359,6 +359,7 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
 }
 
 // ── Book Detail ───────────────────────────────────────────────────────────────
+
 .book-detail {
   background-color: #fdff7f;
   min-height: 100vh;
@@ -439,8 +440,16 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
     font-weight: 400;
     color: #1a1a10;
     line-height: 1.15;
-    margin: 0 0 24px;
+    margin: 0 0 16px;
     letter-spacing: -0.01em;
+  }
+
+  &__author {
+    font-family: $font-body;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: rgba(26, 26, 16, 0.6);
+    margin: 0 0 28px;
   }
 
   &__divider {
@@ -458,13 +467,19 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
   }
 
   &__isbn,
-  &__stock {
+  &__stock,
+  &__meta-item {
     font-family: $font-body;
     font-size: 0.95rem;
     color: rgba(26, 26, 16, 0.5);
     font-style: italic;
     margin: 0;
     letter-spacing: 0.02em;
+  }
+
+  &__meta-item {
+    font-style: normal;
+    font-size: 0.92rem;
   }
 
   &__stock {
@@ -483,6 +498,15 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
     letter-spacing: -0.02em;
     line-height: 1;
     margin-bottom: 40px;
+  }
+
+  &__description {
+    font-family: $font-body;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: rgba(26, 26, 16, 0.65);
+    margin: 0 0 40px;
+    max-width: 56ch;
   }
 
   &__btn {
@@ -560,6 +584,22 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
     }
 
     &:active { transform: scale(0.98); }
+
+    &[disabled] {
+      background: rgba(26, 26, 18, 0.25);
+      color: rgba(240, 232, 200, 0.4);
+      cursor: not-allowed;
+
+      &:hover {
+        background: rgba(26, 26, 18, 0.25);
+        &::before { transform: scaleX(0); }
+        &::after  { width: 10px; height: 10px; }
+        .btn-cr   { width: 10px; height: 10px; }
+        svg { opacity: 0.4; transform: none; }
+      }
+
+      &:active { transform: none; }
+    }
   }
 
   // ── 1200px ──
@@ -610,15 +650,20 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
     &__title {
       font-size: clamp(1.6rem, 5vw, 2.2rem);
       color: $cream;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
+
+    &__author { color: rgba(240, 232, 200, 0.5); }
 
     &__divider { background: rgba(240, 232, 200, 0.15); }
 
     &__isbn,
-    &__stock { color: rgba(240, 232, 200, 0.45); }
+    &__stock,
+    &__meta-item { color: rgba(240, 232, 200, 0.45); }
 
     &__price { color: $cream; font-size: 2rem; }
+
+    &__description { color: rgba(240, 232, 200, 0.6); }
 
     &__btn {
       align-self: stretch;
@@ -632,6 +677,13 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
 
       &::after { border-color: rgba(26, 26, 18, 0.3); }
       .btn-cr  { border-color: rgba(26, 26, 18, 0.3); }
+
+      &[disabled] {
+        background: rgba(240, 232, 200, 0.15);
+        color: rgba(240, 232, 200, 0.35);
+
+        &:hover { background: rgba(240, 232, 200, 0.15); }
+      }
     }
   }
 
@@ -651,12 +703,15 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
 
     &__info { padding: 32px 20px 40px; gap: 0; }
 
-    &__title  { font-size: 1.7rem; margin-bottom: 16px; }
+    &__title  { font-size: 1.7rem; margin-bottom: 12px; }
+    &__author { font-size: 0.95rem; margin-bottom: 20px; }
     &__divider { margin-bottom: 20px; }
     &__meta   { gap: 8px; margin-bottom: 24px; }
     &__isbn,
-    &__stock  { font-size: 0.88rem; }
-    &__price  { font-size: 1.8rem; margin-bottom: 28px; }
+    &__stock,
+    &__meta-item { font-size: 0.88rem; }
+    &__price  { font-size: 1.8rem; margin-bottom: 24px; }
+    &__description { font-size: 0.95rem; margin-bottom: 28px; }
 
     &__btn {
       font-size: 0.9rem;
@@ -681,12 +736,15 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
 
     &__info { padding: 28px 16px 36px; }
 
-    &__title  { font-size: 1.45rem; margin-bottom: 14px; }
+    &__title  { font-size: 1.45rem; margin-bottom: 10px; }
+    &__author { font-size: 0.88rem; margin-bottom: 16px; }
     &__divider { width: 36px; margin-bottom: 18px; }
     &__meta   { gap: 6px; margin-bottom: 20px; }
     &__isbn,
-    &__stock  { font-size: 0.82rem; }
-    &__price  { font-size: 1.6rem; margin-bottom: 24px; }
+    &__stock,
+    &__meta-item { font-size: 0.82rem; }
+    &__price  { font-size: 1.6rem; margin-bottom: 20px; }
+    &__description { font-size: 0.9rem; margin-bottom: 24px; }
 
     &__btn {
       font-size: 0.85rem;
@@ -712,12 +770,15 @@ $font-body: 'EB Garamond', 'Garamond', Georgia, serif;
 
     &__info { padding: 24px 12px 28px; }
 
-    &__title  { font-size: 1.25rem; margin-bottom: 12px; letter-spacing: 0; }
+    &__title  { font-size: 1.25rem; margin-bottom: 8px; letter-spacing: 0; }
+    &__author { font-size: 0.82rem; margin-bottom: 14px; }
     &__divider { width: 28px; margin-bottom: 14px; }
     &__meta   { gap: 5px; margin-bottom: 16px; }
     &__isbn,
-    &__stock  { font-size: 0.78rem; }
-    &__price  { font-size: 1.4rem; margin-bottom: 20px; }
+    &__stock,
+    &__meta-item { font-size: 0.78rem; }
+    &__price  { font-size: 1.4rem; margin-bottom: 18px; }
+    &__description { font-size: 0.85rem; margin-bottom: 20px; }
 
     &__btn {
       font-size: 0.8rem;

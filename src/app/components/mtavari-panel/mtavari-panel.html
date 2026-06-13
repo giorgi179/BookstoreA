@@ -1,0 +1,374 @@
+<div class="panel">
+    <div class="panel-noise" aria-hidden="true"></div>
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+        <div class="sidebar__brand">
+            <div class="sidebar__arch-mask">
+                <img src="https://png.pngtree.com/background/20230614/original/pngtree-an-open-book-sits-on-top-of-several-books-picture-image_3462697.jpg"
+                    alt="Logo" class="sidebar__arch-img">
+            </div>
+            <span class="sidebar__name">BookStore</span>
+            <span class="sidebar__sub">Admin Panel</span>
+        </div>
+
+        <nav class="sidebar__nav" aria-label="მთავარი მენიუ">
+            <button class="nav-item" [class.nav-item--active]="activeTab()==='dashboard'" (click)="setTab('dashboard')">
+                <span class="nav-item__icon">&#9783;</span>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" [class.nav-item--active]="activeTab()==='books'" (click)="setTab('books')">
+                <span class="nav-item__icon">&#128218;</span>
+                <span>წიგნები</span>
+                <span class="nav-item__badge">{{ svc.books().length }}</span>
+            </button>
+            <button class="nav-item" [class.nav-item--active]="activeTab()==='users'" (click)="setTab('users')">
+                <span class="nav-item__icon">&#128100;</span>
+                <span>მომხმარებლები</span>
+                <span class="nav-item__badge">{{ svc.users().length }}</span>
+            </button>
+            <button class="nav-item" [class.nav-item--active]="activeTab()==='messages'" (click)="setTab('messages')">
+                <span class="nav-item__icon">&#9993;</span>
+                <span>შეტყობინებები</span>
+                @if (svc.messages().length) {
+                <span class="nav-item__badge nav-item__badge--alert">{{ svc.messages().length }}</span>
+                }
+            </button>
+        </nav>
+
+        <div class="sidebar__footer">
+            <div class="sidebar__admin-info">
+                <span class="sidebar__admin-avatar">{{ auth.admin()?.fullName?.charAt(0) }}</span>
+                <div>
+                    <p class="sidebar__admin-name">{{ auth.admin()?.fullName }}</p>
+                    <p class="sidebar__admin-email">{{ auth.admin()?.email }}</p>
+                </div>
+            </div>
+            <button class="sidebar__logout" (click)="logout()" aria-label="გამოსვლა">&#10148;</button>
+        </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="panel-main">
+
+        <!-- ════════ DASHBOARD ════════ -->
+        @if (activeTab() === 'dashboard') {
+        <section class="section" aria-labelledby="dash-heading">
+            <h2 id="dash-heading" class="section__title">Dashboard</h2>
+
+            @if (svc.loading()) {
+            <div class="skeleton-grid">
+                @for (_ of [1,2,3,4,5,6]; track $index) {
+                <div class="skeleton-card"></div>
+                }
+            </div>
+            } @else if (svc.stats(); as s) {
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-card__icon">&#128218;</span>
+                    <p class="stat-card__label">სულ წიგნი</p>
+                    <p class="stat-card__value">{{ s.totalBooks | number }}</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__icon">&#128100;</span>
+                    <p class="stat-card__label">მომხმარებელი</p>
+                    <p class="stat-card__value">{{ s.totalUsers | number }}</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__icon">&#128717;</span>
+                    <p class="stat-card__label">შეკვეთა</p>
+                    <p class="stat-card__value">{{ s.totalOrders | number }}</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__icon">&#9993;</span>
+                    <p class="stat-card__label">შეტყობინება</p>
+                    <p class="stat-card__value">{{ s.newMessages | number }}</p>
+                </div>
+                <div class="stat-card stat-card--warn">
+                    <span class="stat-card__icon">&#9888;</span>
+                    <p class="stat-card__label">მცირე მარაგი</p>
+                    <p class="stat-card__value">{{ s.lowStockBooks }}</p>
+                </div>
+                <div class="stat-card stat-card--danger">
+                    <span class="stat-card__icon">&#10006;</span>
+                    <p class="stat-card__label">მარაგი ამოწურულია</p>
+                    <p class="stat-card__value">{{ s.outOfStockBooks }}</p>
+                </div>
+            </div>
+            }
+        </section>
+        }
+
+        <!-- ════════ BOOKS ════════ -->
+        @if (activeTab() === 'books') {
+        <section class="section" aria-labelledby="books-heading">
+            <div class="section__head">
+                <h2 id="books-heading" class="section__title">წიგნები</h2>
+                <div class="section__head-actions">
+                    <div class="search-wrap">
+                        <span class="search-wrap__icon">&#128269;</span>
+                        <input class="search-input" type="search" placeholder="სათაური ან ISBN..." [value]="bookSearch()"
+                            (input)="bookSearch.set($any($event.target).value)" aria-label="წიგნების ძებნა" />
+                    </div>
+                    <button class="btn-add" (click)="openAddBook()">
+                        <span aria-hidden="true">&#10010;</span> წიგნის დამატება
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table" aria-label="წიგნების სია">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>სათაური</th>
+                            <th>ISBN</th>
+                            <th>ფასი</th>
+                            <th>მარაგი</th>
+                            <th>მოქმედება</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (book of filteredBooks(); track book.id) {
+                        <tr>
+                            <td class="td-muted">#{{ book.id }}</td>
+                            <td class="td-title">{{ book.title }}</td>
+                            <td class="td-muted">{{ book.isbn }}</td>
+                            <td>{{ book.price | number:'1.2-2' }} ₾</td>
+                            <td>
+                                @if (editingStockId() === book.id) {
+                                <div class="stock-edit">
+                                    <input class="stock-input" type="number" min="0" [value]="stockValue()"
+                                        (input)="stockValue.set(+$any($event.target).value)"
+                                        aria-label="მარაგის რაოდენობა" />
+                                    <button class="btn-xs btn-xs--ok" (click)="saveStock(book.id)">&#10003;</button>
+                                    <button class="btn-xs btn-xs--cancel" (click)="cancelStock()">&#10005;</button>
+                                </div>
+                                } @else {
+                                <span class="stock-badge" [ngClass]="'stock-badge--' + stockColor(book.stock)"
+                                    (click)="startEditStock(book)" role="button"
+                                    [attr.aria-label]="'მარაგის რედაქტირება: ' + book.stock" tabindex="0"
+                                    (keydown.enter)="startEditStock(book)">{{ book.stock }}</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn-icon btn-icon--danger" (click)="askDelete('book', book.id)"
+                                    aria-label="წაშლა">&#128465;</button>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="6" class="td-empty">წიგნი ვერ მოიძებნა</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        }
+
+        <!-- ════════ USERS ════════ -->
+        @if (activeTab() === 'users') {
+        <section class="section" aria-labelledby="users-heading">
+            <div class="section__head">
+                <h2 id="users-heading" class="section__title">მომხმარებლები</h2>
+                <div class="search-wrap">
+                    <span class="search-wrap__icon">&#128269;</span>
+                    <input class="search-input" type="search" placeholder="სახელი ან ელ. ფოსტა..."
+                        [value]="userSearch()" (input)="userSearch.set($any($event.target).value)"
+                        aria-label="მომხმარებლების ძებნა" />
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table" aria-label="მომხმარებელთა სია">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>სახელი</th>
+                            <th>ელ. ფოსტა</th>
+                            <th>ტელეფონი</th>
+                            <th>სტატუსი</th>
+                            <th>შეკვეთები</th>
+                            <th>მოქმედება</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (user of filteredUsers(); track user.id) {
+                        <tr>
+                            <td class="td-muted">#{{ user.id }}</td>
+                            <td>
+                                <div class="user-cell">
+                                    <span class="user-avatar">{{ user.fullName.charAt(0) }}</span>
+                                    {{ user.fullName }}
+                                </div>
+                            </td>
+                            <td class="td-muted">{{ user.email }}</td>
+                            <td class="td-muted">{{ user.phone || '—' }}</td>
+                            <td>
+                                @if (user.isVerified) {
+                                <span class="badge badge--ok">დადასტურებული</span>
+                                } @else {
+                                <button class="badge badge--warn badge--btn" (click)="verify(user.id)">
+                                    დადასტურება
+                                </button>
+                                }
+                            </td>
+                            <td class="td-center">{{ user.orderCount }}</td>
+                            <td>
+                                <button class="btn-icon btn-icon--danger" (click)="askDelete('user', user.id)"
+                                    aria-label="წაშლა">&#128465;</button>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="7" class="td-empty">მომხმარებელი ვერ მოიძებნა</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        }
+
+        <!-- ════════ MESSAGES ════════ -->
+        @if (activeTab() === 'messages') {
+        <section class="section" aria-labelledby="msg-heading">
+            <h2 id="msg-heading" class="section__title">შეტყობინებები</h2>
+
+            <div class="msg-list">
+                @for (msg of svc.messages(); track msg.id) {
+                <article class="msg-card">
+                    <div class="msg-card__head">
+                        <span class="user-avatar user-avatar--sm">{{ msgAvatar(msg) }}</span>
+                        <div>
+                            <p class="msg-card__name">{{ msgName(msg) }}</p>
+                            <p class="msg-card__email">{{ msgEmail(msg) }}</p>
+                        </div>
+                        <button class="btn-icon btn-icon--danger msg-card__del"
+                            (click)="askDelete('message', msgId(msg))"
+                            aria-label="შეტყობინების წაშლა">&#128465;</button>
+                    </div>
+                    <p class="msg-card__body">{{ msgBody(msg) }}</p>
+                </article>
+                } @empty {
+                <p class="td-empty">შეტყობინება არ არის</p>
+                }
+            </div>
+        </section>
+        }
+
+    </main>
+
+    <!-- ── Add book modal ── -->
+    @if (showAddBook()) {
+    <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="addbook-title">
+        <div class="modal modal--form">
+            <h3 id="addbook-title" class="modal__title">წიგნის დამატება</h3>
+
+            <div class="form-grid">
+                <label class="form-field form-field--full">
+                    <span class="form-field__label">სათაური *</span>
+                    <input class="form-input" type="text" [value]="newBook().title"
+                        (input)="updateNewBook('title', $any($event.target).value)" placeholder="წიგნის სათაური" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">ISBN *</span>
+                    <input class="form-input" type="text" [value]="newBook().isbn"
+                        (input)="updateNewBook('isbn', $any($event.target).value)" placeholder="978-..." />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">კატეგორიის ID</span>
+                    <input class="form-input" type="number" min="1" [value]="newBook().categoryId"
+                        (input)="updateNewBook('categoryId', +$any($event.target).value)" placeholder="1" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">ფასი (₾) *</span>
+                    <input class="form-input" type="number" min="0" step="0.01" [value]="newBook().price"
+                        (input)="updateNewBook('price', +$any($event.target).value)" placeholder="0.00" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">მარაგი</span>
+                    <input class="form-input" type="number" min="0" [value]="newBook().stock"
+                        (input)="updateNewBook('stock', +$any($event.target).value)" placeholder="0" />
+                </label>
+
+                <label class="form-field form-field--full">
+                    <span class="form-field__label">სურათის URL</span>
+                    <input class="form-input" type="text" [value]="newBook().bookUrl"
+                        (input)="updateNewBook('bookUrl', $any($event.target).value)" placeholder="https://..." />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">ავტორი *</span>
+                    <input class="form-input" type="text" [value]="newBook().author"
+                        (input)="updateNewBook('author', $any($event.target).value)" placeholder="ავტორის სახელი" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">გამომცემლობა</span>
+                    <input class="form-input" type="text" [value]="newBook().publisher"
+                        (input)="updateNewBook('publisher', $any($event.target).value)" placeholder="გამომცემლობა" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">გვერდების რაოდენობა</span>
+                    <input class="form-input" type="number" min="0" [value]="newBook().pageCount"
+                        (input)="updateNewBook('pageCount', +$any($event.target).value)" placeholder="0" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">ენა</span>
+                    <input class="form-input" type="text" [value]="newBook().language"
+                        (input)="updateNewBook('language', $any($event.target).value)" placeholder="ქართული" />
+                </label>
+
+                <label class="form-field">
+                    <span class="form-field__label">გამოცემის თარიღი</span>
+                    <input class="form-input" type="date" [value]="newBook().publishedDate.slice(0,10)"
+                        (input)="updateNewBook('publishedDate', $any($event.target).value)" />
+                </label>
+
+                <label class="form-field form-field--full">
+                    <span class="form-field__label">აღწერა</span>
+                    <textarea class="form-input form-textarea" rows="3" [value]="newBook().description"
+                        (input)="updateNewBook('description', $any($event.target).value)"
+                        placeholder="წიგნის აღწერა"></textarea>
+                </label>
+            </div>
+
+            @if (addBookError()) {
+            <p class="form-error">{{ addBookError() }}</p>
+            }
+
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--cancel" (click)="closeAddBook()" [disabled]="addBookLoading()">
+                    გაუქმება
+                </button>
+                <button class="modal__btn modal__btn--save" (click)="submitAddBook()" [disabled]="addBookLoading()">
+                    {{ addBookLoading() ? 'ინახება...' : 'დამატება' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- ── Delete confirm modal ── -->
+    @if (confirmDelete()) {
+    <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal">
+            <p class="modal__icon" aria-hidden="true">&#9888;</p>
+            <h3 id="modal-title" class="modal__title">დარწმუნებული ხართ?</h3>
+            <p class="modal__desc">ეს მოქმედება შეუქცევადია.</p>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--cancel" (click)="cancelDelete()">გაუქმება</button>
+                <button class="modal__btn modal__btn--confirm" (click)="doDelete()">წაშლა</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

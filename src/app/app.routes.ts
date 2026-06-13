@@ -8,6 +8,11 @@ import { Profile } from './components/profile/profile';
 import { Events } from './components/events/events';
 import { authGuard } from './guard/auth-guard-guard';
 import { basketGuard } from './guard/basket-guard-guard';
+import { NotFoundComponent } from './components/not-found-component/not-found-component';
+import { MtavariLogin } from './components/mtavari-login/mtavari-login';
+import { MtavariPanel } from './components/mtavari-panel/mtavari-panel';
+import { adminGuard } from './guard/admin-guard';
+
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -17,6 +22,9 @@ export const routes: Routes = [
   { path: 'contact', component: Contact },
   { path: 'events', component: Events },
   { path: 'profile', component: Profile },
+  { path: 'card', component: Card },
+  { path: 'mtavari-login', component: MtavariLogin },
+  { path: 'mtavari-panel', component: MtavariPanel, canActivate: [adminGuard] },
   {
     path: 'auth',
     loadComponent: () => import('./components/auth/auth').then((m) => m.Auth),
@@ -40,5 +48,6 @@ export const routes: Routes = [
     path: 'cookies',
     loadComponent: () => import('./pages/cookies/cookies').then((m) => m.Cookies),
   },
-  { path: '**', redirectTo: '' },
+
+  { path: '**', component: NotFoundComponent },
 ];

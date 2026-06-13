@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { Book } from '../../service/book';
 import { Auths } from '../../service/auths';
 import { books } from '../../controlers';
@@ -13,28 +14,31 @@ import { BasketService } from '../../service/basket';
   styleUrl: './books.scss',
 })
 export class Books implements OnInit {
-  private api    = inject(Book);
-  private auth   = inject(Auths);
-  private cdr    = inject(ChangeDetectorRef);
+  private api = inject(Book);
+  private auth = inject(Auths);
+  private cdr = inject(ChangeDetectorRef);
   private basket = inject(BasketService);
 
-  books         = signal<books[]>([]);
-  loading       = signal(true);
-  error         = signal('');
-  selectedBook  = signal<books | null>(null);
+  books = signal<books[]>([]);
+  loading = signal(true);
+  error = signal('');
+  selectedBook = signal<books | null>(null);
   showAuthModal = signal(false);
 
   // Toast
-  toastBook     = signal<books | null>(null);
-  toastVisible  = signal(false);
+  toastBook = signal<books | null>(null);
+  toastVisible = signal(false);
   private toastTimer: any;
 
   addToCart(book: books): void {
     const userId = localStorage.getItem('userId');
-    if (!userId) { this.showAuthModal.set(true); return; }
+    if (!userId) {
+      this.showAuthModal.set(true);
+      return;
+    }
 
     this.basket.addItem(book.id, 1).subscribe({
-      next:  () => this.showToast(book),
+      next: () => this.showToast(book),
       error: () => this.showToast(null),
     });
   }
@@ -46,19 +50,35 @@ export class Books implements OnInit {
     this.toastTimer = setTimeout(() => this.toastVisible.set(false), 3200);
   }
 
-  closeModal():  void { this.showAuthModal.set(false); }
-  goToAuth():    void { window.location.href = '/auth'; }
-  dismissToast(): void { this.toastVisible.set(false); }
+  closeModal(): void {
+    this.showAuthModal.set(false);
+  }
+  goToAuth(): void {
+    window.location.href = '/auth';
+  }
+  dismissToast(): void {
+    this.toastVisible.set(false);
+  }
 
   ngOnInit(): void {
-    this.api.getBooks().subscribe({
-      next: (data) => {
-        this.books.set(data);
+    forkJoin({
+      books: this.api.getBooks(),
+      details: this.api.getBookDetails(),
+    }).subscribe({
+      next: ({ books, details }) => {
+        const merged = books.map((book) => ({
+          ...book,
+          bookDetails: details.find((d) => d.bookId === book.id) ?? null,
+        }));
+        this.books.set(merged);
         this.loading.set(false);
         this.cdr.detectChanges();
         setTimeout(() => this.initObserver(), 100);
       },
-      error: () => { this.error.set('შეცდომა'); this.loading.set(false); },
+      error: () => {
+        this.error.set('შეცდომა');
+        this.loading.set(false);
+      },
     });
   }
 
@@ -83,6 +103,6 @@ export class Books implements OnInit {
       },
       { threshold: 0.15, rootMargin: '0px 0px -60px 0px' },
     );
-    document.querySelectorAll('[data-animate-repeat]').forEach(el => observer.observe(el));
+    document.querySelectorAll('[data-animate-repeat]').forEach((el) => observer.observe(el));
   }
 }

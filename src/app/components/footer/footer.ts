@@ -59,7 +59,8 @@ export class Footer {
       },
       error: (e) => {
         this.loading.set(false);
-        this.msg.set(e.message);
+        this.msg.set('You are already subscribed to the newsletter.');
+       
         this.err.set(true);
       },
     });

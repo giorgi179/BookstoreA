@@ -4,7 +4,6 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { BasketGroup } from '../controlers';
 
-
 const API = 'https://bookapi-h00v.onrender.com/api';
 
 @Injectable({ providedIn: 'root' })
@@ -59,9 +58,24 @@ export class BasketService {
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * PUT /api/BookItem/delete-stuck-erti
+   * stock შემცირება + confirmation email გაგზავნა
+   */
+  decreaseStock(bookId: number, email: string, quantity: number): Observable<any> {
+    const params = new HttpParams()
+      .set('id',       String(bookId))
+      .set('email',    email)
+      .set('Quantity', String(quantity));
+    return this.http
+      .put<any>(`${API}/Book/delete-stuck-erti`, null, { headers: this.authHeaders, params })
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(err: unknown): Observable<never> {
     const e = err as { error?: { message?: string }; message?: string };
     const message = e?.error?.message ?? e?.message ?? 'Something went wrong.';
     return throwError(() => new Error(message));
   }
 }
+

@@ -1,1 +1,195 @@
-<p>card works!</p>
+<div class="cp">
+
+  <!-- ══ LOADING ══ -->
+  @if (view() === 'loading') {
+    <div class="cp__loader" @fadeIn>
+      <svg class="cp__spin-svg" viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="20" fill="none" stroke-width="2"/>
+      </svg>
+    </div>
+  }
+
+  <!-- ══ FORM ══ -->
+  @else if (view() === 'form') {
+    <div class="cp__page" @fadeIn>
+
+      <p class="cp__secure-label">Secure Payment</p>
+      <h1 class="cp__title">PAYMENT</h1>
+      <div class="cp__rule"></div>
+
+      <!-- ── card flip preview ── -->
+      <div class="cp__card-3d" [class.cp__card-3d--flip]="cardFlip()">
+        <div class="cp__card-scene">
+
+          <!-- front -->
+          <div class="cp__card-front">
+            <div class="cp__card-top">
+              <span class="cp__card-brand">{{ previewHolder || 'YOUR NAME' }}. Bank</span>
+              <svg class="cp__card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <div class="cp__card-num">{{ previewNumber }}</div>
+            <div class="cp__card-bottom">
+              <div class="cp__card-field">
+                <span class="cp__card-lbl">Card Holder</span>
+                <span class="cp__card-val">{{ previewHolder || 'FULL NAME' }}</span>
+              </div>
+              <div class="cp__card-field">
+                <span class="cp__card-lbl">Expires</span>
+                <span class="cp__card-val">{{ previewExpiry || 'MM/YY' }}</span>
+              </div>
+              <svg class="cp__card-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- back -->
+          <div class="cp__card-back">
+            <div class="cp__card-stripe"></div>
+            <div class="cp__card-cvv-area">
+              <span class="cp__card-cvv-lbl">CVV</span>
+              <span class="cp__card-cvv-val">{{ previewCvv || '···' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── existing card banner ── -->
+      @if (savedCard()) {
+        <div class="cp__existing" @fadeIn>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          Card on file: {{ savedCard()?.cardNumber }}
+          <button class="cp__remove-btn" (click)="removeCard()"
+                  [disabled]="deleting() || saving()">
+            @if (deleting()) { … }
+            @else { Remove }
+          </button>
+        </div>
+      }
+
+      <!-- ── form box ── -->
+      <div class="cp__box">
+        <form [formGroup]="form" (ngSubmit)="saveCard()" novalidate>
+
+          <div class="cp__field" [class.cp__field--err]="err('cardNumber')">
+            <label class="cp__lbl">Card Number</label>
+            <input class="cp__input" type="text" inputmode="numeric"
+                   maxlength="16" placeholder="1234 5678 9012 3456"
+                   formControlName="cardNumber"
+                   (input)="onCardInput($event)"
+                   autocomplete="cc-number"/>
+            @if (err('cardNumber')) {
+              <span class="cp__err-msg">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Card number must be 16 digits.
+              </span>
+            }
+          </div>
+
+          <div class="cp__field" [class.cp__field--err]="err('cardHolderName')">
+            <label class="cp__lbl">Card Holder Name</label>
+            <input class="cp__input" type="text"
+                   placeholder="FULL NAME"
+                   formControlName="cardHolderName"
+                   autocomplete="cc-name"/>
+            @if (err('cardHolderName')) {
+              <span class="cp__err-msg">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Enter the name on the card.
+              </span>
+            }
+          </div>
+
+          <div class="cp__row">
+            <div class="cp__field" [class.cp__field--err]="err('expiryDate')">
+              <label class="cp__lbl">Expiry Date</label>
+              <input class="cp__input" type="text" inputmode="numeric"
+                     maxlength="5" placeholder="MM/YY"
+                     formControlName="expiryDate"
+                     (input)="onExpiryInput($event)"
+                     autocomplete="cc-exp"/>
+              @if (err('expiryDate')) {
+                <span class="cp__err-msg">Use MM/YY format.</span>
+              }
+            </div>
+
+            <div class="cp__field" [class.cp__field--err]="err('cvv')">
+              <label class="cp__lbl">CVV</label>
+              <input class="cp__input" type="password" inputmode="numeric"
+                     maxlength="4" placeholder="···"
+                     formControlName="cvv"
+                     (focus)="onCvvFocus()" (blur)="onCvvBlur()"
+                     autocomplete="cc-csc"/>
+              @if (err('cvv')) {
+                <span class="cp__err-msg">3 or 4 digits.</span>
+              }
+            </div>
+          </div>
+
+          <div class="cp__field" [class.cp__field--err]="err('exactAddress')">
+            <label class="cp__lbl">Delivery Address</label>
+            <input class="cp__input" type="text"
+                   placeholder="123 Main St, City, Country"
+                   formControlName="exactAddress"
+                   autocomplete="shipping street-address"/>
+            @if (err('exactAddress')) {
+              <span class="cp__err-msg">Enter a delivery address.</span>
+            }
+          </div>
+
+          @if (errorMsg()) {
+            <p class="cp__api-err">{{ errorMsg() }}</p>
+          }
+
+          <div class="cp__total-row">
+            <span class="cp__total-lbl">Total Amount</span>
+            <span class="cp__total-val">GEL {{ totalAmount.toFixed(2) }}</span>
+          </div>
+
+          <button type="submit" class="cp__pay-btn"
+                  [class.cp__pay-btn--busy]="saving()"
+                  [disabled]="saving() || deleting()">
+            @if (saving()) { <span class="cp__btn-spin"></span> }
+            @else { PAY NOW }
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  }
+
+  <!-- ══ SUCCESS ══ -->
+  @else if (view() === 'success') {
+    <div class="cp__state" @fadeIn>
+      <svg class="cp__state-icon" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#2e5f8a" stroke-width="1.8"/>
+        <path d="M18 32l10 10 18-20" stroke="#2e5f8a" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"
+              class="cp__check-path"/>
+      </svg>
+      <h2 class="cp__state-heading">Card Saved!</h2>
+      <p class="cp__state-sub">You can now checkout from your cart.</p>
+      <a routerLink="/basket" class="cp__pay-btn" style="text-decoration:none; display:inline-flex;">
+        Go to Cart
+      </a>
+    </div>
+  }
+
+</div>

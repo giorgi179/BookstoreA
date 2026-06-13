@@ -1,0 +1,84 @@
+<div class="login-page">
+  <div class="login-noise" aria-hidden="true"></div>
+
+  <!-- Arch decoration -->
+  <div class="login-arch" aria-hidden="true">
+    <div class="login-arch__mask">
+      <span class="login-arch__glyph">&#9998;</span>
+    </div>
+    <div class="login-arch__vignette"></div>
+  </div>
+
+  <!-- Card -->
+  <div class="login-card">
+    <header class="login-card__head">
+      <p class="login-card__eyebrow">სამართავი პანელი</p>
+      <h1 class="login-card__title">ავტორიზაცია</h1>
+    </header>
+
+    <form class="login-card__form" (ngSubmit)="submit()" novalidate>
+
+      <!-- Email -->
+      <div class="field">
+        <label class="field__label" for="email">ელ. ფოსტა</label>
+        <div class="field__wrap">
+          <span class="field__icon">&#64;</span>
+          <input
+            id="email"
+            class="field__input"
+            type="email"
+            autocomplete="email"
+            placeholder="admin@bookstore.ge"
+            [value]="email()"
+            (input)="email.set($any($event.target).value)"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label class="field__label" for="password">პაროლი</label>
+        <div class="field__wrap">
+          <span class="field__icon">&#128274;</span>
+          <input
+            id="password"
+            class="field__input"
+            [type]="showPass() ? 'text' : 'password'"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            required
+          />
+          <button
+            type="button"
+            class="field__toggle"
+            (click)="showPass.set(!showPass())"
+            [attr.aria-label]="showPass() ? 'პაროლის დამალვა' : 'პაროლის ჩვენება'"
+          >
+            {{ showPass() ? '&#128065;&#65039;' : '&#128065;' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      @if (error()) {
+        <p class="login-card__error" role="alert">{{ error() }}</p>
+      }
+
+      <!-- Submit -->
+      <button class="login-card__btn" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <span class="login-card__spinner"></span>
+          შესვლა...
+        } @else {
+          შესვლა
+        }
+      </button>
+
+    </form>
+  </div>
+
+  <p class="login-page__brand">BookStore &nbsp;·&nbsp; Admin</p>
+</div>

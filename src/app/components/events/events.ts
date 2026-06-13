@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit, ChangeDetectorRef } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { Book } from '../../service/book';
 import { Auths } from '../../service/auths';
 import { books } from '../../controlers';
@@ -51,9 +52,16 @@ export class Events implements OnInit {
   dismissToast(): void { this.toastVisible.set(false); }
 
   ngOnInit(): void {
-    this.api.getBooks().subscribe({
-      next: (data) => {
-        this.books.set(data.slice(0, 3));
+    forkJoin({
+      books: this.api.getBooks(),
+      details: this.api.getBookDetails(),
+    }).subscribe({
+      next: ({ books, details }) => {
+        const merged = books.map((book) => ({
+          ...book,
+          bookDetails: details.find((d) => d.bookId === book.id) ?? null,
+        }));
+        this.books.set(merged.slice(0, 3));
         this.loading.set(false);
         this.cdr.detectChanges();
         setTimeout(() => this.initObserver(), 100);

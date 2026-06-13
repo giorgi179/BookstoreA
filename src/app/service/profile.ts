@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import {
   BookOrder,
   Payment,
@@ -10,8 +10,6 @@ import {
   UpdateProfileRequest,
   UserProfile,
 } from '../controlers';
-
-import { map } from 'rxjs/operators';
 import { CardFormData } from '../controlers';
 
 const BASE_USER = 'https://bookapi-h00v.onrender.com/api/User';
@@ -21,16 +19,14 @@ const BASE_PAYMENT = 'https://bookapi-h00v.onrender.com/api/Payment';
 export class ProfileService {
   private http = inject(HttpClient);
 
-  // ── Auth helpers ────────────────────────────────────────────────────────────
+  // ── Auth helpers ──────────────────────────────────────────────────────────
 
   private get token(): string {
     return localStorage.getItem('authToken') ?? '';
   }
-
   private get email(): string {
     return localStorage.getItem('email') ?? '';
   }
-
   private get userId(): number {
     return Number(localStorage.getItem('userId') ?? 0);
   }
@@ -40,15 +36,13 @@ export class ProfileService {
   }
 
   private assertAuth(): Observable<never> | null {
-    if (!this.token || !this.userId) {
+    if (!this.token || !this.userId)
       return throwError(() => new Error('User is not authenticated.'));
-    }
     return null;
   }
 
-  // ── User ────────────────────────────────────────────────────────────────────
+  // ── User ──────────────────────────────────────────────────────────────────
 
-  /** GET /api/User/get-user?email=... */
   getUser(): Observable<UserProfile> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -58,7 +52,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** GET /api/User/get-user-{id} */
   getUserById(id: number): Observable<UserProfile> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -67,7 +60,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** PUT /api/User/update-profile */
   updateProfile(data: { firstName: string; lastName: string; phone: string }): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -81,7 +73,8 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** GET /api/User/get-photo?email=... */
+  // ── Photo ─────────────────────────────────────────────────────────────────
+
   getPhoto(): Observable<string> {
     const authErr = this.assertAuth();
     if (authErr) return authErr as Observable<never>;
@@ -90,15 +83,18 @@ export class ProfileService {
       .get(`${BASE_USER}/get-photo`, {
         headers: this.authHeaders,
         params,
-        responseType: 'text',
+        responseType: 'text', // სერვერი Ok(string) → text/plain
       })
       .pipe(
-        map((url) => url?.replace('http://', 'https://')), // ← ეს დაამატე
+        map((raw) => {
+          // სერვერი ზოგჯერ JSON-ს წარმოადგენს quotes-ით: "https://..."
+          const url = raw?.replace(/^"|"$/g, '').trim();
+          return url ? url.replace('http://', 'https://') : '';
+        }),
         catchError(this.handleError),
       );
   }
 
-  /** POST /api/User/upload-photo */
   uploadPhoto(file: File): Observable<string> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -117,7 +113,8 @@ export class ProfileService {
       );
   }
 
-  /** PUT /api/User/change-password */
+  // ── Password ──────────────────────────────────────────────────────────────
+
   changePassword(oldPassword: string, newPassword: string): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -137,7 +134,8 @@ export class ProfileService {
       );
   }
 
-  /** POST /api/User/subscribe-newsletter */
+  // ── Newsletter ────────────────────────────────────────────────────────────
+
   subscribeNewsletter(): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -147,7 +145,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** DELETE /api/User/unsubscribe-newsletter?email=... */
   unsubscribeNewsletter(): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -157,11 +154,25 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** PUT /api/User/save-card */
+  subscribeNewsletterPublic(email: string): Observable<void> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http
+      .post(`${BASE_USER}/subscribe-newsletter`, JSON.stringify(email), {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(
+        map(() => void 0),
+        catchError(this.handleError),
+      );
+  }
+
+  // ── Card ──────────────────────────────────────────────────────────────────
+
   saveCard(card: CardFormData): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
-    const body: SaveCardRequest = {
+    const body = {
       userId: this.userId,
       cardNumber: card.cardNumber.replace(/\s/g, ''),
       cardHolder: card.cardHolder,
@@ -172,7 +183,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** DELETE /api/User/remove-card?userId=... */
   removeCard(): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -182,7 +192,8 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** DELETE /api/User/delete-user?email=... */
+  // ── User account ──────────────────────────────────────────────────────────
+
   deleteUser(): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -196,27 +207,20 @@ export class ProfileService {
     localStorage.clear();
   }
 
-  /**
-   * GET /api/User/get-user?email=... — orders come from user.payments or
-   * a dedicated endpoint. The swagger shows POST /api/User/post-buy for placing
-   * orders; the purchased books live inside the Payment objects.
-   * We re-use getUser() and extract basket/payment data there.
-   *
-   * If a dedicated orders endpoint exists in the future, swap this out.
-   * For now we call the User endpoint and cast the payments array.
-   */
+  // ── Orders — /api/Payment/user/{userId} ───────────────────────────────────
+
   getOrders(): Observable<BookOrder[]> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
-    const params = new HttpParams().set('email', this.email);
     return this.http
-      .get<BookOrder[]>(`${BASE_USER}/get-orders`, { headers: this.authHeaders, params })
-      .pipe(catchError(this.handleError));
+      .get<BookOrder[]>(`${BASE_PAYMENT}/purchases/${this.userId}`, {
+        headers: this.authHeaders,
+      })
+      .pipe(catchError((): Observable<BookOrder[]> => of([])));
   }
 
-  // ── Payment ─────────────────────────────────────────────────────────────────
+  // ── Payment ───────────────────────────────────────────────────────────────
 
-  /** POST /api/Payment/pay */
   pay(payload: PayRequest): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -233,7 +237,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** GET /api/Payment/all */
   getAllPayments(): Observable<Payment[]> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -242,7 +245,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** GET /api/Payment/user/{userId} */
   getUserPayments(): Observable<Payment[]> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -251,7 +253,6 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  /** DELETE /api/Payment/{id} */
   deletePayment(paymentId: number): Observable<void> {
     const authErr = this.assertAuth();
     if (authErr) return authErr;
@@ -260,7 +261,7 @@ export class ProfileService {
       .pipe(catchError(this.handleError));
   }
 
-  // ── Error handler ───────────────────────────────────────────────────────────
+  // ── Error handler ─────────────────────────────────────────────────────────
 
   private handleError(err: any): Observable<never> {
     const message =
@@ -269,18 +270,5 @@ export class ProfileService {
       err?.message ??
       'Something went wrong. Please try again.';
     return throwError(() => new Error(message));
-  }
-  /** POST /api/User/subscribe-newsletter — public, takes email directly */
-  subscribeNewsletterPublic(email: string): Observable<void> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http
-      .post(`${BASE_USER}/subscribe-newsletter`, JSON.stringify(email), {
-        headers,
-        responseType: 'text',
-      })
-      .pipe(
-        map(() => void 0),
-        catchError(this.handleError),
-      );
   }
 }

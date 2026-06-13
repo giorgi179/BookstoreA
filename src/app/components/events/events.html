@@ -1,4 +1,3 @@
-
 @if (toastVisible()) {
   <div class="cart-toast" [class.cart-toast--error]="!toastBook()" (click)="dismissToast()">
     @if (toastBook()) {
@@ -45,9 +44,39 @@
     </div>
     <div class="book-detail__info">
       <h1 class="book-detail__title">{{ selectedBook()!.title }}</h1>
+
+      @if (selectedBook()!.bookDetails?.author) {
+      <p class="book-detail__author">ავტორი: {{ selectedBook()!.bookDetails?.author }}</p>
+      }
+
       <p class="book-detail__isbn">ISBN: {{ selectedBook()!.isbn }}</p>
       <p class="book-detail__price">{{ selectedBook()!.price }}$</p>
       <p class="book-detail__stock">მარაგი: {{ selectedBook()!.stock }}</p>
+
+      @if (selectedBook()!.bookDetails?.publisher) {
+      <p class="book-detail__meta">გამომცემლობა: {{ selectedBook()!.bookDetails?.publisher }}</p>
+      }
+
+      @if (selectedBook()!.bookDetails?.pageCount) {
+      <p class="book-detail__meta">გვერდები: {{ selectedBook()!.bookDetails?.pageCount }}</p>
+      }
+
+      @if (selectedBook()!.bookDetails?.language) {
+      <p class="book-detail__meta">ენა: {{ selectedBook()!.bookDetails?.language }}</p>
+      }
+
+      @if (selectedBook()!.bookDetails?.publishedDate) {
+      <p class="book-detail__meta">გამოცემის თარიღი: {{ selectedBook()!.bookDetails?.publishedDate | date:'dd.MM.yyyy' }}</p>
+      }
+
+      @if (selectedBook()!.categoryId) {
+      <p class="book-detail__meta">კატეგორია: {{ selectedBook()!.categoryId }}</p>
+      }
+
+      @if (selectedBook()!.bookDetails?.description) {
+      <p class="book-detail__description">{{ selectedBook()!.bookDetails?.description }}</p>
+      }
+
       <button class="book-detail__btn" (click)="addToCart(selectedBook()!)">Add to Cart</button>
     </div>
   </div>
