@@ -39,23 +39,114 @@
 }
 
 <!-- Book Detail -->
+<!-- ── Cart Toast ── -->
+@if (toastVisible()) {
+<div class="cart-toast" [class.cart-toast--error]="!toastBook()" (click)="dismissToast()">
+  @if (toastBook()) {
+  <div class="cart-toast__img-wrap">
+    <img [src]="toastBook()!.bookUrl" [alt]="toastBook()!.title" class="cart-toast__img" />
+  </div>
+  <div class="cart-toast__body">
+    <p class="cart-toast__label">Added to cart</p>
+    <p class="cart-toast__title">{{ toastBook()!.title }}</p>
+    <p class="cart-toast__price">${{ toastBook()!.price }}</p>
+  </div>
+  <svg class="cart-toast__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+  } @else {
+  <span class="cart-toast__err-icon">✕</span>
+  <p class="cart-toast__label">Failed to add item</p>
+  }
+</div>
+}
+
+<!-- Auth Modal -->
+@if (showAuthModal()) {
+<div class="auth-modal-overlay" (click)="closeModal()">
+  <div class="auth-modal" (click)="$event.stopPropagation()">
+    <div class="auth-modal__icon"> <svg class="cart-toast__check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12" />
+      </svg></div>
+    <h2 class="auth-modal__title">Sign in required</h2>
+    <p class="auth-modal__text">To add books to your cart, please sign in or create an account.</p>
+    <div class="auth-modal__buttons">
+      <button class="auth-modal__btn auth-modal__btn--primary" (click)="goToAuth()">Sign In / Register</button>
+      <button class="auth-modal__btn auth-modal__btn--ghost" (click)="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Book Detail -->
 @if (selectedBook()) {
 <div class="book-detail">
-  <button class="book-detail__back" (click)="closeDetail()"> Back</button>
+  <button class="book-detail__back" (click)="closeDetail()"><span>Back</span></button>
   <div class="book-detail__inner">
     <div class="book-detail__image">
       <img [src]="selectedBook()!.bookUrl" [alt]="selectedBook()!.title" />
     </div>
     <div class="book-detail__info">
       <h1 class="book-detail__title">{{ selectedBook()!.title }}</h1>
-      <p class="book-detail__isbn">ISBN: {{ selectedBook()!.isbn }}</p>
+
+      @if (selectedBook()!.bookDetails?.author) {
+      <p class="book-detail__author">Author: {{ selectedBook()!.bookDetails?.author }}</p>
+      }
+
+      <div class="book-detail__divider"></div>
+
+      <div class="book-detail__meta">
+        <p class="book-detail__isbn">ISBN: {{ selectedBook()!.isbn }}</p>
+
+        <p class="book-detail__stock"
+          [class.book-detail__stock--low]="selectedBook()!.stock > 0 && selectedBook()!.stock <= 5"
+          [class.book-detail__stock--out]="selectedBook()!.stock === 0">
+          @if (selectedBook()!.stock === 0) {
+          Out of stock
+          } @else if (selectedBook()!.stock <= 5) { Only {{ selectedBook()!.stock }} left in stock } @else { In stock:
+            {{ selectedBook()!.stock }} } </p>
+
+            @if (selectedBook()!.bookDetails?.publisher) {
+            <p class="book-detail__meta-item">Publisher: {{ selectedBook()!.bookDetails?.publisher }}</p>
+            }
+
+            @if (selectedBook()!.bookDetails?.pageCount) {
+            <p class="book-detail__meta-item">Pages: {{ selectedBook()!.bookDetails?.pageCount }}</p>
+            }
+
+            @if (selectedBook()!.bookDetails?.language) {
+            <p class="book-detail__meta-item">Language: {{ selectedBook()!.bookDetails?.language }}</p>
+            }
+
+            @if (selectedBook()!.bookDetails?.publishedDate) {
+            <p class="book-detail__meta-item">Published: {{ selectedBook()!.bookDetails?.publishedDate |
+              date:'dd.MM.yyyy' }}</p>
+            }
+
+            @if (selectedBook()!.categoryId) {
+            <p class="book-detail__meta-item">Category: {{ selectedBook()!.categoryId }}</p>
+            }
+      </div>
+
       <p class="book-detail__price">{{ selectedBook()!.price }}$</p>
-      <p class="book-detail__stock">მარაგი: {{ selectedBook()!.stock }}</p>
-      <button class="book-detail__btn" (click)="addToCart(selectedBook()!)">Add to Cart</button>
+
+      @if (selectedBook()!.bookDetails?.description) {
+      <p class="book-detail__description">{{ selectedBook()!.bookDetails?.description }}</p>
+      }
+
+      <button class="book-detail__btn" [disabled]="selectedBook()!.stock === 0" (click)="addToCart(selectedBook()!)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+        </svg>
+        <span>{{ selectedBook()!.stock === 0 ? 'Out of stock' : 'Add to Cart' }}</span>
+        <span class="btn-cr"></span>
+      </button>
     </div>
   </div>
 </div>
-
 } @else {
 <section class="books-hero">
   <h1 class="books-hero__title">A Library of Dreams</h1>
