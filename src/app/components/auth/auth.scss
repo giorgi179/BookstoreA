@@ -475,6 +475,42 @@ input {
   }
 }
 
+// ── Mobile switch link (hidden on desktop) ────────────────────────────────────
+.mobile-switch {
+  display: none;
+  font-size: 13px;
+  color: vars.$text-muted;
+  margin: 14px 0 0;
+  padding: 0;
+  text-align: center;
+  letter-spacing: 0.2px;
+  font-weight: 300;
+  line-height: 20px;
+}
+
+.mobile-switch-link {
+  color: vars.$cta-border;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  margin: 0;
+  letter-spacing: 0.2px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.75;
+    color: vars.$cta-border;
+  }
+
+  // override global span pseudo-elements
+  &::before,
+  &::after {
+    display: none !important;
+  }
+}
+
 // ── Verified container ────────────────────────────────────────────────────────
 .verified-container {
   display: flex;
@@ -826,6 +862,11 @@ input {
     min-height: 420px;
     border-radius: 0;
   }
+
+  // Mobile switch — ჩანს მხოლოდ mobile-ზე
+  .mobile-switch {
+    display: block;
+  }
 }
 
 // ── 480px — პატარა ტელეფონი ──────────────────────────────────────────────────
@@ -926,6 +967,15 @@ input {
   }
 
   .full-btn { margin-top: 6px; }
+
+  .mobile-switch {
+    font-size: 12px;
+    margin: 12px 0 0;
+  }
+
+  .mobile-switch-link {
+    font-size: 12px;
+  }
 }
 
 // ── 375px — iPhone SE / Galaxy A-series ──────────────────────────────────────
@@ -986,6 +1036,15 @@ input {
     font-size: 12.5px;
     line-height: 19px;
     margin: 6px 0 12px;
+  }
+
+  .mobile-switch {
+    font-size: 11.5px;
+    margin: 10px 0 0;
+  }
+
+  .mobile-switch-link {
+    font-size: 11.5px;
   }
 }
 
@@ -1153,6 +1212,15 @@ input {
   }
 
   .full-btn { margin-top: 4px; }
+
+  .mobile-switch {
+    font-size: 11px;
+    margin: 8px 0 0;
+  }
+
+  .mobile-switch-link {
+    font-size: 11px;
+  }
 }
 
 // ── Reduced motion ─────────────────────────────────────────────────────────────

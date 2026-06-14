@@ -114,6 +114,12 @@
       <button type="submit" [disabled]="isLoading()">
         @if (isLoading()) { <span class="btn-spinner"></span> } @else { Sign Up }
       </button>
+
+      <!-- Mobile only: switch to Sign In -->
+      <p class="mobile-switch">
+        Already have an account?
+        <a (click)="togglePanel()" class="mobile-switch-link">Sign In</a>
+      </p>
     </form>
     }
 
@@ -147,7 +153,6 @@
     }
   </div>
 
-  <!-- ══════════ SIGN IN ══════════ -->
   <!-- ══════════ SIGN IN ══════════ -->
   <div class="form-container sign-in-container">
 
@@ -215,6 +220,12 @@
       <button type="submit" [disabled]="isLoading()">
         @if (isLoading()) { <span class="btn-spinner"></span> } @else { Sign In }
       </button>
+
+      <!-- Mobile only: switch to Sign Up -->
+      <p class="mobile-switch">
+        Don't have an account?
+        <a (click)="togglePanel()" class="mobile-switch-link">Sign Up</a>
+      </p>
     </form>
     }
 
