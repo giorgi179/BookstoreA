@@ -1,7 +1,9 @@
 <div class="panel">
     <div class="panel-noise" aria-hidden="true"></div>
 
-    <!-- ── Sidebar ── -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <!--  SIDEBAR                                                              -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
     <aside class="sidebar">
         <div class="sidebar__brand">
             <div class="sidebar__arch-mask">
@@ -14,21 +16,36 @@
 
         <nav class="sidebar__nav" aria-label="მთავარი მენიუ">
             <button class="nav-item" [class.nav-item--active]="activeTab()==='dashboard'" (click)="setTab('dashboard')">
-                <span class="nav-item__icon">&#9783;</span>
+                <span class="nav-item__icon">⊞</span>
                 <span>Dashboard</span>
             </button>
+
             <button class="nav-item" [class.nav-item--active]="activeTab()==='books'" (click)="setTab('books')">
-                <span class="nav-item__icon">&#128218;</span>
+                <span class="nav-item__icon">📚</span>
                 <span>წიგნები</span>
                 <span class="nav-item__badge">{{ svc.books().length }}</span>
             </button>
+
             <button class="nav-item" [class.nav-item--active]="activeTab()==='users'" (click)="setTab('users')">
-                <span class="nav-item__icon">&#128100;</span>
+                <span class="nav-item__icon">👤</span>
                 <span>მომხმარებლები</span>
                 <span class="nav-item__badge">{{ svc.users().length }}</span>
             </button>
+
+            <button class="nav-item" [class.nav-item--active]="activeTab()==='baskets'" (click)="setTab('baskets')">
+                <span class="nav-item__icon">🛒</span>
+                <span>კალათები</span>
+                <span class="nav-item__badge">{{ svc.baskets().length }}</span>
+            </button>
+
+            <button class="nav-item" [class.nav-item--active]="activeTab()==='payments'" (click)="setTab('payments')">
+                <span class="nav-item__icon">💳</span>
+                <span>გადახდები</span>
+                <span class="nav-item__badge">{{ svc.payments().length }}</span>
+            </button>
+
             <button class="nav-item" [class.nav-item--active]="activeTab()==='messages'" (click)="setTab('messages')">
-                <span class="nav-item__icon">&#9993;</span>
+                <span class="nav-item__icon">✉</span>
                 <span>შეტყობინებები</span>
                 @if (svc.messages().length) {
                 <span class="nav-item__badge nav-item__badge--alert">{{ svc.messages().length }}</span>
@@ -44,14 +61,16 @@
                     <p class="sidebar__admin-email">{{ auth.admin()?.email }}</p>
                 </div>
             </div>
-            <button class="sidebar__logout" (click)="logout()" aria-label="გამოსვლა">&#10148;</button>
+            <button class="sidebar__logout" (click)="logout()" aria-label="გამოსვლა">➤</button>
         </div>
     </aside>
 
-    <!-- ── Main ── -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <!--  MAIN                                                                 -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
     <main class="panel-main">
 
-        <!-- ════════ DASHBOARD ════════ -->
+        <!-- ══════ DASHBOARD ══════ -->
         @if (activeTab() === 'dashboard') {
         <section class="section" aria-labelledby="dash-heading">
             <h2 id="dash-heading" class="section__title">Dashboard</h2>
@@ -64,54 +83,62 @@
             </div>
             } @else if (svc.stats(); as s) {
             <div class="stat-grid">
-                <div class="stat-card">
-                    <span class="stat-card__icon">&#128218;</span>
+                <div class="stat-card" (click)="setTab('books')" role="button" tabindex="0">
+                    <span class="stat-card__icon">📚</span>
                     <p class="stat-card__label">სულ წიგნი</p>
                     <p class="stat-card__value">{{ s.totalBooks | number }}</p>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-card__icon">&#128100;</span>
+                <div class="stat-card" (click)="setTab('users')" role="button" tabindex="0">
+                    <span class="stat-card__icon">👤</span>
                     <p class="stat-card__label">მომხმარებელი</p>
                     <p class="stat-card__value">{{ s.totalUsers | number }}</p>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-card__icon">&#128717;</span>
+                <div class="stat-card" (click)="setTab('payments')" role="button" tabindex="0">
+                    <span class="stat-card__icon">🛍</span>
                     <p class="stat-card__label">შეკვეთა</p>
                     <p class="stat-card__value">{{ s.totalOrders | number }}</p>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-card__icon">&#9993;</span>
+                <div class="stat-card" (click)="setTab('messages')" role="button" tabindex="0">
+                    <span class="stat-card__icon">✉</span>
                     <p class="stat-card__label">შეტყობინება</p>
                     <p class="stat-card__value">{{ s.newMessages | number }}</p>
                 </div>
                 <div class="stat-card stat-card--warn">
-                    <span class="stat-card__icon">&#9888;</span>
+                    <span class="stat-card__icon">⚠</span>
                     <p class="stat-card__label">მცირე მარაგი</p>
                     <p class="stat-card__value">{{ s.lowStockBooks }}</p>
                 </div>
                 <div class="stat-card stat-card--danger">
-                    <span class="stat-card__icon">&#10006;</span>
+                    <span class="stat-card__icon">✖</span>
                     <p class="stat-card__label">მარაგი ამოწურულია</p>
                     <p class="stat-card__value">{{ s.outOfStockBooks }}</p>
                 </div>
+            </div>
+
+            <!-- Quick nav shortcuts -->
+            <div class="quick-nav">
+                <button class="quick-nav__btn" (click)="setTab('baskets')">🛒 კალათები</button>
+                <button class="quick-nav__btn" (click)="setTab('payments')">💳 გადახდები</button>
+                <button class="quick-nav__btn" (click)="toggleSubscribers(); setTab('users')">⭐ გამომწერები</button>
             </div>
             }
         </section>
         }
 
-        <!-- ════════ BOOKS ════════ -->
+        <!-- ══════ BOOKS ══════ -->
         @if (activeTab() === 'books') {
         <section class="section" aria-labelledby="books-heading">
             <div class="section__head">
                 <h2 id="books-heading" class="section__title">წიგნები</h2>
                 <div class="section__head-actions">
                     <div class="search-wrap">
-                        <span class="search-wrap__icon">&#128269;</span>
-                        <input class="search-input" type="search" placeholder="სათაური ან ISBN..." [value]="bookSearch()"
-                            (input)="bookSearch.set($any($event.target).value)" aria-label="წიგნების ძებნა" />
+                        <span class="search-wrap__icon">🔍</span>
+                        <input class="search-input" type="search" placeholder="სათაური ან ISBN..."
+                            [value]="bookSearch()" (input)="bookSearch.set($any($event.target).value)"
+                            aria-label="წიგნების ძებნა" />
                     </div>
                     <button class="btn-add" (click)="openAddBook()">
-                        <span aria-hidden="true">&#10010;</span> წიგნის დამატება
+                        <span aria-hidden="true">✚</span> წიგნის დამატება
                     </button>
                 </div>
             </div>
@@ -122,6 +149,7 @@
                         <tr>
                             <th>ID</th>
                             <th>სათაური</th>
+                            <th>ავტორი</th>
                             <th>ISBN</th>
                             <th>ფასი</th>
                             <th>მარაგი</th>
@@ -132,7 +160,15 @@
                         @for (book of filteredBooks(); track book.id) {
                         <tr>
                             <td class="td-muted">#{{ book.id }}</td>
-                            <td class="td-title">{{ book.title }}</td>
+                            <td class="td-title">
+                                <div class="book-cell">
+                                    @if (book.bookUrl) {
+                                    <img class="book-thumb" [src]="book.bookUrl" alt="" loading="lazy" />
+                                    }
+                                    <span>{{ book.title }}</span>
+                                </div>
+                            </td>
+                            <td class="td-muted">{{ book.bookDetails?.author || '—' }}</td>
                             <td class="td-muted">{{ book.isbn }}</td>
                             <td>{{ book.price | number:'1.2-2' }} ₾</td>
                             <td>
@@ -141,8 +177,8 @@
                                     <input class="stock-input" type="number" min="0" [value]="stockValue()"
                                         (input)="stockValue.set(+$any($event.target).value)"
                                         aria-label="მარაგის რაოდენობა" />
-                                    <button class="btn-xs btn-xs--ok" (click)="saveStock(book.id)">&#10003;</button>
-                                    <button class="btn-xs btn-xs--cancel" (click)="cancelStock()">&#10005;</button>
+                                    <button class="btn-xs btn-xs--ok" (click)="saveStock(book.id)">✓</button>
+                                    <button class="btn-xs btn-xs--cancel" (click)="cancelStock()">✕</button>
                                 </div>
                                 } @else {
                                 <span class="stock-badge" [ngClass]="'stock-badge--' + stockColor(book.stock)"
@@ -151,14 +187,16 @@
                                     (keydown.enter)="startEditStock(book)">{{ book.stock }}</span>
                                 }
                             </td>
-                            <td>
+                            <td class="actions-cell">
+                                <button class="btn-icon btn-icon--edit" (click)="openEditBook(book)"
+                                    aria-label="რედაქტირება">✏</button>
                                 <button class="btn-icon btn-icon--danger" (click)="askDelete('book', book.id)"
-                                    aria-label="წაშლა">&#128465;</button>
+                                    aria-label="წაშლა">🗑</button>
                             </td>
                         </tr>
                         } @empty {
                         <tr>
-                            <td colspan="6" class="td-empty">წიგნი ვერ მოიძებნა</td>
+                            <td colspan="7" class="td-empty">წიგნი ვერ მოიძებნა</td>
                         </tr>
                         }
                     </tbody>
@@ -167,16 +205,22 @@
         </section>
         }
 
-        <!-- ════════ USERS ════════ -->
+        <!-- ══════ USERS ══════ -->
         @if (activeTab() === 'users') {
         <section class="section" aria-labelledby="users-heading">
             <div class="section__head">
                 <h2 id="users-heading" class="section__title">მომხმარებლები</h2>
-                <div class="search-wrap">
-                    <span class="search-wrap__icon">&#128269;</span>
-                    <input class="search-input" type="search" placeholder="სახელი ან ელ. ფოსტა..."
-                        [value]="userSearch()" (input)="userSearch.set($any($event.target).value)"
-                        aria-label="მომხმარებლების ძებნა" />
+                <div class="section__head-actions">
+                    <div class="search-wrap">
+                        <span class="search-wrap__icon">🔍</span>
+                        <input class="search-input" type="search" placeholder="სახელი ან ელ. ფოსტა..."
+                            [value]="userSearch()" (input)="userSearch.set($any($event.target).value)"
+                            aria-label="მომხმარებლების ძებნა" />
+                    </div>
+                    <button class="btn-toggle" [class.btn-toggle--active]="showSubscribers()"
+                        (click)="toggleSubscribers()">
+                        ⭐ გამომწერები
+                    </button>
                 </div>
             </div>
 
@@ -189,6 +233,7 @@
                             <th>ელ. ფოსტა</th>
                             <th>ტელეფონი</th>
                             <th>სტატუსი</th>
+                            <th>გამომწერი</th>
                             <th>შეკვეთები</th>
                             <th>მოქმედება</th>
                         </tr>
@@ -207,22 +252,33 @@
                             <td class="td-muted">{{ user.phone || '—' }}</td>
                             <td>
                                 @if (user.isVerified) {
-                                <span class="badge badge--ok">დადასტურებული</span>
+                                <button class="badge badge--ok badge--btn" (click)="unverify(user.id)" title="გაუქმება">
+                                    ✓ დადასტურებული
+                                </button>
                                 } @else {
                                 <button class="badge badge--warn badge--btn" (click)="verify(user.id)">
                                     დადასტურება
                                 </button>
                                 }
                             </td>
+                            <td class="td-center">
+                                @if (user.isSubscribed) {
+                                <span class="badge badge--sub">⭐ აქტიური</span>
+                                } @else {
+                                <span class="td-muted">—</span>
+                                }
+                            </td>
                             <td class="td-center">{{ user.orderCount }}</td>
-                            <td>
+                            <td class="actions-cell">
+                                <button class="btn-icon btn-icon--warn" (click)="askDelete('userCard', user.id)"
+                                    aria-label="ბარათის წაშლა" title="ბარათის წაშლა">💳</button>
                                 <button class="btn-icon btn-icon--danger" (click)="askDelete('user', user.id)"
-                                    aria-label="წაშლა">&#128465;</button>
+                                    aria-label="წაშლა">🗑</button>
                             </td>
                         </tr>
                         } @empty {
                         <tr>
-                            <td colspan="7" class="td-empty">მომხმარებელი ვერ მოიძებნა</td>
+                            <td colspan="8" class="td-empty">მომხმარებელი ვერ მოიძებნა</td>
                         </tr>
                         }
                     </tbody>
@@ -231,7 +287,157 @@
         </section>
         }
 
-        <!-- ════════ MESSAGES ════════ -->
+        <!-- ══════ BASKETS ══════ -->
+        @if (activeTab() === 'baskets') {
+        <section class="section" aria-labelledby="baskets-heading">
+            <h2 id="baskets-heading" class="section__title">კალათები</h2>
+
+            @if (!svc.baskets().length) {
+            <p class="td-empty">კალათა ვერ მოიძებნა</p>
+            }
+
+            <div class="basket-list">
+                @for (basket of svc.baskets(); track basket.id) {
+                <div class="basket-card" [class.basket-card--open]="expandedBasketId() === basket.id">
+                    <div class="basket-card__head" (click)="toggleBasket(basket.id)" role="button" tabindex="0"
+                        (keydown.enter)="toggleBasket(basket.id)">
+                        <div class="basket-card__info">
+                            <span class="basket-card__id">#{{ basket.id }}</span>
+                            <span class="basket-card__count">{{ basket.items.length }} პოზიცია</span>
+                            <span class="basket-card__total">{{ basketTotal(basket) | number:'1.2-2' }} ₾</span>
+                        </div>
+                        <div class="basket-card__actions">
+                            <button class="btn-icon btn-icon--danger"
+                                (click)="askDelete('basket', basket.id); $event.stopPropagation()"
+                                aria-label="კალათის წაშლა">🗑</button>
+                            <span class="basket-card__chevron"
+                                [class.basket-card__chevron--open]="expandedBasketId() === basket.id">›</span>
+                        </div>
+                    </div>
+
+                    @if (expandedBasketId() === basket.id) {
+                    <div class="basket-card__body">
+                        <table class="data-table data-table--sm">
+                            <thead>
+                                <tr>
+                                    <th>წიგნი</th>
+                                    <th>ISBN</th>
+                                    <th>ერთეული ფასი</th>
+                                    <th>რაოდენობა</th>
+                                    <th>სულ</th>
+                                    <th>მოქმედება</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of basket.items; track item.id) {
+                                <tr>
+                                    <td class="td-title">{{ item.book.title }}</td>
+                                    <td class="td-muted">{{ item.book.isbn }}</td>
+                                    <td>{{ item.price | number:'1.2-2' }} ₾</td>
+                                    <td>
+                                        @if (editingItemId() === item.id) {
+                                        <div class="stock-edit">
+                                            <input class="stock-input" type="number" min="1" [value]="itemQtyValue()"
+                                                (input)="itemQtyValue.set(+$any($event.target).value)" />
+                                            <button class="btn-xs btn-xs--ok"
+                                                (click)="saveItemQty(item.id, basket.id)">✓</button>
+                                            <button class="btn-xs btn-xs--cancel" (click)="cancelEditItem()">✕</button>
+                                        </div>
+                                        } @else {
+                                        <span class="qty-badge" (click)="startEditItem(item)" role="button"
+                                            tabindex="0">
+                                            {{ item.quantity }}
+                                        </span>
+                                        }
+                                    </td>
+                                    <td>{{ item.price * item.quantity | number:'1.2-2' }} ₾</td>
+                                    <td>
+                                        <button class="btn-icon btn-icon--danger"
+                                            (click)="askDelete('basketItem', item.id, basket.id)"
+                                            aria-label="წაშლა">🗑</button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </section>
+        }
+
+        <!-- ══════ PAYMENTS ══════ -->
+        @if (activeTab() === 'payments') {
+        <section class="section" aria-labelledby="payments-heading">
+            <div class="section__head">
+                <h2 id="payments-heading" class="section__title">გადახდები</h2>
+                <div class="search-wrap">
+                    <span class="search-wrap__icon">🔍</span>
+                    <input class="search-input" type="search" placeholder="სახელი, ID ან მისამართი..."
+                        [value]="paymentSearch()" (input)="paymentSearch.set($any($event.target).value)" />
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table" aria-label="გადახდების სია">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ბარათის მფლობელი</th>
+                            <th>თანხა</th>
+                            <th>მისამართი</th>
+                            <th>სტატუსი</th>
+                            <th>თარიღი</th>
+                            <th>მოქმედება</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (pay of filteredPayments(); track pay.id) {
+                        <tr>
+                            <td class="td-muted">#{{ pay.id }}</td>
+                            <td>{{ pay.cardHolderName }}</td>
+                            <td class="td-amount">{{ pay.amount | number:'1.2-2' }} ₾</td>
+                            <td class="td-muted td-address">{{ pay.exactAddress }}</td>
+                            <td>
+                                @if (editingPaymentId() === pay.id) {
+                                <div class="stock-edit">
+                                    <select class="status-select" [value]="paymentStatusVal()"
+                                        (change)="paymentStatusVal.set($any($event.target).value)">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="Refunded">Refunded</option>
+                                    </select>
+                                    <button class="btn-xs btn-xs--ok" (click)="saveStatus(pay.id)">✓</button>
+                                    <button class="btn-xs btn-xs--cancel" (click)="cancelEditStatus()">✕</button>
+                                </div>
+                                } @else {
+                                <span class="status-badge" [ngClass]="'status-badge--' + statusColor(pay.status)"
+                                    (click)="startEditStatus(pay)" role="button" tabindex="0">
+                                    {{ pay.status || 'Pending' }}
+                                </span>
+                                }
+                            </td>
+                            <td class="td-muted">{{ pay.paidAt ? (pay.paidAt | date:'dd MMM yyyy') : '—' }}</td>
+                            <td>
+                                <button class="btn-icon btn-icon--danger" (click)="askDelete('payment', pay.id)"
+                                    aria-label="წაშლა">🗑</button>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="7" class="td-empty">გადახდა ვერ მოიძებნა</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        }
+
+        <!-- ══════ MESSAGES ══════ -->
         @if (activeTab() === 'messages') {
         <section class="section" aria-labelledby="msg-heading">
             <h2 id="msg-heading" class="section__title">შეტყობინებები</h2>
@@ -246,8 +452,7 @@
                             <p class="msg-card__email">{{ msgEmail(msg) }}</p>
                         </div>
                         <button class="btn-icon btn-icon--danger msg-card__del"
-                            (click)="askDelete('message', msgId(msg))"
-                            aria-label="შეტყობინების წაშლა">&#128465;</button>
+                            (click)="askDelete('message', msgId(msg))" aria-label="შეტყობინების წაშლა">🗑</button>
                     </div>
                     <p class="msg-card__body">{{ msgBody(msg) }}</p>
                 </article>
@@ -260,79 +465,71 @@
 
     </main>
 
-    <!-- ── Add book modal ── -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <!--  MODALS                                                               -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Add book -->
     @if (showAddBook()) {
     <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="addbook-title">
         <div class="modal modal--form">
             <h3 id="addbook-title" class="modal__title">წიგნის დამატება</h3>
-
             <div class="form-grid">
                 <label class="form-field form-field--full">
                     <span class="form-field__label">სათაური *</span>
                     <input class="form-input" type="text" [value]="newBook().title"
                         (input)="updateNewBook('title', $any($event.target).value)" placeholder="წიგნის სათაური" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">ISBN *</span>
                     <input class="form-input" type="text" [value]="newBook().isbn"
                         (input)="updateNewBook('isbn', $any($event.target).value)" placeholder="978-..." />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">კატეგორიის ID</span>
                     <input class="form-input" type="number" min="1" [value]="newBook().categoryId"
                         (input)="updateNewBook('categoryId', +$any($event.target).value)" placeholder="1" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">ფასი (₾) *</span>
                     <input class="form-input" type="number" min="0" step="0.01" [value]="newBook().price"
                         (input)="updateNewBook('price', +$any($event.target).value)" placeholder="0.00" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">მარაგი</span>
                     <input class="form-input" type="number" min="0" [value]="newBook().stock"
                         (input)="updateNewBook('stock', +$any($event.target).value)" placeholder="0" />
                 </label>
-
                 <label class="form-field form-field--full">
                     <span class="form-field__label">სურათის URL</span>
                     <input class="form-input" type="text" [value]="newBook().bookUrl"
                         (input)="updateNewBook('bookUrl', $any($event.target).value)" placeholder="https://..." />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">ავტორი *</span>
                     <input class="form-input" type="text" [value]="newBook().author"
                         (input)="updateNewBook('author', $any($event.target).value)" placeholder="ავტორის სახელი" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">გამომცემლობა</span>
                     <input class="form-input" type="text" [value]="newBook().publisher"
                         (input)="updateNewBook('publisher', $any($event.target).value)" placeholder="გამომცემლობა" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">გვერდების რაოდენობა</span>
                     <input class="form-input" type="number" min="0" [value]="newBook().pageCount"
                         (input)="updateNewBook('pageCount', +$any($event.target).value)" placeholder="0" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">ენა</span>
                     <input class="form-input" type="text" [value]="newBook().language"
                         (input)="updateNewBook('language', $any($event.target).value)" placeholder="ქართული" />
                 </label>
-
                 <label class="form-field">
                     <span class="form-field__label">გამოცემის თარიღი</span>
                     <input class="form-input" type="date" [value]="newBook().publishedDate.slice(0,10)"
                         (input)="updateNewBook('publishedDate', $any($event.target).value)" />
                 </label>
-
                 <label class="form-field form-field--full">
                     <span class="form-field__label">აღწერა</span>
                     <textarea class="form-input form-textarea" rows="3" [value]="newBook().description"
@@ -340,15 +537,12 @@
                         placeholder="წიგნის აღწერა"></textarea>
                 </label>
             </div>
-
             @if (addBookError()) {
             <p class="form-error">{{ addBookError() }}</p>
             }
-
             <div class="modal__actions">
-                <button class="modal__btn modal__btn--cancel" (click)="closeAddBook()" [disabled]="addBookLoading()">
-                    გაუქმება
-                </button>
+                <button class="modal__btn modal__btn--cancel" (click)="closeAddBook()"
+                    [disabled]="addBookLoading()">გაუქმება</button>
                 <button class="modal__btn modal__btn--save" (click)="submitAddBook()" [disabled]="addBookLoading()">
                     {{ addBookLoading() ? 'ინახება...' : 'დამატება' }}
                 </button>
@@ -357,11 +551,51 @@
     </div>
     }
 
-    <!-- ── Delete confirm modal ── -->
+    <!-- Edit book -->
+    @if (showEditBook() && editingBook(); as b) {
+    <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="editbook-title">
+        <div class="modal modal--form">
+            <h3 id="editbook-title" class="modal__title">წიგნის რედაქტირება</h3>
+            <div class="form-grid">
+                <label class="form-field form-field--full">
+                    <span class="form-field__label">სათაური</span>
+                    <input class="form-input" type="text" [value]="b.title"
+                        (input)="updateEditBook('title', $any($event.target).value)" />
+                </label>
+                <label class="form-field">
+                    <span class="form-field__label">ISBN</span>
+                    <input class="form-input" type="text" [value]="b.isbn"
+                        (input)="updateEditBook('isbn', $any($event.target).value)" />
+                </label>
+                <label class="form-field">
+                    <span class="form-field__label">ფასი (₾)</span>
+                    <input class="form-input" type="number" min="0" step="0.01" [value]="b.price"
+                        (input)="updateEditBook('price', +$any($event.target).value)" />
+                </label>
+                <label class="form-field">
+                    <span class="form-field__label">მარაგი</span>
+                    <input class="form-input" type="number" min="0" [value]="b.stock"
+                        (input)="updateEditBook('stock', +$any($event.target).value)" />
+                </label>
+                <label class="form-field form-field--full">
+                    <span class="form-field__label">სურათის URL</span>
+                    <input class="form-input" type="text" [value]="b.bookUrl"
+                        (input)="updateEditBook('bookUrl', $any($event.target).value)" />
+                </label>
+            </div>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--cancel" (click)="closeEditBook()">გაუქმება</button>
+                <button class="modal__btn modal__btn--save" (click)="submitEditBook()">შენახვა</button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Delete confirm -->
     @if (confirmDelete()) {
     <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal">
-            <p class="modal__icon" aria-hidden="true">&#9888;</p>
+            <p class="modal__icon" aria-hidden="true">⚠</p>
             <h3 id="modal-title" class="modal__title">დარწმუნებული ხართ?</h3>
             <p class="modal__desc">ეს მოქმედება შეუქცევადია.</p>
             <div class="modal__actions">
@@ -371,4 +605,5 @@
         </div>
     </div>
     }
+
 </div>

@@ -115,7 +115,8 @@ export interface Payment {
   cardHolderName: string;
   amount: number;
   exactAddress: string;
-  createdAt?: string;
+  paidAt?: string; 
+  status?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -169,7 +170,6 @@ export interface BasketGroup {
 // Profile
 // ─────────────────────────────────────────────────────────────────────────────
 
-
 export interface AdminUser {
   fullName: string;
   email: string;
@@ -211,6 +211,7 @@ export interface AppUser {
   isVerified: boolean;
   userImgs: string;
   orderCount: number;
+  isSubscribed?: boolean; // ← დაამატე
 }
 
 export interface Message {

@@ -16,8 +16,6 @@ $font-d: 'Playfair Display', serif;
 $font-b: 'EB Garamond', 'Garamond', Georgia, serif;
 $ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-$sidebar-w: 252px;
-
 // Breakpoints
 $bp-lg: 1024px;
 $bp-md: 768px;
@@ -35,11 +33,21 @@ $bp-min: 320px;
   }
 }
 
+@keyframes pg-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Root layout
 // ─────────────────────────────────────────────────────────────────────────────
 .pg {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: $bg;
   color: $cream;
@@ -49,51 +57,64 @@ $bp-min: 320px;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sidebar
+// Header — cover band + avatar overlay + identity + tab nav (Facebook layout)
 // ─────────────────────────────────────────────────────────────────────────────
-.pg__sidebar {
-  width: $sidebar-w;
-  flex-shrink: 0;
+.pg__header {
   background: $surface;
-  border-right: 1px solid $card-border;
+  border-bottom: 1px solid $card-border;
+}
+
+// ─── Cover band ────────────────────────────────────────────────────────────────
+.pg__cover {
+  position: relative;
+  height: 160px;
+  background:
+    radial-gradient(ellipse 80% 100% at 30% 0%, rgba($gold, 0.16), transparent 60%),
+    linear-gradient(135deg, #1e1e16 0%, #15150f 100%);
+  border-bottom: 1px solid $card-border;
+  overflow: hidden;
+}
+
+.pg__cover-ornament {
+  position: absolute;
+  right: clamp(16px, 4vw, 56px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-family: $font-d;
+  color: rgba($gold, 0.14);
+  line-height: 1;
+  pointer-events: none;
+}
+
+// ─── Header content row (avatar + name + logout) ─────────────────────────────
+.pg__header-content {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  padding: 40px 0 32px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  align-items: flex-end;
+  gap: 20px;
+  padding: 0 clamp(20px, 5vw, 56px);
+  margin-top: -48px;
+  padding-bottom: 18px;
 }
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-.pg__avatar-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 0 20px 28px;
-  border-bottom: 1px solid $card-border;
-  margin-bottom: 20px;
-}
-
 .pg__avatar-ring {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   flex-shrink: 0;
 }
 
 .pg__avatar-arch {
   width: 100%;
   height: 100%;
-  border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+  border-radius: 50%;
   overflow: hidden;
-  border: 1.5px solid rgba($gold, 0.35);
+  border: 3px solid $surface;
+  outline: 1px solid rgba($gold, 0.35);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+  background: $card;
 }
 
 .pg__avatar-img {
@@ -106,10 +127,10 @@ $bp-min: 320px;
 
 .pg__avatar-edit {
   position: absolute;
-  bottom: -5px;
-  right: -5px;
-  width: 26px;
-  height: 26px;
+  bottom: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: $card;
   border: 1px solid $card-border;
@@ -132,71 +153,103 @@ $bp-min: 320px;
   }
 }
 
+// ─── Identity ─────────────────────────────────────────────────────────────────
 .pg__identity {
-  text-align: center;
   min-width: 0;
-  width: 100%;
+  flex: 1;
+  padding-bottom: 4px;
 }
 
 .pg__name {
   margin: 0;
   font-family: $font-d;
-  font-size: 1rem;
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
   font-weight: 400;
   color: $cream;
-  line-height: 1.3;
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 .pg__email-label {
   margin: 4px 0 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: $muted-dim;
   word-break: break-all;
   line-height: 1.4;
 }
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
-.pg__nav {
-  flex: 1;
+// ─── Logout (header position) ──────────────────────────────────────────────────
+.pg__logout {
   display: flex;
-  flex-direction: column;
-  padding: 0 10px;
-  gap: 2px;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 18px;
+  border: 1px solid rgba($danger, 0.18);
+  border-radius: 50px;
+  background: transparent;
+  color: rgba($muted, 0.6);
+  font-family: $font-b;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+  min-height: 40px;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($danger, 0.08);
+    color: lighten($danger, 22%);
+    border-color: rgba($danger, 0.4);
+  }
+}
+
+// ─── Tab nav (horizontal, Facebook-style) ──────────────────────────────────────
+.pg__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 clamp(12px, 5vw, 56px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .pg__nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 14px 16px;
   border: none;
+  border-bottom: 2px solid transparent;
   background: transparent;
   color: $muted;
   font-family: $font-b;
-  font-size: 0.88rem;
-  letter-spacing: 0.04em;
-  border-radius: 6px;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  text-align: left;
-  transition:
-    background 0.18s,
-    color 0.18s;
   white-space: nowrap;
-  min-height: 42px;
-  width: 100%;
+  min-height: 44px;
+  flex-shrink: 0;
+  transition:
+    color 0.18s,
+    border-color 0.18s;
 
   &:hover {
-    background: rgba($cream, 0.05);
     color: $cream;
   }
 
   &--active {
-    background: rgba($gold, 0.1);
     color: $cream;
+    border-bottom-color: $gold;
 
     .pg__nav-icon {
       color: $gold;
@@ -214,37 +267,16 @@ $bp-min: 320px;
     opacity 0.18s;
 }
 
-// ─── Logout ───────────────────────────────────────────────────────────────────
-.pg__logout {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 12px 10px 0;
-  padding: 10px 14px;
-  border: 1px solid rgba($danger, 0.18);
-  border-radius: 6px;
-  background: transparent;
-  color: rgba($muted, 0.6);
-  font-family: $font-b;
-  font-size: 0.88rem;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-  min-height: 42px;
-  width: calc(100% - 20px);
-
-  &:hover {
-    background: rgba($danger, 0.08);
-    color: lighten($danger, 22%);
-    border-color: rgba($danger, 0.4);
-  }
-
-  span {
-    flex: 1;
-  }
+.pg__nav-badge {
+  background: var(--accent, #2e5f8a);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -252,23 +284,25 @@ $bp-min: 320px;
 // ─────────────────────────────────────────────────────────────────────────────
 .pg__main {
   flex: 1;
-  padding: 52px clamp(24px, 5vw, 64px) 64px;
-  max-width: 780px;
+  padding: 40px clamp(20px, 5vw, 56px) 64px;
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
   min-width: 0;
   box-sizing: border-box;
 }
 
 // ─── Panel ────────────────────────────────────────────────────────────────────
 .pg__panel-head {
-  margin-bottom: 40px;
-  padding-bottom: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 18px;
   border-bottom: 1px solid $card-border;
 }
 
 .pg__panel-title {
   margin: 0;
   font-family: $font-d;
-  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  font-size: clamp(1.35rem, 3.5vw, 1.9rem);
   font-weight: 400;
   color: $cream;
   line-height: 1.2;
@@ -475,6 +509,12 @@ $bp-min: 320px;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;
+
+  &--sm {
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+  }
 }
 
 // ─── Library ──────────────────────────────────────────────────────────────────
@@ -508,6 +548,18 @@ $bp-min: 320px;
   &:hover {
     transform: translateY(-4px);
   }
+
+  &--skeleton {
+    pointer-events: none;
+  }
+}
+
+.pg__book-cover-wrap {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 4px;
+  background: $card;
 }
 
 .pg__book-cover {
@@ -538,6 +590,80 @@ $bp-min: 320px;
 .pg__book-price {
   font-size: 0.82rem;
   color: rgba($gold, 0.85);
+}
+
+// ─── Skeleton loader ─────────────────────────────────────────────────────────
+.pg__skeleton {
+  background: linear-gradient(
+    90deg,
+    $card 25%,
+    #28281f 50%,
+    $card 75%
+  );
+  background-size: 200% 100%;
+  animation: pg-shimmer 1.4s infinite;
+  border-radius: 4px;
+
+  &.pg__book-cover {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    display: block;
+  }
+
+  &--title {
+    height: 14px;
+    width: 80%;
+    margin-bottom: 8px;
+  }
+
+  &--sub {
+    height: 11px;
+    width: 60%;
+    margin-bottom: 6px;
+  }
+
+  &--short {
+    width: 40%;
+  }
+}
+
+// ─── Refresh button ────────────────────────────────────────────────────────────
+.pg__refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 9px 18px;
+  border: 1px solid $card-border;
+  border-radius: 50px;
+  background: transparent;
+  color: $muted-dim;
+  font-family: $font-b;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  min-height: 40px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    color: $cream;
+    border-color: rgba($gold, 0.4);
+  }
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.pg__panel-total {
+  font-weight: 600;
+  color: $gold;
 }
 
 // ─── Payment card preview ─────────────────────────────────────────────────────
@@ -759,233 +885,52 @@ $bp-min: 320px;
 // Responsive — 1024px
 // ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-lg) {
-  .pg__sidebar {
-    width: 220px;
-  }
   .pg__main {
-    padding: 44px clamp(20px, 4vw, 48px) 56px;
+    padding: 36px clamp(18px, 4vw, 48px) 56px;
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Responsive — 768px  (sidebar → top bar)
+// Responsive — 768px
 // ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-md) {
   .pg {
-    flex-direction: column;
     padding-top: 60px;
   }
 
-  // Sidebar becomes a horizontal top bar
-  .pg__sidebar {
-    width: 100%;
-    height: auto;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    padding: 0;
-    flex-direction: row;
-    align-items: stretch;
-    border-right: none;
-    border-bottom: 1px solid $card-border;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
+  .pg__cover {
+    height: 120px;
   }
 
-  // Avatar — compact row item
-  .pg__avatar-block {
-    flex-direction: row;
-    align-items: center;
-    padding: 10px 16px;
-    border-bottom: none;
-    border-right: 1px solid $card-border;
-    margin-bottom: 0;
-    gap: 10px;
-    flex-shrink: 0;
+  .pg__header-content {
+    margin-top: -36px;
+    gap: 14px;
+    flex-wrap: wrap;
   }
 
   .pg__avatar-ring {
-    width: 44px;
-    height: 44px;
+    width: 76px;
+    height: 76px;
   }
   .pg__avatar-edit {
-    width: 20px;
-    height: 20px;
-    bottom: -4px;
-    right: -4px;
-    font-size: 10px;
+    width: 24px;
+    height: 24px;
   }
 
-  .pg__identity {
-    text-align: left;
-  }
   .pg__name {
-    font-size: 0.85rem;
-    max-width: 120px;
-  }
-  .pg__email-label {
-    display: none;
-  } // hidden in topbar — saves space
-
-  // Nav — horizontal scrollable row
-  .pg__nav {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    padding: 6px 8px;
-    gap: 2px;
-    flex: 1;
-    align-items: center;
-    overflow-x: auto;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
+    font-size: 1.2rem;
   }
 
-  .pg__nav-item {
-    flex-shrink: 0;
-    padding: 7px 12px;
-    font-size: 0.82rem;
-    min-height: 36px;
-    border-radius: 6px;
-  }
-
-  // Logout — always visible as last item in the bar
   .pg__logout {
-    flex-shrink: 0;
-    margin: 6px 8px 6px 4px;
-    padding: 7px 12px;
-    width: auto;
-    min-height: 36px;
-    font-size: 0.82rem;
-    border-color: rgba($danger, 0.22);
-    white-space: nowrap;
-    gap: 6px;
+    order: 3;
+    margin-left: auto;
   }
 
   .pg__main {
-    padding: 36px 20px 48px;
-    max-width: 100%;
+    padding: 32px 18px 48px;
   }
 }
 
-// ── დაამატე არსებულ profile.scss-ს ──────────────────────────────────────────
-
-// Library badge on sidebar nav
-.pg__nav-badge {
-  margin-left: auto;
-  background: var(--accent, #2e5f8a);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  line-height: 1;
-  padding: 2px 6px;
-  border-radius: 999px;
-  min-width: 18px;
-  text-align: center;
-}
-
-// Refresh button below library grid
-.pg__refresh-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 20px;
-  padding: 6px 14px;
-  border: 1px solid var(--border, #ddd);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text-muted, #888);
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition:
-    color 0.2s,
-    border-color 0.2s;
-
-  &:hover:not(:disabled) {
-    color: var(--text, #222);
-    border-color: var(--text-muted, #888);
-  }
-  &:disabled {
-    opacity: 0.45;
-    cursor: default;
-  }
-
-  svg {
-    flex-shrink: 0;
-  }
-}
-
-// Total spent label in panel subtitle
-.pg__panel-total {
-  font-weight: 600;
-  color: var(--accent, #2e5f8a);
-}
-
-// Book cover wrapper (keeps aspect-ratio stable while loading)
-.pg__book-cover-wrap {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
-  border-radius: 4px;
-  background: var(--surface-alt, #f5f5f5);
-}
-
-// Skeleton loader for library tab
-.pg__book-card--skeleton {
-  pointer-events: none;
-}
-
-.pg__skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--surface-alt, #eee) 25%,
-    var(--surface-hover, #ddd) 50%,
-    var(--surface-alt, #eee) 75%
-  );
-  background-size: 200% 100%;
-  animation: pg-shimmer 1.4s infinite;
-  border-radius: 4px;
-
-  &.pg__book-cover {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    display: block;
-  }
-
-  &--title {
-    height: 14px;
-    width: 80%;
-    margin-bottom: 8px;
-  }
-
-  &--sub {
-    height: 11px;
-    width: 60%;
-    margin-bottom: 6px;
-  }
-
-  &--short {
-    width: 40%;
-  }
-}
-
-@keyframes pg-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-// Small spinner variant for avatar upload button
-.pg__spinner--sm {
-  width: 12px;
-  height: 12px;
-  border-width: 2px;
-}
 // ─────────────────────────────────────────────────────────────────────────────
 // Responsive — 600px
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1036,29 +981,70 @@ $bp-min: 320px;
 // Responsive — 480px
 // ─────────────────────────────────────────────────────────────────────────────
 @media (max-width: $bp-xs) {
-  .pg__main {
-    padding: 28px 14px 40px;
+  .pg__cover {
+    height: 96px;
   }
+
+  .pg__header-content {
+    margin-top: -30px;
+    padding: 0 14px;
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .pg__avatar-ring {
+    width: 64px;
+    height: 64px;
+  }
+  .pg__avatar-edit {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pg__identity {
+    flex-basis: calc(100% - 64px - 14px);
+  }
+
+  .pg__name {
+    font-size: 1.05rem;
+    white-space: normal;
+  }
+  .pg__email-label {
+    font-size: 0.72rem;
+  }
+
+  .pg__logout {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-left: 0;
+    order: 4;
+  }
+
+  .pg__nav {
+    padding: 0 6px;
+  }
+  .pg__nav-item {
+    padding: 12px 12px;
+    font-size: 0.85rem;
+  }
+
+  // Icon-only tabs on very narrow screens
+  .pg__nav-label {
+    display: none;
+  }
+
+  .pg__main {
+    padding: 24px 14px 40px;
+  }
+
+  .pg__panel-head {
+    margin-bottom: 24px;
+  }
+
   .pg__setting {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-  .pg__panel-head {
-    margin-bottom: 28px;
-  }
-
-  // Hide nav labels → icon-only tabs
-  .pg__nav-item span:last-child {
-    display: none;
-  }
-  .pg__nav-item {
-    padding: 8px 10px;
-  }
-
-  // Keep logout text visible so it's recognisable
-  .pg__logout span {
-    display: inline;
   }
 }
 
@@ -1070,11 +1056,40 @@ $bp-min: 320px;
     padding-top: 56px;
   }
 
-  .pg__name {
-    max-width: 90px;
+  .pg__cover {
+    height: 84px;
   }
+
+  .pg__header-content {
+    margin-top: -26px;
+    padding: 0 10px;
+    padding-bottom: 12px;
+    gap: 10px;
+  }
+
+  .pg__avatar-ring {
+    width: 56px;
+    height: 56px;
+  }
+  .pg__avatar-edit {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pg__identity {
+    flex-basis: calc(100% - 56px - 10px);
+  }
+
+  .pg__name {
+    font-size: 0.98rem;
+  }
+
+  .pg__nav-item {
+    padding: 11px 10px;
+  }
+
   .pg__main {
-    padding: 22px 12px 36px;
+    padding: 20px 12px 36px;
   }
 
   .pg__danger-zone {
@@ -1090,38 +1105,58 @@ $bp-min: 320px;
     padding-top: 52px;
   }
 
-  .pg__avatar-block {
-    padding: 8px 10px;
+  .pg__cover {
+    height: 72px;
+  }
+
+  .pg__header-content {
+    margin-top: -22px;
+    padding: 0 8px;
+    padding-bottom: 10px;
     gap: 8px;
   }
+
   .pg__avatar-ring {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
   }
   .pg__avatar-edit {
     width: 18px;
     height: 18px;
+    font-size: 10px;
   }
+
+  .pg__identity {
+    flex-basis: calc(100% - 48px - 8px);
+  }
+
   .pg__name {
-    max-width: 72px;
-    font-size: 0.78rem;
+    font-size: 0.9rem;
+  }
+  .pg__email-label {
+    font-size: 0.68rem;
+  }
+
+  .pg__logout {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    min-height: 38px;
   }
 
   .pg__nav-item {
-    padding: 7px 8px;
+    padding: 10px 9px;
+    min-height: 40px;
   }
-  .pg__logout {
-    padding: 7px 8px;
-    margin: 4px 6px;
-    font-size: 0.78rem;
-    gap: 5px;
+  .pg__nav-icon svg {
+    width: 15px;
+    height: 15px;
   }
 
   .pg__main {
-    padding: 18px 10px 28px;
+    padding: 16px 10px 28px;
   }
   .pg__panel-head {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .pg__fields {
     gap: 12px;

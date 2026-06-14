@@ -1,125 +1,155 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe, NgClass, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AdminLoginService } from '../../service/admin-login';
 import { AdminService } from '../../service/admin';
-import { Book, Message, NewBook } from '../../controlers';
+import { Book, BasketGroup, BasketItem, Message, NewBook, Payment } from '../../controlers';
 
-type Tab = 'dashboard' | 'books' | 'users' | 'messages';
+type Tab = 'dashboard' | 'books' | 'users' | 'messages' | 'baskets' | 'payments';
 
 @Component({
   selector: 'app-mtavari-panel',
   standalone: true,
-  imports: [DecimalPipe, NgClass, FormsModule],
+  imports: [DecimalPipe, NgClass, FormsModule, DatePipe],
   templateUrl: './mtavari-panel.html',
   styleUrl: './mtavari-panel.scss',
 })
 export class MtavariPanel implements OnInit {
-  readonly svc = inject(AdminService);
+  readonly svc  = inject(AdminService);
   readonly auth = inject(AdminLoginService);
 
   activeTab = signal<Tab>('dashboard');
 
-  bookSearch = signal('');
-  userSearch = signal('');
+  bookSearch    = signal('');
+  userSearch    = signal('');
+  paymentSearch = signal('');
 
+  // ── Book editing ──────────────────────────────────────────────────────────
   editingStockId = signal<number | null>(null);
-  stockValue = signal(0);
+  stockValue     = signal(0);
 
-  confirmDelete = signal<{ type: string; id: number } | null>(null);
+  showEditBook  = signal(false);
+  editingBook   = signal<Book | null>(null);
 
-  // ── Add book ──────────────────────────────
-  showAddBook = signal(false);
-  addBookError = signal<string | null>(null);
+  // ── Add book ──────────────────────────────────────────────────────────────
+  showAddBook    = signal(false);
+  addBookError   = signal<string | null>(null);
   addBookLoading = signal(false);
 
   newBook = signal<NewBook>({
-    title: '',
-    isbn: '',
-    price: 0,
-    stock: 0,
-    bookUrl: '',
-    categoryId: 1,
-    author: '',
-    description: '',
-    publisher: '',
-    pageCount: 0,
-    publishedDate: new Date().toISOString(),
-    language: 'ქართული',
+    title: '', isbn: '', price: 0, stock: 0, bookUrl: '', categoryId: 1,
+    author: '', description: '', publisher: '', pageCount: 0,
+    publishedDate: new Date().toISOString(), language: 'ქართული',
   });
 
+  // ── Basket expand ─────────────────────────────────────────────────────────
+  expandedBasketId  = signal<number | null>(null);
+  editingItemId     = signal<number | null>(null);
+  itemQtyValue      = signal(0);
+
+  // ── Payment status edit ───────────────────────────────────────────────────
+  editingPaymentId  = signal<number | null>(null);
+  paymentStatusVal  = signal('');
+
+  // ── Confirm delete ────────────────────────────────────────────────────────
+  confirmDelete = signal<{ type: string; id: number; extra?: number } | null>(null);
+
+  // ── Show subscribers toggle ───────────────────────────────────────────────
+  showSubscribers = signal(false);
+
+  // ── Computed ──────────────────────────────────────────────────────────────
   readonly filteredBooks = computed(() => {
     const q = this.bookSearch().toLowerCase();
-    return this.svc
-      .books()
-      .filter((b) => b.title.toLowerCase().includes(q) || b.isbn?.toLowerCase().includes(q));
+    return this.svc.books().filter(
+      (b) => b.title.toLowerCase().includes(q) || b.isbn?.toLowerCase().includes(q),
+    );
   });
 
   readonly filteredUsers = computed(() => {
     const q = this.userSearch().toLowerCase();
-    return this.svc
-      .users()
-      .filter((u) => u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+    const list = this.showSubscribers() ? this.svc.subscribers() : this.svc.users();
+    return list.filter(
+      (u) => u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
+    );
   });
 
+  readonly filteredPayments = computed(() => {
+    const q = this.paymentSearch().toLowerCase();
+    return this.svc.payments().filter(
+      (p) =>
+        p.cardHolderName?.toLowerCase().includes(q) ||
+        p.exactAddress?.toLowerCase().includes(q) ||
+        String(p.id).includes(q),
+    );
+  });
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit() {
     if (!this.auth.isLoggedIn()) return;
-
     this.svc.loadDashboard().subscribe();
     this.svc.loadBooks().subscribe();
     this.svc.loadUsers().subscribe();
     this.svc.loadMessages().subscribe();
+    this.svc.loadBaskets().subscribe();
+    this.svc.loadPayments().subscribe();
   }
 
   setTab(tab: Tab) {
     this.activeTab.set(tab);
-
-    if (tab === 'books' && this.svc.books().length === 0) this.svc.loadBooks().subscribe();
-    if (tab === 'users' && this.svc.users().length === 0) this.svc.loadUsers().subscribe();
-    if (tab === 'messages' && this.svc.messages().length === 0) this.svc.loadMessages().subscribe();
+    if (tab === 'books'    && !this.svc.books().length)    this.svc.loadBooks().subscribe();
+    if (tab === 'users'    && !this.svc.users().length)    this.svc.loadUsers().subscribe();
+    if (tab === 'messages' && !this.svc.messages().length) this.svc.loadMessages().subscribe();
+    if (tab === 'baskets'  && !this.svc.baskets().length)  this.svc.loadBaskets().subscribe();
+    if (tab === 'payments' && !this.svc.payments().length) this.svc.loadPayments().subscribe();
   }
 
-  // ── Books ─────────────────────────────────
+  // ── Books ─────────────────────────────────────────────────────────────────
   startEditStock(book: Book) {
     this.editingStockId.set(book.id);
     this.stockValue.set(book.stock);
   }
-
   saveStock(id: number) {
-    this.svc.updateStock(id, this.stockValue()).subscribe(() => {
-      this.editingStockId.set(null);
-    });
+    this.svc.updateStock(id, this.stockValue()).subscribe(() => this.editingStockId.set(null));
+  }
+  cancelStock() { this.editingStockId.set(null); }
+
+  openEditBook(book: Book) {
+    this.editingBook.set({ ...book });
+    this.showEditBook.set(true);
+  }
+  closeEditBook() { this.showEditBook.set(false); this.editingBook.set(null); }
+
+  updateEditBook<K extends keyof Book>(field: K, value: Book[K]) {
+    this.editingBook.update((b) => b ? { ...b, [field]: value } : b);
   }
 
-  cancelStock() {
-    this.editingStockId.set(null);
+  submitEditBook() {
+    const b = this.editingBook();
+    if (!b) return;
+    const payload: NewBook = {
+      title: b.title, isbn: b.isbn, price: b.price, stock: b.stock,
+      bookUrl: b.bookUrl, categoryId: b.categoryId,
+      author: b.bookDetails?.author ?? '',
+      description: b.bookDetails?.description ?? '',
+      publisher: b.bookDetails?.publisher ?? '',
+      pageCount: b.bookDetails?.pageCount ?? 0,
+      publishedDate: b.bookDetails?.publishedDate ?? new Date().toISOString(),
+      language: b.bookDetails?.language ?? '',
+    };
+    this.svc.updateBook(b.id, payload).subscribe(() => this.closeEditBook());
   }
 
-  // ── Add book ──────────────────────────────
   openAddBook() {
     this.newBook.set({
-      title: '',
-      isbn: '',
-      price: 0,
-      stock: 0,
-      bookUrl: '',
-      categoryId: 1,
-      author: '',
-      description: '',
-      publisher: '',
-      pageCount: 0,
-      publishedDate: new Date().toISOString(),
-      language: 'ქართული',
+      title: '', isbn: '', price: 0, stock: 0, bookUrl: '', categoryId: 1,
+      author: '', description: '', publisher: '', pageCount: 0,
+      publishedDate: new Date().toISOString(), language: 'ქართული',
     });
     this.addBookError.set(null);
     this.showAddBook.set(true);
   }
-
-  closeAddBook() {
-    this.showAddBook.set(false);
-    this.addBookError.set(null);
-  }
+  closeAddBook() { this.showAddBook.set(false); this.addBookError.set(null); }
 
   updateNewBook<K extends keyof NewBook>(field: K, value: NewBook[K]) {
     this.newBook.update((b) => ({ ...b, [field]: value }));
@@ -127,89 +157,112 @@ export class MtavariPanel implements OnInit {
 
   submitAddBook() {
     const book = this.newBook();
-
-    if (!book.title.trim()) {
-      this.addBookError.set('სათაური სავალდებულოა');
-      return;
-    }
-    if (!book.isbn.trim()) {
-      this.addBookError.set('ISBN სავალდებულოა');
-      return;
-    }
-    if (book.price <= 0) {
-      this.addBookError.set('ფასი უნდა იყოს დადებითი');
-      return;
-    }
+    if (!book.title.trim()) { this.addBookError.set('სათაური სავალდებულოა'); return; }
+    if (!book.isbn.trim())  { this.addBookError.set('ISBN სავალდებულოა'); return; }
+    if (book.price <= 0)    { this.addBookError.set('ფასი უნდა იყოს დადებითი'); return; }
+    if (!book.author.trim()) { this.addBookError.set('ავტორი სავალდებულოა'); return; }
 
     this.addBookLoading.set(true);
     this.addBookError.set(null);
-
     this.svc.addBook(book).subscribe({
-      next: () => {
-        this.addBookLoading.set(false);
-        this.showAddBook.set(false);
-      },
+      next: () => { this.addBookLoading.set(false); this.showAddBook.set(false); },
       error: (err) => {
         this.addBookLoading.set(false);
-        this.addBookError.set(
-          typeof err.error === 'string' ? err.error : 'წიგნის დამატება ვერ მოხერხდა',
-        );
+        this.addBookError.set(typeof err.error === 'string' ? err.error : 'წიგნის დამატება ვერ მოხერხდა');
       },
     });
   }
 
-  // ── Delete ────────────────────────────────
-  askDelete(type: string, id: number) {
-    this.confirmDelete.set({ type, id });
+  // ── Users ─────────────────────────────────────────────────────────────────
+  verify(id: number)   { this.svc.verifyUser(id).subscribe(); }
+  unverify(id: number) { this.svc.unverifyUser(id).subscribe(); }
+
+  toggleSubscribers() {
+    this.showSubscribers.update((v) => !v);
+    if (this.showSubscribers() && !this.svc.subscribers().length) {
+      this.svc.loadSubscribers().subscribe();
+    }
   }
-  cancelDelete() {
-    this.confirmDelete.set(null);
+
+  // ── Baskets ───────────────────────────────────────────────────────────────
+  toggleBasket(id: number) {
+    this.expandedBasketId.update((cur) => (cur === id ? null : id));
   }
+
+  startEditItem(item: BasketItem) {
+    this.editingItemId.set(item.id);
+    this.itemQtyValue.set(item.quantity);
+  }
+  cancelEditItem() { this.editingItemId.set(null); }
+
+  saveItemQty(itemId: number, basketId: number) {
+    this.svc.updateBasketItem(itemId, basketId, this.itemQtyValue()).subscribe(() =>
+      this.editingItemId.set(null),
+    );
+  }
+
+  // ── Payments ──────────────────────────────────────────────────────────────
+  startEditStatus(p: Payment & { status?: string }) {
+    this.editingPaymentId.set(p.id);
+    this.paymentStatusVal.set((p as any).status ?? 'Pending');
+  }
+  cancelEditStatus() { this.editingPaymentId.set(null); }
+
+  saveStatus(id: number) {
+    this.svc.updatePaymentStatus(id, this.paymentStatusVal()).subscribe(() =>
+      this.editingPaymentId.set(null),
+    );
+  }
+
+  statusColor(status: string | undefined): string {
+    switch ((status ?? '').toLowerCase()) {
+      case 'paid':      return 'ok';
+      case 'pending':   return 'warn';
+      case 'failed':    return 'danger';
+      default:          return 'muted';
+    }
+  }
+
+  // ── Delete ────────────────────────────────────────────────────────────────
+  askDelete(type: string, id: number, extra?: number) {
+    this.confirmDelete.set({ type, id, extra });
+  }
+  cancelDelete() { this.confirmDelete.set(null); }
 
   doDelete() {
     const d = this.confirmDelete();
     if (!d) return;
+
     const obs =
-      d.type === 'book'
-        ? this.svc.deleteBook(d.id)
-        : d.type === 'user'
-          ? this.svc.deleteUser(d.id)
-          : d.type === 'message'
-            ? this.svc.deleteMessage(d.id)
-            : null;
+      d.type === 'book'        ? this.svc.deleteBook(d.id) :
+      d.type === 'user'        ? this.svc.deleteUser(d.id) :
+      d.type === 'userCard'    ? this.svc.deleteUserCard(d.id) :
+      d.type === 'message'     ? this.svc.deleteMessage(d.id) :
+      d.type === 'basket'      ? this.svc.deleteBasket(d.id) :
+      d.type === 'basketItem'  ? this.svc.deleteBasketItem(d.id, d.extra!) :
+      d.type === 'payment'     ? this.svc.deletePayment(d.id) :
+      null;
+
     obs?.subscribe(() => this.confirmDelete.set(null));
   }
 
-  // ── Users ─────────────────────────────────
-  verify(id: number) {
-    this.svc.verifyUser(id).subscribe();
-  }
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  logout() { this.auth.logout(); }
 
-  // ── Auth ──────────────────────────────────
-  logout() {
-    this.auth.logout();
-  }
-
+  // ── Helpers ───────────────────────────────────────────────────────────────
   stockColor(stock: number): string {
     if (stock === 0) return 'danger';
-    if (stock < 5) return 'warn';
+    if (stock < 5)  return 'warn';
     return 'ok';
   }
 
-  // ── Template helpers ──────────────────────
-  msgId(msg: Message): number {
-    return msg.id;
+  basketTotal(b: BasketGroup): number {
+    return b.items.reduce((s, i) => s + i.price * i.quantity, 0);
   }
-  msgName(msg: Message): string {
-    return msg.user?.fullName ?? 'უცნობი';
-  }
-  msgEmail(msg: Message): string {
-    return msg.user?.email ?? '';
-  }
-  msgBody(msg: Message): string {
-    return msg.message ?? msg.text ?? '—';
-  }
-  msgAvatar(msg: Message): string {
-    return (msg.user?.fullName?.charAt(0) ?? '?').toUpperCase();
-  }
+
+  msgId(msg: Message): number        { return msg.id; }
+  msgName(msg: Message): string      { return msg.user?.fullName ?? 'უცნობი'; }
+  msgEmail(msg: Message): string     { return msg.user?.email ?? ''; }
+  msgBody(msg: Message): string      { return msg.message ?? msg.text ?? '—'; }
+  msgAvatar(msg: Message): string    { return (msg.user?.fullName?.charAt(0) ?? '?').toUpperCase(); }
 }
