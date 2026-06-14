@@ -23,11 +23,7 @@ export interface ResetPasswordRequest {
 // User / Profile
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Matches the actual API response from GET /api/User/get-user
- * NOTE: API returns `fullName` (not separate firstName/lastName),
- * `savedCardMasked`, `savedCardHolder`, `savedCardExpiry`, `isSubscribed`
- */
+
 export interface UserProfile {
   id: number;
   email: string;
@@ -211,7 +207,7 @@ export interface AppUser {
   isVerified: boolean;
   userImgs: string;
   orderCount: number;
-  isSubscribed?: boolean; // ← დაამატე
+  isSubscribed?: boolean; 
 }
 
 export interface Message {

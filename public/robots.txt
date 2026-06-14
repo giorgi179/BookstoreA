@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /profile
+Disallow: /basket
+Disallow: /auth
+Disallow: /mtavari-login
+Disallow: /mtavari-panel
+
+Sitemap: https://yourdomain.ge/sitemap.xml

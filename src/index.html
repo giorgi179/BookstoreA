@@ -1,14 +1,68 @@
 <!doctype html>
-<html lang="en">
+<html lang="ka">
 
 <head>
   <meta charset="utf-8">
-  <title>BooskStore</title>
+  <title>BookStore – წიგნების ონლაინ მაღაზია</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="description"
+    content="BookStore-ზე იპოვე საუკეთესო წიგნები ქართულ და ინგლისურ ენაზე. ფართო კოლექცია, სწრაფი მიტანა, ხელმისაწვდომი ფასები.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#1a1035">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BookStore">
+  <meta property="og:title" content="BookStore – წიგნების ონლაინ მაღაზია">
+  <meta property="og:description" content="BookStore-ზე იპოვე საუკეთესო წიგნები ქართულ და ინგლისურ ენაზე.">
+  <meta property="og:image" content="https://bookstore.onrender.com/assets/og-image.svg">
+  <meta property="og:locale" content="ka_GE">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BookStore – წიგნების ონლაინ მაღაზია">
+  <meta name="twitter:description" content="BookStore-ზე იპოვე საუკეთესო წიგნები ქართულ და ინგლისურ ენაზე.">
+  <meta name="twitter:image" content="https://bookstore.onrender.com/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Fonts & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- JSON-LD: BookStore -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BookStore",
+    "name": "BookStore",
+    "url": "https://bookstore.onrender.com",
+    "description": "ქართული ონლაინ წიგნების მაღაზია",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "GE",
+      "addressLocality": "თბილისი"
+    }
+  }
+  </script>
+
+  <!-- JSON-LD: SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://bookstore.onrender.com",
+    "name": "BookStore",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://bookstore.onrender.com/books?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
 
 <body>

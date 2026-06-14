@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
@@ -6,6 +6,8 @@ import { CookieConsent } from './shared/cookie-consent/cookie-consent';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { SeoService } from './service/seo';
+
 
 @Component({
   selector: 'app-root',
@@ -13,17 +15,22 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('booskStore');
   showNavbar = true;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private seoService: SeoService) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const hiddenRoutes = ['/mtavari-panel', '/mtavari-login'];
-        this.showNavbar = !hiddenRoutes.some((route) => event.urlAfterRedirects.startsWith(route));
-        
+        this.showNavbar = !hiddenRoutes.some((route) =>
+          event.urlAfterRedirects.startsWith(route)
+        );
       });
+  }
+
+  ngOnInit(): void {
+    this.seoService.initRouteListener();
   }
 }
