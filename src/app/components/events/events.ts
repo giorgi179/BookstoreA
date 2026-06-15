@@ -6,6 +6,7 @@ import { books } from '../../controlers';
 import { CommonModule } from '@angular/common';
 import { Loader } from '../loader/loader';
 import { BasketService } from '../../service/basket';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-events',
@@ -18,6 +19,7 @@ export class Events implements OnInit {
   private auth   = inject(Auths);
   private cdr    = inject(ChangeDetectorRef);
   private basket = inject(BasketService);
+    private router = inject(Router);
 
   books         = signal<books[]>([]);
   loading       = signal(true);
@@ -48,7 +50,7 @@ export class Events implements OnInit {
   }
 
   closeModal():   void { this.showAuthModal.set(false); }
-  goToAuth():     void { window.location.href = '/auth'; }
+  goToAuth():     void { this.router.navigate(['/auth']);}
   dismissToast(): void { this.toastVisible.set(false); }
 
   ngOnInit(): void {
