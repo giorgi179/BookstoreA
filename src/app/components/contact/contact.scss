@@ -24,11 +24,11 @@ $sp-xl: 32px;
 $sp-2xl: 48px;
 
 // ===== BREAKPOINTS =====
-$bp-lg:  1024px;
-$bp-md:   768px;
-$bp-sm:   480px;
-$bp-xs:   380px;
-$bp-xxs:  320px;
+$bp-lg: 1024px;
+$bp-md: 768px;
+$bp-sm: 480px;
+$bp-xs: 380px;
+$bp-xxs: 320px;
 
 // ===== TRANSITIONS =====
 $transition-fast: 0.3s ease;
@@ -36,21 +36,41 @@ $transition-smooth: 0.5s ease-out;
 
 // ===== ANIMATIONS =====
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-50px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(50px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // ===== MAIN SECTION =====
 .contact-section {
-  background: linear-gradient(135deg, $primary-bg 0%, color.adjust($primary-bg, $lightness: 3%) 100%);
+  background: linear-gradient(
+    135deg,
+    $primary-bg 0%,
+    color.adjust($primary-bg, $lightness: 3%) 100%
+  );
   min-height: 100vh;
   width: 100%;
   display: flex;
@@ -60,9 +80,16 @@ $transition-smooth: 0.5s ease-out;
   box-sizing: border-box;
   overflow: hidden;
 
-  @media (max-width: $bp-md)  { padding: $sp-lg; min-height: auto; }
-  @media (max-width: $bp-sm)  { padding: $sp-md; }
-  @media (max-width: $bp-xxs) { padding: $sp-sm; }
+  @media (max-width: $bp-md) {
+    padding: $sp-lg;
+    min-height: auto;
+  }
+  @media (max-width: $bp-sm) {
+    padding: $sp-md;
+  }
+  @media (max-width: $bp-xxs) {
+    padding: $sp-sm;
+  }
 }
 
 .contact-container {
@@ -94,7 +121,9 @@ $transition-smooth: 0.5s ease-out;
 .contact-info {
   animation: slideInLeft 0.8s $transition-smooth;
 
-  @media (max-width: $bp-lg) { order: 2; }
+  @media (max-width: $bp-lg) {
+    order: 2;
+  }
 
   .contact-subtitle {
     font-family: $font-body;
@@ -105,8 +134,14 @@ $transition-smooth: 0.5s ease-out;
     margin: 0 0 $sp-lg;
     font-weight: 400;
 
-    @media (max-width: $bp-sm)  { margin-bottom: $sp-md; }
-    @media (max-width: $bp-xxs) { font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: $sp-sm; }
+    @media (max-width: $bp-sm) {
+      margin-bottom: $sp-md;
+    }
+    @media (max-width: $bp-xxs) {
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      margin-bottom: $sp-sm;
+    }
   }
 
   .contact-title {
@@ -117,15 +152,21 @@ $transition-smooth: 0.5s ease-out;
     line-height: 1.35;
     margin: 0 0 $sp-2xl * 1.5;
 
-    @media (max-width: $bp-md)  { margin-bottom: $sp-xl; }
-    @media (max-width: $bp-sm)  { margin-bottom: $sp-lg; }
+    @media (max-width: $bp-md) {
+      margin-bottom: $sp-xl;
+    }
+    @media (max-width: $bp-sm) {
+      margin-bottom: $sp-lg;
+    }
     @media (max-width: $bp-xxs) {
       font-size: clamp(1.15rem, 6vw, 1.4rem);
       margin-bottom: $sp-md;
       line-height: 1.4;
 
       // break long line nicely on tiny screens
-      br { display: none; }
+      br {
+        display: none;
+      }
     }
   }
 }
@@ -136,17 +177,32 @@ $transition-smooth: 0.5s ease-out;
   gap: $sp-2xl * 1.5;
   margin-top: $sp-2xl * 2;
 
-  @media (max-width: $bp-md)  { gap: $sp-xl;  margin-top: $sp-xl; }
-  @media (max-width: $bp-sm)  { gap: $sp-lg;  margin-top: $sp-lg; }
-  @media (max-width: $bp-xxs) { gap: $sp-md;  margin-top: $sp-md; }
+  @media (max-width: $bp-md) {
+    gap: $sp-xl;
+    margin-top: $sp-xl;
+  }
+  @media (max-width: $bp-sm) {
+    gap: $sp-lg;
+    margin-top: $sp-lg;
+  }
+  @media (max-width: $bp-xxs) {
+    gap: $sp-md;
+    margin-top: $sp-md;
+  }
 }
 
 .detail-block {
   animation: fadeIn 0.8s ease-out backwards;
 
-  &:nth-child(1) { animation-delay: 0.2s; }
-  &:nth-child(2) { animation-delay: 0.4s; }
-  &:nth-child(3) { animation-delay: 0.6s; }
+  &:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.6s;
+  }
 
   .detail-title {
     font-family: $font-display;
@@ -156,8 +212,12 @@ $transition-smooth: 0.5s ease-out;
     margin: 0 0 $sp-md;
     letter-spacing: 0.02em;
 
-    @media (max-width: $bp-sm)  { margin-bottom: $sp-sm; }
-    @media (max-width: $bp-xxs) { margin-bottom: $sp-xs; }
+    @media (max-width: $bp-sm) {
+      margin-bottom: $sp-sm;
+    }
+    @media (max-width: $bp-xxs) {
+      margin-bottom: $sp-xs;
+    }
   }
 
   .detail-text {
@@ -168,7 +228,9 @@ $transition-smooth: 0.5s ease-out;
     margin: 0;
     letter-spacing: 0.02em;
 
-    @media (max-width: $bp-xxs) { line-height: 1.6; }
+    @media (max-width: $bp-xxs) {
+      line-height: 1.6;
+    }
   }
 }
 
@@ -176,7 +238,9 @@ $transition-smooth: 0.5s ease-out;
 .form-wrapper {
   animation: slideInRight 0.8s $transition-smooth;
 
-  @media (max-width: $bp-lg) { order: 1; }
+  @media (max-width: $bp-lg) {
+    order: 1;
+  }
 
   .form-title {
     font-family: $font-display;
@@ -186,8 +250,12 @@ $transition-smooth: 0.5s ease-out;
     margin: 0 0 $sp-2xl;
     letter-spacing: 0.04em;
 
-    @media (max-width: $bp-sm)  { margin-bottom: $sp-xl; }
-    @media (max-width: $bp-xxs) { margin-bottom: $sp-lg; }
+    @media (max-width: $bp-sm) {
+      margin-bottom: $sp-xl;
+    }
+    @media (max-width: $bp-xxs) {
+      margin-bottom: $sp-lg;
+    }
   }
 }
 
@@ -196,8 +264,12 @@ $transition-smooth: 0.5s ease-out;
   flex-direction: column;
   gap: $sp-xl;
 
-  @media (max-width: $bp-sm)  { gap: $sp-lg; }
-  @media (max-width: $bp-xxs) { gap: $sp-md; }
+  @media (max-width: $bp-sm) {
+    gap: $sp-lg;
+  }
+  @media (max-width: $bp-xxs) {
+    gap: $sp-md;
+  }
 }
 
 .form-group {
@@ -206,13 +278,25 @@ $transition-smooth: 0.5s ease-out;
   gap: $sp-md;
   animation: fadeIn 0.8s ease-out backwards;
 
-  &:nth-child(1) { animation-delay: 0.2s; }
-  &:nth-child(2) { animation-delay: 0.3s; }
-  &:nth-child(3) { animation-delay: 0.4s; }
-  &:nth-child(4) { animation-delay: 0.5s; }
-  &:nth-child(5) { animation-delay: 0.6s; }
+  &:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.5s;
+  }
+  &:nth-child(5) {
+    animation-delay: 0.6s;
+  }
 
-  @media (max-width: $bp-xxs) { gap: $sp-sm; }
+  @media (max-width: $bp-xxs) {
+    gap: $sp-sm;
+  }
 }
 
 .form-label {
@@ -245,7 +329,9 @@ $transition-smooth: 0.5s ease-out;
   // prevent iOS zoom on focus (font-size must be ≥16px equivalent)
   -webkit-text-size-adjust: 100%;
 
-  &::placeholder { color: transparent; }
+  &::placeholder {
+    color: transparent;
+  }
 
   &:focus {
     border-bottom-color: $cream;
@@ -255,29 +341,44 @@ $transition-smooth: 0.5s ease-out;
   }
 
   &:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-box-shadow: 0 0 0 30px #7e7e6d8c inset !important;
     -webkit-text-fill-color: $text-light;
   }
-
   @media (max-width: $bp-sm) {
     padding: $sp-sm 0 $sp-xs;
-    &:focus { padding: $sp-sm $sp-sm $sp-xs; }
+    &:focus {
+      padding: $sp-sm $sp-sm $sp-xs;
+    }
   }
 
   @media (max-width: $bp-xxs) {
     font-size: 16px; // prevent iOS zoom
     padding: $sp-xs 0;
-    &:focus { padding: $sp-xs $sp-xs $sp-xs; }
+    &:focus {
+      padding: $sp-xs $sp-xs $sp-xs;
+    }
   }
 }
 
 .form-textarea {
-  resize: vertical;
+  resize: none; // მობილურზე — არანაირი resize
   min-height: 120px;
   line-height: 1.6;
+  overflow-y: auto;
+  touch-action: pan-y;
 
-  @media (max-width: $bp-sm)  { min-height: 100px; }
-  @media (max-width: $bp-xxs) { min-height: 80px; }
+  @media (max-width: $bp-sm) {
+    min-height: 100px;
+    // resize: vertical აქ არ უნდა იყოს!
+  }
+
+  @media (max-width: $bp-xxs) {
+    min-height: 80px;
+  }
+
+  @media (min-width: $bp-lg) {
+    resize: vertical; // მხოლოდ დიდ ეკრანზე
+  }
 }
 
 .error-msg {
@@ -307,8 +408,8 @@ $transition-smooth: 0.5s ease-out;
   position: relative;
   overflow: hidden;
   text-align: center;
-  width: 100%;           // full width on all sizes — cleaner on mobile
-  min-height: 48px;      // touch target
+  width: 100%; // full width on all sizes — cleaner on mobile
+  min-height: 48px; // touch target
   box-sizing: border-box;
 
   &::before {
@@ -326,10 +427,14 @@ $transition-smooth: 0.5s ease-out;
     background: $cream-dark;
     transform: translateY(-2px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-    &::before { left: 100%; }
+    &::before {
+      left: 100%;
+    }
   }
 
-  &:active:not(:disabled) { transform: translateY(0); }
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
 
   &:disabled {
     opacity: 0.5;
