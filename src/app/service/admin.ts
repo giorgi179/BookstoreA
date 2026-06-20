@@ -14,7 +14,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-  private readonly API = 'https://bookapi-h00v.onrender.com/api/Admin';
+  private readonly API = 'https://bookapi-oc2p.onrender.com/api/Admin';
 
   readonly stats    = signal<DashboardStats | null>(null);
   readonly books    = signal<Book[]>([]);

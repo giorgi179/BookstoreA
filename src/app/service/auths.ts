@@ -8,7 +8,7 @@ import { LoginRequest, ResetPasswordRequest, TokenResponse } from '../controlers
   providedIn: 'root',
 })
 export class Auths {
-  readonly apiUrl = 'https://bookapi-h00v.onrender.com/api';
+  readonly apiUrl = 'https://bookapi-oc2p.onrender.com/api';
   readonly http = inject(HttpClient);
 
   readonly isLoggedIn = signal<boolean>(!!localStorage.getItem('userId'));

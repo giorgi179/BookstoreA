@@ -12,8 +12,8 @@ import {
 } from '../controlers';
 import { CardFormData } from '../controlers';
 
-const BASE_USER = 'https://bookapi-h00v.onrender.com/api/User';
-const BASE_PAYMENT = 'https://bookapi-h00v.onrender.com/api/Payment';
+const BASE_USER = 'https://bookapi-oc2p.onrender.com/api/User';
+const BASE_PAYMENT = 'https://bookapi-oc2p.onrender.com/api/Payment';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {

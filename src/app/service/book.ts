@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { books } from '../controlers';
@@ -17,7 +17,7 @@ export interface BookDetails {
   providedIn: 'root',
 })
 export class Book {
-  readonly apiUrl = 'https://bookapi-h00v.onrender.com/api';
+  readonly apiUrl = 'https://bookapi-oc2p.onrender.com/api';
 
   readonly http = inject(HttpClient);
 
@@ -26,5 +26,9 @@ export class Book {
   }
   getBookDetails(): Observable<BookDetails[]> {
     return this.http.get<BookDetails[]>(`${this.apiUrl}/Book/get-book-detals-tolist`);
+  }
+  search(q: string): Observable<books[]> {
+    const params = new HttpParams().set('q', q);
+    return this.http.get<books[]>(`${this.apiUrl}/Book/search-books`, { params });
   }
 }

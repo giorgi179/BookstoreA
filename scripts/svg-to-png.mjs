@@ -1,4 +1,4 @@
-﻿import sharp from 'sharp';
+import sharp from 'sharp';
 import { readFileSync } from 'fs';
 
 const svg = readFileSync('./src/assets/og-image.svg');

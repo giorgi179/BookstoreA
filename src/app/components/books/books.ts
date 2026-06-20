@@ -1,16 +1,19 @@
-import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
-import { Book } from '../../service/book';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Book, BookDetails } from '../../service/book';
 import { Auths } from '../../service/auths';
 import { books } from '../../controlers';
 import { CommonModule } from '@angular/common';
 import { Loader } from '../loader/loader';
+import { LoaderSerch } from '../loader-serch/loader-serch';
 import { BasketService } from '../../service/basket';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-books',
-  imports: [CommonModule, Loader],
+  imports: [CommonModule, Loader,LoaderSerch],
   templateUrl: './books.html',
   styleUrl: './books.scss',
 })
@@ -20,6 +23,14 @@ export class Books implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private basket = inject(BasketService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+
+  private allBooks: books[] = [];
+  private allDetails: BookDetails[] = [];
+
+  searchQuery = signal('');
+  searching = signal(false);
+  private searchInput$ = new Subject<string>();
 
   books = signal<books[]>([]);
   loading = signal(true);
@@ -72,6 +83,8 @@ export class Books implements OnInit {
           ...book,
           bookDetails: details.find((d) => d.bookId === book.id) ?? null,
         }));
+        this.allBooks = merged;
+        this.allDetails = details;
         this.books.set(merged);
         this.loading.set(false);
         this.cdr.detectChanges();
@@ -82,6 +95,46 @@ export class Books implements OnInit {
         this.loading.set(false);
       },
     });
+
+    this.initSearchStream();
+  }
+
+  private initSearchStream(): void {
+    this.searchInput$
+      .pipe(
+        debounceTime(350),
+        distinctUntilChanged(),
+        switchMap((q) => {
+          const trimmed = q.trim();
+          this.searching.set(!!trimmed);
+
+          if (!trimmed) {
+            return [this.allBooks];
+          }
+          return this.api.search(trimmed);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((results) => {
+        const merged = results.map((book) => ({
+          ...book,
+          bookDetails: this.allDetails.find((d) => d.bookId === book.id) ?? null,
+        }));
+        this.books.set(merged);
+        this.searching.set(false);
+        this.cdr.detectChanges();
+        setTimeout(() => this.initObserver(), 100);
+      });
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+    this.searchInput$.next(value);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+    this.searchInput$.next('');
   }
 
   openDetail(book: books): void {

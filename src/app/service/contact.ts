@@ -5,7 +5,7 @@ import { inject, Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class Contacts {
-  readonly apiUrl = 'https://bookapi-h00v.onrender.com/api';
+  readonly apiUrl = 'https://bookapi-oc2p.onrender.com/api';
 
   readonly http = inject(HttpClient);
 

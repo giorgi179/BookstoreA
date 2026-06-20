@@ -352,7 +352,7 @@ $transition-smooth: 0.5s ease-out;
   }
 
   @media (max-width: $bp-xxs) {
-    font-size: 16px; // prevent iOS zoom
+    font-size: 16px;
     padding: $sp-xs 0;
     &:focus {
       padding: $sp-xs $sp-xs $sp-xs;
@@ -361,7 +361,7 @@ $transition-smooth: 0.5s ease-out;
 }
 
 .form-textarea {
-  resize: none; // მობილურზე — არანაირი resize
+  resize: none; 
   min-height: 120px;
   line-height: 1.6;
   overflow-y: auto;
@@ -369,7 +369,7 @@ $transition-smooth: 0.5s ease-out;
 
   @media (max-width: $bp-sm) {
     min-height: 100px;
-    // resize: vertical აქ არ უნდა იყოს!
+    
   }
 
   @media (max-width: $bp-xxs) {
@@ -377,7 +377,7 @@ $transition-smooth: 0.5s ease-out;
   }
 
   @media (min-width: $bp-lg) {
-    resize: vertical; // მხოლოდ დიდ ეკრანზე
+    resize: vertical; 
   }
 }
 

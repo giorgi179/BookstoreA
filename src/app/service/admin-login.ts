@@ -11,7 +11,7 @@ export interface AdminUser {
 
 @Injectable({ providedIn: 'root' })
 export class AdminLoginService {
-  private readonly API = 'https://bookapi-h00v.onrender.com/api/Admin';
+  private readonly API = 'https://bookapi-oc2p.onrender.com/api/Admin';
 
   readonly admin = signal<AdminUser | null>(this.#loadAdmin());
   readonly loading = signal(false);
