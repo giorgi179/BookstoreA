@@ -21,11 +21,7 @@ export class Contact {
   });
 
   submit(){
-    console.log('Form valid:', this.contactForm.valid);
-    console.log('Form status:', this.contactForm.status);
-    console.log('Form value:', this.contactForm.value);
-    console.log('Form raw value:', this.contactForm.getRawValue());
-    
+
     if (this.contactForm.invalid) {
       alert('გთხოვთ შეავსოთ ყველა სავალდებულო ველი');
       return;

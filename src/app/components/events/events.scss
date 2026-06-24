@@ -44,7 +44,7 @@ $breakpoint-xxs: 320px;
 // ===== HERO SECTION =====
 .books-hero {
   background: linear-gradient(135deg, $hero-bg 0%, color.adjust($hero-bg, $lightness: -5%) 100%);
-  min-height: 93vh;
+  min-height: 63vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -135,7 +135,9 @@ $breakpoint-xxs: 320px;
   max-width: 340px;
   min-height: auto;
   opacity: 0;
-  transition: opacity $transition-smooth, transform $transition-smooth;
+  transition:
+    opacity $transition-smooth,
+    transform $transition-smooth;
   transform: translateY($sp-xl);
   will-change: opacity, transform;
 
@@ -425,23 +427,45 @@ $breakpoint-xxs: 320px;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ===== BOOK DETAIL =====
@@ -493,7 +517,11 @@ $breakpoint-xxs: 320px;
   }
 
   &__image {
-    background: linear-gradient(135deg, $darker-bg 0%, color.adjust($darker-bg, $lightness: -5%) 100%);
+    background: linear-gradient(
+      135deg,
+      $darker-bg 0%,
+      color.adjust($darker-bg, $lightness: -5%) 100%
+    );
     padding: $sp-2xl;
     display: flex;
     align-items: center;
@@ -733,6 +761,12 @@ $breakpoint-xxs: 320px;
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
