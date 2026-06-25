@@ -97,8 +97,6 @@ export class BasketComponent implements OnInit, OnDestroy {
   }
 
   private buildForm(): void {
-    // CVV არ არის required — შენახული ბარათით გადახდისას backend-ი CVV-ს არ ითხოვს.
-    // Delivery address კი საჭიროა.
     this.checkoutForm = this.fb.group({
       exactAddress: ['', [Validators.required, Validators.minLength(5)]],
     });
@@ -116,9 +114,19 @@ export class BasketComponent implements OnInit, OnDestroy {
     return this.groups.find(g => g.items.some(i => i.id === itemId))?.id ?? 0;
   }
 
+  // ── რაოდენობის ცვლილება stock-ის ლიმიტით ────────────────────────────────
   updateQty(item: BasketItem, delta: number): void {
     const next = item.quantity + delta;
-    if (next < 1) { this.removeItem(item); return; }
+
+    if (next < 1) {
+      this.removeItem(item);
+      return;
+    }
+
+    // stock-ის ლიმიტი
+    const maxStock = item.book.stock ?? 999;
+    if (next > maxStock) return;
+
     item.quantity = next;
 
     if (!this.qtySubjects.has(item.id)) {
@@ -132,6 +140,7 @@ export class BasketComponent implements OnInit, OnDestroy {
         this.svc.updateItem(basketId, bookId, qty).subscribe({ error: () => this.load() });
       });
     }
+
     this.qtySubjects.get(item.id)!.next({
       basketId: this.getBasketId(item.id),
       bookId: item.bookId,
@@ -139,6 +148,7 @@ export class BasketComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ── item-ის წაშლა ─────────────────────────────────────────────────────────
   removeItem(item: BasketItem): void {
     this.qtySubjects.get(item.id)?.complete();
     this.qtySubjects.delete(item.id);
@@ -152,6 +162,7 @@ export class BasketComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ── კალათის გასუფთავება ───────────────────────────────────────────────────
   clearAll(): void {
     if (!confirm('Remove all items from your cart?')) return;
     this.clearing.set(true);
@@ -168,8 +179,6 @@ export class BasketComponent implements OnInit, OnDestroy {
     if (this.checkingOut() || this.allItems.length === 0) return;
     this.checkingOut.set(true);
     this.payError.set('');
-
-    // შევინახოთ items + total (price-ითაც) — /card გვერდსაც სჭირდება
     this.saveCheckoutState();
 
     this.paymentSvc.getSavedCard()
@@ -192,7 +201,6 @@ export class BasketComponent implements OnInit, OnDestroy {
       });
   }
 
-  /** შეინახე კალათის მდგომარეობა localStorage-ში checkout flow-სთვის */
   private saveCheckoutState(): void {
     localStorage.setItem('checkoutTotal', String(this.subtotal));
     localStorage.setItem(
@@ -201,7 +209,7 @@ export class BasketComponent implements OnInit, OnDestroy {
         this.allItems.map(i => ({
           bookId:   i.bookId,
           quantity: i.quantity,
-          price:    i.price,   // ← unit price — per-item amount-ისთვის
+          price:    i.price,
         })),
       ),
     );
@@ -219,7 +227,7 @@ export class BasketComponent implements OnInit, OnDestroy {
     this.router.navigate(['/card']);
   }
 
-  // ── Pay with saved card ───────────────────────────────────────────────────
+  // ── გადახდა შენახული ბარათით ─────────────────────────────────────────────
   confirmPay(): void {
     if (this.checkoutForm.invalid) {
       this.checkoutForm.markAllAsTouched();
@@ -234,14 +242,6 @@ export class BasketComponent implements OnInit, OnDestroy {
     const { exactAddress } = this.checkoutForm.value;
     const itemsSnapshot = [...this.allItems];
     const total = this.subtotal;
-
-    // ── Step 1: გადახდა — თითოეული book-ისთვის ცალკე call bookId-ით ──────
-    //
-    // API: POST /api/Payment/pay?userId&bookId&cardNumber&cardHolderName
-    //                           &expiryDate&cvv&exactAddress&amount
-    //
-    // შენახული ბარათით გადახდისას CVV-ი "000"-ით ივსება,
-    // რადგან backend-ი masked ბარათისთვის CVV-ს არ ამოწმებს.
     const SAVED_CARD_CVV = '000';
 
     const paymentCalls = itemsSnapshot.length > 0
@@ -252,8 +252,8 @@ export class BasketComponent implements OnInit, OnDestroy {
             card.expiryDate,
             SAVED_CARD_CVV,
             exactAddress,
-            item.price * item.quantity,   // ← ზუსტი თანხა item-ისთვის
-            item.bookId,                  // ← bookId — purchases-ში გამოჩნდება
+            item.price * item.quantity,
+            item.bookId,
           )
         )
       : [
@@ -267,16 +267,16 @@ export class BasketComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
 
-        // ── Step 2: stock შემცირება ────────────────────────────────────────
+        // stock შემცირება
         switchMap(() => {
           const stockCalls = itemsSnapshot.map(item =>
             this.svc.decreaseStock(item.bookId, this.email, item.quantity)
-              .pipe(catchError(() => of(null))),  // ერთი შეცდომა სხვებს არ შეაჩერებს
+              .pipe(catchError(() => of(null))),
           );
           return stockCalls.length > 0 ? forkJoin(stockCalls) : of([]);
         }),
 
-        // ── Step 3: კალათის გასუფთავება ───────────────────────────────────
+        // კალათის გასუფთავება
         switchMap(() => this.svc.clearBasket().pipe(catchError(() => of(null)))),
       )
       .subscribe({
@@ -288,7 +288,6 @@ export class BasketComponent implements OnInit, OnDestroy {
           this.qtySubjects.forEach(s => s.complete());
           this.qtySubjects.clear();
           this.groups = [];
-          // წარმატებული checkout-ის შემდეგ ბიბლიოთეკაში გადაამისამართე
           this.router.navigate(['/profile'], { queryParams: { tab: 'library' } });
         },
         error: (e: Error) => {
@@ -301,5 +300,15 @@ export class BasketComponent implements OnInit, OnDestroy {
   errField(field: string): boolean {
     const c = this.checkoutForm.get(field);
     return !!(c?.invalid && c?.touched);
+  }
+
+  // ── stock badge ───────────────────────────────────────────────────────────
+  stockWarning(item: BasketItem): boolean {
+    const stock = item.book.stock ?? 999;
+    return stock > 0 && stock <= 5;
+  }
+
+  isAtMaxStock(item: BasketItem): boolean {
+    return item.quantity >= (item.book.stock ?? 999);
   }
 }

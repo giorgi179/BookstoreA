@@ -733,14 +733,19 @@ $bp-xxs: 320px;
   border-radius: 6px;
   display: grid;
   place-items: center;
-  transition: color 0.15s, background 0.15s;
+  transition:
+    color 0.15s,
+    background 0.15s;
 
   &:hover:not(:disabled) {
     color: var(--text, #1a1a1a);
     background: var(--hover, #f0f0f0);
   }
 
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 // ── Saved card preview ───────────────────────────────────────
@@ -800,7 +805,9 @@ $bp-xxs: 320px;
   font-size: 0.9rem;
   color: var(--text, #1a1a1a);
   background: var(--input-bg, #fafafa);
-  transition: border-color 0.18s, box-shadow 0.18s;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -811,7 +818,9 @@ $bp-xxs: 320px;
     background: #fff;
   }
 
-  &::placeholder { color: var(--placeholder, #bbb); }
+  &::placeholder {
+    color: var(--placeholder, #bbb);
+  }
 }
 
 .bk__modal-err {
@@ -863,6 +872,19 @@ $bp-xxs: 320px;
 
 // ── Spinner (light variant for dark button) ───────────────────
 .bk__spinner--light {
-  border-color: rgba(255,255,255,0.3);
+  border-color: rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
+}
+.bk__stock-warn {
+  font-family: vars.$font-body;
+  font-size: 12px;
+  color: #f0c060;
+  margin: 2px 0 0;
+}
+
+.bk__stock-max {
+  font-family: vars.$font-body;
+  font-size: 11px;
+  color: rgba(240, 232, 200, 0.4);
+  margin: 2px 0 0;
 }

@@ -45,6 +45,8 @@ export class Books implements OnInit {
   private toastTimer: any;
 
   addToCart(book: books): void {
+    if (book.stock === 0) return;
+
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.showAuthModal.set(true);

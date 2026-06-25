@@ -144,7 +144,9 @@
       <p class="book-card__price">{{ book.price }}$</p>
       <div class="book-card__buttons">
         <button class="book-card__btn book-card__btn--details" (click)="openDetail(book)">Details</button>
-        <button class="book-card__btn book-card__btn--cart" (click)="addToCart(book)">Add to Cart</button>
+        <button class="book-card__btn book-card__btn--cart" [disabled]="book.stock === 0" (click)="addToCart(book)">
+          {{ book.stock === 0 ? 'Out of stock' : 'Add to Cart' }}
+        </button>
       </div>
     </div>
   </div>

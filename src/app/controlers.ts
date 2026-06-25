@@ -23,7 +23,6 @@ export interface ResetPasswordRequest {
 // User / Profile
 // ─────────────────────────────────────────────────────────────────────────────
 
-
 export interface UserProfile {
   id: number;
   email: string;
@@ -111,7 +110,7 @@ export interface Payment {
   cardHolderName: string;
   amount: number;
   exactAddress: string;
-  paidAt?: string; 
+  paidAt?: string;
   status?: string;
 }
 
@@ -145,6 +144,7 @@ export interface BasketBook {
   bookUrl: string;
   isbn: string;
   price: number;
+  stock: number; 
   bookDetails?: { author?: string } | null;
 }
 
@@ -207,7 +207,7 @@ export interface AppUser {
   isVerified: boolean;
   userImgs: string;
   orderCount: number;
-  isSubscribed?: boolean; 
+  isSubscribed?: boolean;
 }
 
 export interface Message {
@@ -230,4 +230,3 @@ export interface NewBook {
   publishedDate: string;
   language: string;
 }
-
