@@ -3,17 +3,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Book, BookDetails } from '../../service/book';
-import { Auths } from '../../service/auths';
+
 import { books } from '../../controlers';
 import { CommonModule } from '@angular/common';
 import { Loader } from '../loader/loader';
 import { LoaderSerch } from '../loader-serch/loader-serch';
 import { BasketService } from '../../service/basket';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-books',
-  imports: [CommonModule, Loader,LoaderSerch],
+  imports: [CommonModule, Loader, LoaderSerch],
   templateUrl: './books.html',
   styleUrl: './books.scss',
 })
@@ -24,6 +24,7 @@ export class Books implements OnInit {
   private basket = inject(BasketService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private activatedRoute = inject(ActivatedRoute);
 
   private allBooks: books[] = [];
   private allDetails: BookDetails[] = [];
@@ -74,6 +75,11 @@ export class Books implements OnInit {
   }
 
   ngOnInit(): void {
+    const initialQuery = this.activatedRoute.snapshot.queryParamMap.get('q') ?? '';
+    if (initialQuery) {
+      this.searchQuery.set(initialQuery);
+      this.searchInput$.next(initialQuery);
+    }
     forkJoin({
       books: this.api.getBooks(),
       details: this.api.getBookDetails(),
@@ -130,11 +136,25 @@ export class Books implements OnInit {
   onSearchInput(value: string): void {
     this.searchQuery.set(value);
     this.searchInput$.next(value);
+
+    // URL-ში ჩაწერა
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { q: value || null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   clearSearch(): void {
     this.searchQuery.set('');
     this.searchInput$.next('');
+
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: { q: null },
+      replaceUrl: true,
+    });
   }
 
   openDetail(book: books): void {

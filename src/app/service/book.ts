@@ -18,6 +18,7 @@ export interface BookDetails {
 })
 export class Book {
   readonly apiUrl = 'https://bookapi-oc2p.onrender.com/api';
+  
 
   readonly http = inject(HttpClient);
 
