@@ -15,10 +15,17 @@ function getCurrentLanguage(): string {
 }
 
 function initN8nChat(): void {
+  const target = document.querySelector<HTMLElement>('#n8n-chat');
+
+  if (!target) {
+    console.warn('n8n chat target element not found');
+    return;
+  }
+
   try {
     createChat({
       webhookUrl: 'https://giorgi0012.app.n8n.cloud/webhook/aa4c578f-3f2a-42cb-8590-22c2d2b78a09/chat',
-      target: '#n8n-chat',
+      target,
       metadata: {
         language: getCurrentLanguage(),
       },
@@ -27,11 +34,11 @@ function initN8nChat(): void {
       defaultLanguage: 'en',
       loadPreviousSession: true,
       enableStreaming: true,
-      initialMessages: ['გამარჯობა! თუ გსურს, შეგიძლია უბრალოდ მოისვი კითხვა.'],
+      initialMessages: ['გამარჯობა! თუ გსურს, უბრალოდ მომწერე سؤالით.'],
       i18n: {
         en: {
           title: 'Hello! 👋',
-          subtitle: "Ask a question or start a conversation.",
+          subtitle: 'Ask a question or start a conversation.',
           footer: '',
           getStarted: 'New Conversation',
           inputPlaceholder: 'Type your question..',

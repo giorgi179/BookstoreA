@@ -36,6 +36,22 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+#n8n-chat {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  width: min(420px, calc(100vw - 24px));
+  max-width: 100%;
+  pointer-events: auto;
+}
+
+#n8n-chat .chat-window-wrapper,
+#n8n-chat .chat-window-toggle {
+  position: relative;
+  z-index: 2147483647;
+}
+
 // ── Typography ───────────────────────────────────────────────────
 h1, h2, h3, h4, h5, h6 {
   font-size: inherit;
