@@ -66,7 +66,13 @@ export class Home implements AfterViewInit, OnInit, OnDestroy {
     }, 850);
   }
 
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   ngOnInit(): void {
+    this.scrollToTop();
+
     this.intervalId = setInterval(() => {
       this.goTo((this.currentIndex() + 1) % this.testimonials.length);
     }, 3000);
@@ -82,6 +88,7 @@ export class Home implements AfterViewInit, OnInit, OnDestroy {
 
     // DOM-ის render-ის შემდეგ refresh, რომ ახალი elements "დაითვალოს"
     setTimeout(() => {
+      this.scrollToTop();
       AOS.refreshHard();
     }, 0);
   }

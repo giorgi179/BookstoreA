@@ -19,4 +19,25 @@ describe('Home', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should scroll to the top on initialization', () => {
+    let calledWith: ScrollToOptions | null = null;
+    const originalScrollTo = window.scrollTo;
+
+    Object.defineProperty(window, 'scrollTo', {
+      value: (options: ScrollToOptions) => {
+        calledWith = options;
+      },
+      writable: true,
+    });
+
+    component.ngOnInit();
+
+    expect(calledWith).toEqual({ top: 0, behavior: 'smooth' });
+
+    Object.defineProperty(window, 'scrollTo', {
+      value: originalScrollTo,
+      writable: true,
+    });
+  });
 });
