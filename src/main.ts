@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
-import '@n8n/chat/style.css';
+import '@n8n/chat/dist/style.css';
 import { createChat } from '@n8n/chat';
 
 function getCurrentLanguage(): string {
@@ -34,7 +34,7 @@ function initN8nChat(): void {
       defaultLanguage: 'en',
       loadPreviousSession: true,
       enableStreaming: true,
-      initialMessages: ['გამარჯობა! თუ გსურს, უბრალოდ მომწერე سؤالით.'],
+      initialMessages: ['გამარჯობა! თუ გსურთ, უბრალოდ დაწერეთ თქვენი შეკითხვა.'],
       i18n: {
         en: {
           title: 'Hello! 👋',
