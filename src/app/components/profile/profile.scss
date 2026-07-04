@@ -16,6 +16,8 @@ $font-d: 'Playfair Display', serif;
 $font-b: 'EB Garamond', 'Garamond', Georgia, serif;
 $ease: cubic-bezier(0.22, 1, 0.36, 1);
 
+@use 'sass:color';
+
 // Breakpoints
 $bp-lg: 1024px;
 $bp-md: 768px;
@@ -204,7 +206,7 @@ $bp-min: 320px;
 
   &:hover {
     background: rgba($danger, 0.08);
-    color: lighten($danger, 22%);
+    color: color.adjust($danger, $lightness: 22%);
     border-color: rgba($danger, 0.4);
   }
 }
@@ -432,7 +434,7 @@ $bp-min: 320px;
     color: $success;
   }
   &--err {
-    color: lighten($danger, 15%);
+    color: color.adjust($danger, $lightness: 15%);
   }
 }
 
@@ -490,7 +492,7 @@ $bp-min: 320px;
   &--danger {
     background: rgba($danger, 0.08);
     border: 1px solid rgba($danger, 0.38);
-    color: lighten($danger, 20%);
+    color: color.adjust($danger, $lightness: 20%);
     padding: 10px 26px;
 
     &:hover:not(:disabled) {
@@ -726,7 +728,7 @@ $bp-min: 320px;
   transition: color 0.2s;
 
   &:hover {
-    color: lighten($danger, 18%);
+    color: color.adjust($danger, $lightness: 18%);
   }
 }
 
@@ -814,7 +816,7 @@ $bp-min: 320px;
   font-family: $font-d;
   font-size: 0.95rem;
   font-weight: 400;
-  color: lighten($danger, 20%);
+  color: color.adjust($danger, $lightness: 20%);
 }
 
 .pg__danger-desc {
