@@ -1,17 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { forkJoin, catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Contacts {
-  // readonly apiUrl = 'https://bookapi-oc2p.onrender.com/api';
-  readonly apiUrl = 'https://giorgi0012.app.n8n.cloud/webhook-test/0a0adde1-0392-436a-8ff9-5113375a9c06';
+  readonly apiUrl = 'https://bookapi-oc2p.onrender.com/api';
+  readonly n8nUrl = 'https://giorgi0012.app.n8n.cloud/webhook/books'; // production URL
 
   readonly http = inject(HttpClient);
 
   setContact(data: { lastName: string; firstName: string; email: string; massage: string }) {
-    return this.http.post(
+    const saveToDb = this.http.post(
       `${this.apiUrl}/User/user-massage`,
       {},
       {
@@ -23,5 +24,14 @@ export class Contacts {
         }
       }
     );
+
+    const sendToN8n = this.http.post(this.n8nUrl, data).pipe(
+      catchError((err) => {
+        console.error('n8n error:', err);
+        return of(null);
+      })
+    );
+
+    return forkJoin([saveToDb, sendToN8n]);
   }
 }
