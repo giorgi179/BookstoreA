@@ -114,12 +114,13 @@ export class Books implements OnInit {
         distinctUntilChanged(),
         switchMap((q) => {
           const trimmed = q.trim();
+          const normalizedQuery = trimmed.toLowerCase();
           this.searching.set(!!trimmed);
 
-          if (!trimmed) {
+          if (!normalizedQuery) {
             return [this.allBooks];
           }
-          return this.api.search(trimmed);
+          return this.api.search(normalizedQuery);
         }),
         takeUntilDestroyed(this.destroyRef),
       )

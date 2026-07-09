@@ -8,7 +8,6 @@
 // Professional CSS Reset
 // ─────────────────────────────────────────────────────────────────
 
-// ── Box model ────────────────────────────────────────────────────
 *,
 *::before,
 *::after {
@@ -17,7 +16,6 @@
   padding: 0;
 }
 
-// ── Document ─────────────────────────────────────────────────────
 html {
   font-size: 100%;
   line-height: 1.5;
@@ -48,7 +46,9 @@ body {
   max-width: 100%;
   pointer-events: auto;
 
-  // ── ფერები / ტიპოგრაფია ──────────────────────────────────────
+  bottom: max(16px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+
   --chat--color--primary: #c8b87a;
   --chat--color--primary-shade-50: #b8a768;
   --chat--color--primary--shade-100: #a8965a;
@@ -70,14 +70,12 @@ body {
   --chat--border-radius: 6px;
   --chat--transition-duration: 0.2s;
 
-  // ── ფანჯარა ──────────────────────────────────────────────────
   --chat--window--width: 380px;
   --chat--window--height: 600px;
   --chat--window--border: 1px solid rgba(200, 184, 122, 0.3);
   --chat--window--border-radius: 14px;
   --chat--window--z-index: 2147483647;
 
-  // ── ჰედერი ───────────────────────────────────────────────────
   --chat--header--background: #141410;
   --chat--header--color: #f0e8c8;
   --chat--header--padding: 1.5rem 1.25rem;
@@ -85,10 +83,8 @@ body {
   --chat--heading--font-size: 1.6rem;
   --chat--subtitle--line-height: 1.5;
 
-  // ── სხეული / ფონი ────────────────────────────────────────────
   --chat--body--background: #1a1a16;
 
-  // ── შეტყობინებები ────────────────────────────────────────────
   --chat--message--font-size: 0.95rem;
   --chat--message-line-height: 1.6;
   --chat--message--border-radius: 10px;
@@ -99,14 +95,12 @@ body {
   --chat--message--user--color: #141410;
   --chat--message--pre--background: rgba(0, 0, 0, 0.3);
 
-  // ── გახსნის ღილაკი (toggle) ──────────────────────────────────
   --chat--toggle--size: 60px;
   --chat--toggle--background: #c8b87a;
   --chat--toggle--hover--background: #b8a768;
   --chat--toggle--active--background: #a8965a;
   --chat--toggle--color: #141410;
 
-  // ── შეყვანის ველი ────────────────────────────────────────────
   --chat--input--background: #1e1e18;
   --chat--input--text-color: #f0e8c8;
   --chat--input--border-radius: 8px;
@@ -119,18 +113,15 @@ body {
   --chat--input--send--button--background-hover: rgba(200, 184, 122, 0.1);
   --chat--input--send--button--color-hover: #f0e8c8;
 
-  // ── ღილაკები ──────────────────────────────────────────────────
   --chat--button--background--primary: #c8b87a;
   --chat--button--color--primary: #141410;
   --chat--button--background--primary--hover: #b8a768;
   --chat--button--color--primary--hover: #141410;
 
-  // ── ფუტერი ───────────────────────────────────────────────────
   --chat--footer--background: #141410;
   --chat--footer--color: #c8bfa8;
   --chat--footer--border-top: 1px solid rgba(200, 184, 122, 0.15);
 
-  // ── სხვადასხვა ────────────────────────────────────────────────
   --chat--close--button--color-hover: #c8b87a;
   --chat--message--actions--color: #c8b87a;
 }
@@ -141,7 +132,6 @@ body {
   z-index: 2147483647;
 }
 
-// ── დამატებითი დახვეწა (CSS variable-ებით ვერ იმართება) ──────────
 #n8n-chat {
   .chat-window {
     box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
@@ -175,6 +165,101 @@ body {
     color: #c8bfa8;
     opacity: 0.6;
     font-family: 'EB Garamond', Georgia, serif;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// n8n Chat — რესპონსივი გაუმჯობესება (320px-მდე)
+// ─────────────────────────────────────────────────────────────────
+
+@media (max-width: 480px) {
+  #n8n-chat {
+    right: 8px;
+    bottom: 8px;
+    width: calc(100vw - 16px);
+    bottom: max(8px, env(safe-area-inset-bottom));
+    right: max(8px, env(safe-area-inset-right));
+
+    --chat--window--width: 100%;
+    --chat--window--height: min(600px, calc(100dvh - 90px));
+    --chat--window--border-radius: 12px;
+
+    --chat--toggle--size: 52px;
+    --chat--header--padding: 1.1rem 1rem;
+    --chat--heading--font-size: 1.25rem;
+    --chat--message--font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  #n8n-chat {
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    width: auto;
+    bottom: max(6px, env(safe-area-inset-bottom));
+    right: max(6px, env(safe-area-inset-right));
+    left: max(6px, env(safe-area-inset-left));
+
+    --chat--window--height: min(560px, calc(100dvh - 80px));
+    --chat--window--border-radius: 10px;
+    --chat--spacing: 0.75rem;
+
+    --chat--toggle--size: 48px;
+    --chat--header--padding: 0.9rem 0.85rem;
+    --chat--heading--font-size: 1.1rem;
+    --chat--message--font-size: 0.85rem;
+    --chat--message-line-height: 1.5;
+    --chat--message--border-radius: 8px;
+
+    --chat--input--container--border-radius: 16px;
+  }
+
+  #n8n-chat {
+    .chat-window {
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+    }
+
+    .chat-header h1 {
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+
+    .chat-header p {
+      font-size: 0.8rem;
+    }
+
+    .chat-message {
+      padding: 0.6rem 0.8rem;
+    }
+
+    textarea {
+      font-size: 0.85rem;
+    }
+
+    .chat-window-toggle {
+      box-shadow: 0 6px 20px rgba(200, 184, 122, 0.3);
+    }
+  }
+}
+
+@media (max-width: 340px) {
+  #n8n-chat {
+    right: 4px;
+    bottom: 4px;
+    left: 4px;
+
+    --chat--window--height: min(520px, calc(100dvh - 70px));
+    --chat--toggle--size: 44px;
+    --chat--header--padding: 0.75rem 0.7rem;
+    --chat--heading--font-size: 1rem;
+    --chat--message--font-size: 0.8rem;
+  }
+}
+
+@media (max-height: 480px) and (max-width: 900px) {
+  #n8n-chat {
+    --chat--window--height: min(400px, calc(100dvh - 60px));
   }
 }
 
