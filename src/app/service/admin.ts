@@ -25,6 +25,7 @@ export class AdminService {
   readonly subscribers = signal<AppUser[]>([]);
   readonly loading = signal(false);
   readonly categories = signal<{ id: number; name: string; bookCount: number }[]>([]);
+  
   constructor(
     private http: HttpClient,
     private auth: AdminLoginService,
