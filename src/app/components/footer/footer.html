@@ -13,23 +13,12 @@
       <form (ngSubmit)="onSubscribe()">
         <div class="input-group">
           <label>Email *</label>
-          <input
-            type="email"
-            name="email"
-            [(ngModel)]="email"
-            placeholder="Enter your email"
-            [disabled]="loading()"
-          />
+          <input type="email" name="email" [(ngModel)]="email" placeholder="Enter your email" [disabled]="loading()" />
         </div>
 
         <div class="checkbox-group">
-          <input
-            type="checkbox"
-            id="subscribe"
-            name="subscribeChecked"
-            [(ngModel)]="subscribeChecked"
-            [disabled]="loading()"
-          />
+          <input type="checkbox" id="subscribe" name="subscribeChecked" [(ngModel)]="subscribeChecked"
+            [disabled]="loading()" />
           <label for="subscribe">
             I want to subscribe to your newsletter.
           </label>
@@ -37,18 +26,18 @@
 
         <button type="submit" [disabled]="loading()" [class.is-success]="subscribed()">
           @if (loading()) {
-            Subscribing...
+          Subscribing...
           } @else if (subscribed()) {
-            ✓ Subscribed
+          ✓ Subscribed
           } @else {
-            Subscribe
+          Subscribe
           }
         </button>
 
         @if (msg()) {
-          <p class="newsletter-msg" [class.newsletter-msg--err]="err()" [class.newsletter-msg--ok]="!err() && msg()">
-            {{ msg() }}
-          </p>
+        <p class="newsletter-msg" [class.newsletter-msg--err]="err()" [class.newsletter-msg--ok]="!err() && msg()">
+          {{ msg() }}
+        </p>
         }
       </form>
     </div>
@@ -63,13 +52,13 @@
       <h4>Contact</h4>
 
       <p>
-        500 Terry Francine St <br />
-        San Francisco, CA 94158
+        Saburtalo <br />
+        Tbilisi, Georgia 
       </p>
 
-      <a href="mailto:info@mysite.com">info@mysite.com</a>
+      <a href="mailto:giorgimeshveliani03@gmail.com">giorgimeshveliani03@gmail.com</a>
 
-      <span>123-456-7890</span>
+      <span>597 04 00 55</span>
     </div>
 
     <div class="footer-links">
@@ -82,9 +71,10 @@
     <div class="socials">
       <h4>Follow the Whispers</h4>
 
-      <a href="https://www.instagram.com/g_meshveliani_15/">Instagram</a>
-      <a href="https://www.upwork.com/freelancers/~01977b43dc53ca2c2d?mp_source=share">Upwork</a>
-      <a href="#">X</a>
+      <a href="https://www.instagram.com/g_meshveliani_15/" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.upwork.com/freelancers/~01977b43dc53ca2c2d?mp_source=share" target="_blank"
+        rel="noopener noreferrer">Upwork</a>
+      <a href="https://x.com/" target="_blank" rel="noopener noreferrer">X</a>
     </div>
   </div>
   <button class="scroll-top" (click)="scrollToTop()" aria-label="Scroll to top">
